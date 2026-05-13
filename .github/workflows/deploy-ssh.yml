@@ -1,5 +1,4 @@
 name: Deploy to Alternate Host via SSH
-
 on:
   push:
     branches:
