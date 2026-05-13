@@ -31,6 +31,10 @@ name: Deploy to Alternate Host via SSH
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      deploy_note:
+        description: Manual deployment note
+        required: false
 
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "${{ secrets.SSH_DEPLOY_SCRIPT }}"
   deploy:
@@ -51,3 +55,4 @@ name: Deploy to Alternate Host via SSH
             cd /var/www/jpv-os
             git pull
             docker compose up -d --build
+
