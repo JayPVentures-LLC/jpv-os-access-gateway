@@ -30,7 +30,7 @@ jobs:
         run: dotnet publish WebApplication1/WebApplication1.csproj -c Release -o publish --no-build
 
       - name: Upload release artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: webapplication1-release
           path: publish
