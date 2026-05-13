@@ -31,3 +31,10 @@ jobs:
       uses: github/codeql-action/autobuild@v3
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
+    - name: Detect Default CodeQL Conflict
+      if: failure()
+      run: |
+        if grep -Fq 'CodeQL analyses from advanced configurations cannot be processed when the default setup is enabled' "$GITHUB_STEP_SUMMARY" 2>/dev/null; then
+          echo "::error::Default Code Scanning setup detected. Please disable the default setup in repository security settings."
+          exit 1
+        fi
