@@ -1,36 +1,38 @@
-# Reporting a Vulnerability
-If you discover a security vulnerability, I ask that you report it responsibly and privately.
-Please do not create public GitHub issues for security-related reports.
-# How to Report
-Send vulnerability disclosures to:
+# Security Policy
+
+## Reporting a Vulnerability
+
+I take security reports seriously.
+
+Please report vulnerabilities privately by emailing:
+
 security@jaypventuresllc.com
 
-# When possible, include:
-A detailed description of the issue
-Steps to reproduce the vulnerability
-Potential impact assessment
-Proof-of-concept code or screenshots
-Affected versions, environments, or configurations
-# What You Can Expect
-# After I receive a report:
+Do not disclose suspected vulnerabilities publicly before I have reviewed and responded.
 
-I will typically acknowledge receipt within 72 hours
-I may request additional details or clarification during validation
-I will provide status updates as the investigation progresses
+## What to Include
 
-# If the vulnerability is confirmed:
-I will investigate and validate the issue internally
-I will prioritize remediation based on severity and ecosystem impact
-I may release patches, mitigations, or security advisories for supported versions
-I may coordinate disclosure timing with the reporter when appropriatec
-# If the report cannot be reproduced, is outside scope, or does not present a valid security risk, I will communicate that determination whenever possible.
+Please include:
 
-# Responsible Disclosure Guidelines
-I ask that researchers avoid:
+- affected repository or application area
+- steps to reproduce
+- expected impact
+- screenshots, logs, or proof-of-concept details when safe to share
+- your contact information for follow-up
 
-Public disclosure before remediation is available
-Automated exploitation against production systems
-Accessing, modifying, or destroying user data
-Actions that could negatively impact system integrity or availability
+## Response Expectations
 
-I appreciate responsible security research and coordinated disclosure efforts that help improve the security, reliability, and integrity of the ecosystem.
+I will review submitted reports, determine severity, and respond with the next appropriate action.
+
+Accepted reports may result in remediation, additional review, temporary deployment restrictions, or governance updates.
+
+Reports that are not accepted will still be reviewed and documented when appropriate.
+
+## Supported Branch
+
+Security updates are applied to the active main branch unless otherwise documented.
+
+## Responsible Disclosure
+
+I ask that reporters give reasonable time for review and remediation before public disclosure.
+
