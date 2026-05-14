@@ -1,6 +1,19 @@
-﻿<Router AppAssembly="typeof(Program).Assembly">
+<Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(JPVOS.Components.Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(JPVOS.Components.Layout.MainLayout)">
+            <div class="jpv-layout">
+                <main>
+                    <section class="jpv-section">
+                        <h1>Page unavailable</h1>
+                        <p>The requested JPV-OS route is not registered.</p>
+                        <p><a href="/">Return home</a></p>
+                    </section>
+                </main>
+            </div>
+        </LayoutView>
+    </NotFound>
 </Router>
