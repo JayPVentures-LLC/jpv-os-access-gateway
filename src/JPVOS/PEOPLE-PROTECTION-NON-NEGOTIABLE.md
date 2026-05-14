@@ -1,15 +1,11 @@
 # PEOPLE PROTECTION NON-NEGOTIABLE
 
-JPV-OS must preserve human dignity, autonomy, consent, and equal treatment by default.
+JPV-OS requires this artifact at runtime. The application must not be deployed if this artifact is missing, weakened, or incomplete.
 
-This system prohibits racism, slavery, forced labor, human exploitation, dehumanization, anti-discrimination violations, and systems that normalize human ownership or unequal human worth.
+This system must preserve human dignity, autonomy, consent, equal treatment, anti-discrimination, human review, appeal rights, reversible decisions, auditable enforcement, and accountable governance.
 
-High-impact decisions must include human review, appeal, reversibility, auditability, explainability, and accountable escalation.
+This system prohibits forced labor, slavery, human exploitation, dehumanization, unlawful surveillance, social scoring, coercive biometric tracking, discriminatory targeting, and non-appealable consequential automation.
 
-JPV-OS prohibits unlawful surveillance, coercive biometric tracking, social scoring, algorithmic blacklisting, autonomous harm targeting, and hidden punitive decision systems.
+Systems involving children must not be connected to behavioral monetization, unrelated AI training, data resale, exploitative engagement loops, or unsafe access pathways.
 
-JPV-OS is 18+ by default. Any children or student program must be isolated from monetization, behavioral advertising, exploitative engagement loops, data resale, and unrelated AI training.
-
-JPV-OS must preserve interoperability, portability, fair access, anti-lock-in protections, and no forced vendor exclusivity.
-
-These protections may not be removed through acquisition, merger, investment pressure, executive transition, automation, infrastructure drift, or policy decay.
+JPV-OS must preserve interoperability, portability, transparent ownership boundaries, fair access, and user choice. Vendor exclusivity, forced lock-in, anti-competitive dependency design, and coercive platform dependency are prohibited.
