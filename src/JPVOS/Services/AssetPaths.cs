@@ -46,4 +46,31 @@ public static class AssetPaths
     {
         public const string Default = "/assets/opengraph/jpv-os-og.png";
     }
+
+    // -------------------------------------------------
+    // Compatibility aliases for existing Razor pages
+    // -------------------------------------------------
+
+    public static class Init
+    {
+        public const string Hero = "/assets/jpv-os/jpv-os-hero.png";
+    }
+
+    public static class JayPVentures
+    {
+        public const string Hero = "/assets/jaypventures/jaypventures-hero.png";
+        public const string Image01 = "/assets/jaypventures/jaypventures-image-01.png";
+    }
+
+    public static class JayPVLabs
+    {
+        public const string Hero = "/assets/jaypvlabs/jaypvlabs-hero.png";
+        public const string Image01 = "/assets/jaypvlabs/jaypvlabs-image-01.png";
+    }
+
+    public static class References
+    {
+        public const string Hero = "/assets/jpv-os/jpv-os-hero.png";
+    }
+
 }
