@@ -5,14 +5,19 @@ using System.Text.Json;
 
 [ApiController]
 [Route("api/discord/oauth")]
+
 public class DiscordOAuthController : ControllerBase
 {
     private readonly IConfiguration _config;
     private readonly IHttpClientFactory _httpFactory;
-    public DiscordOAuthController(IConfiguration config, IHttpClientFactory httpFactory)
+    private readonly EntitlementService _entitlementService;
+    private readonly DiscordService _discordService;
+    public DiscordOAuthController(IConfiguration config, IHttpClientFactory httpFactory, EntitlementService entitlementService, DiscordService discordService)
     {
         _config = config;
         _httpFactory = httpFactory;
+        _entitlementService = entitlementService;
+        _discordService = discordService;
     }
 
     [HttpGet("connect")]
@@ -47,7 +52,30 @@ public class DiscordOAuthController : ControllerBase
         var tokenJson = await tokenRes.Content.ReadAsStringAsync();
         var token = JsonDocument.Parse(tokenJson).RootElement;
         var accessToken = token.GetProperty("access_token").GetString();
-        // TODO: Store Discord user ID and link to entitlement
+
+        // Fetch Discord user info
+        var userReq = new HttpRequestMessage(HttpMethod.Get, "https://discord.com/api/v10/users/@me");
+        userReq.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        var userRes = await http.SendAsync(userReq);
+        var userJson = await userRes.Content.ReadAsStringAsync();
+        var user = JsonDocument.Parse(userJson).RootElement;
+        var discordUserId = user.GetProperty("id").GetString();
+
+        // Link Discord user to entitlement (by state = Stripe customer ID)
+        var ent = _entitlementService.GetByStripeCustomerId(state);
+        if (ent != null)
+        {
+            ent.DiscordUserId = discordUserId;
+            // Assign Discord role based on package
+            var roleKey = ent.PackageKey.ToUpperInvariant();
+            var roleId = _config[$"DISCORD_ROLE_{roleKey}"];
+            if (!string.IsNullOrEmpty(roleId))
+            {
+                ent.DiscordRole = roleId;
+                await _discordService.AssignRoleAsync(discordUserId, roleId);
+            }
+            _entitlementService.AddOrUpdate(ent);
+        }
         return Redirect("/access");
     }
 }
