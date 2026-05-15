@@ -1243,3 +1243,31 @@ body{
 .partner-icon {
     opacity: .92 !important;
 }
+
+/* FINAL PARTNER PAGE CROPPING + ICON POLISH */
+.partners-hero {
+    padding-top: 42px !important;
+}
+
+.partners-hero .jpv-title {
+    font-size: clamp(48px, 5vw, 86px) !important;
+    line-height: .94 !important;
+    max-width: 1120px !important;
+}
+
+.partners-hero .jpv-lede {
+    margin-top: 22px !important;
+    margin-bottom: 34px !important;
+}
+
+.partner-category {
+    margin-top: 36px !important;
+}
+
+.partner-icon-wrap {
+    background: rgba(255,255,255,.018) !important;
+}
+
+.partner-icon {
+    opacity: .92 !important;
+}
