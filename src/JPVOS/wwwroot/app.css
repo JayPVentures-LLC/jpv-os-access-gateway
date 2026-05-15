@@ -1680,3 +1680,233 @@ nav a:hover {
     }
 }
 
+
+/* =========================================================
+   JPV-OS FINAL NAV + PARTNER OPERATING STACK POLISH
+   ========================================================= */
+
+body {
+    background:
+        radial-gradient(circle at top left, rgba(0,212,255,.08), transparent 28%),
+        radial-gradient(circle at top right, rgba(255,45,138,.10), transparent 30%),
+        linear-gradient(135deg, #05070B 0%, #07101B 42%, #130017 100%) !important;
+}
+
+/* Top navigation polish */
+header,
+.top-row,
+.navbar,
+.jpv-nav,
+nav {
+    backdrop-filter: blur(20px);
+}
+
+body > header,
+.jpv-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    min-height: 72px;
+    padding: 18px 42px;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    background:
+        linear-gradient(180deg, rgba(5,7,11,.82), rgba(5,7,11,.42));
+}
+
+body > header a,
+.jpv-nav a,
+nav a {
+    color: rgba(245,247,250,.78) !important;
+    text-decoration: none !important;
+    font-size: .82rem;
+    font-weight: 750;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-right: 22px;
+    transition: color .18s ease, opacity .18s ease;
+}
+
+body > header a:hover,
+.jpv-nav a:hover,
+nav a:hover {
+    color: #00D4FF !important;
+}
+
+/* Hero */
+.partners-hero {
+    margin-top: 30px !important;
+    padding: 64px 76px !important;
+    border-radius: 34px !important;
+}
+
+.partners-hero .jpv-title {
+    max-width: 1180px !important;
+    font-size: clamp(52px, 6vw, 106px) !important;
+    line-height: .92 !important;
+    letter-spacing: -.065em !important;
+    margin-bottom: 28px !important;
+}
+
+.partners-hero .jpv-lede {
+    max-width: 980px !important;
+    color: rgba(220,230,245,.76) !important;
+    font-size: clamp(18px, 1.35vw, 22px) !important;
+    line-height: 1.7 !important;
+    margin-bottom: 40px !important;
+}
+
+.jpv-kicker,
+.partner-section-label {
+    color: #00D4FF !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .45em !important;
+}
+
+.partner-section-label {
+    font-size: .76rem !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Sections */
+.partner-category {
+    margin-top: 42px !important;
+}
+
+/* Grid */
+.partner-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+    align-items: stretch !important;
+}
+
+/* Cards */
+.partner-card {
+    display: grid !important;
+    grid-template-columns: 58px 1fr !important;
+    align-items: start !important;
+    gap: 18px !important;
+    min-height: 154px !important;
+    padding: 20px 22px !important;
+    border-radius: 22px !important;
+    overflow: visible !important;
+    border: 1px solid rgba(255,255,255,.06) !important;
+    background:
+        linear-gradient(135deg, rgba(0,212,255,.045), rgba(123,48,255,.035)),
+        rgba(8,12,24,.88) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.035),
+        0 20px 50px rgba(0,0,0,.18) !important;
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        background .18s ease,
+        box-shadow .18s ease !important;
+}
+
+.partner-card::before,
+.partner-card::after {
+    display: none !important;
+    content: none !important;
+}
+
+.partner-card:hover {
+    transform: translateY(-4px) !important;
+    border-color: rgba(0,212,255,.2) !important;
+    box-shadow:
+        0 14px 46px rgba(0,0,0,.34),
+        0 0 0 1px rgba(0,212,255,.10) !important;
+}
+
+/* Logo shell */
+.partner-icon-shell,
+.partner-icon-wrap {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255,255,255,.025) !important;
+    border: 1px solid rgba(255,255,255,.065) !important;
+    box-shadow: none !important;
+}
+
+/* Actual logos */
+.partner-logo,
+.partner-icon {
+    width: 30px !important;
+    height: 30px !important;
+    max-width: 34px !important;
+    max-height: 34px !important;
+    object-fit: contain !important;
+    display: block !important;
+    opacity: .98 !important;
+    filter: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+/* Copy */
+.partner-copy h3,
+.partner-title {
+    margin: 0 0 6px !important;
+    font-size: 20px !important;
+    line-height: 1.1 !important;
+    font-weight: 800 !important;
+    letter-spacing: -.035em !important;
+    color: #F5F7FA !important;
+}
+
+.partner-copy p {
+    margin: 0 !important;
+    max-width: 70ch !important;
+    color: rgba(214,223,238,.74) !important;
+    font-size: 14.5px !important;
+    line-height: 1.52 !important;
+}
+
+/* Badges */
+.partner-meta {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 7px !important;
+    margin-top: 11px !important;
+}
+
+.partner-badge {
+    border-radius: 999px !important;
+    padding: 4px 9px !important;
+    border: 1px solid rgba(255,255,255,.06) !important;
+    background: rgba(255,255,255,.035) !important;
+    color: rgba(190,207,235,.78) !important;
+    font-size: 9px !important;
+    font-weight: 900 !important;
+    letter-spacing: .14em !important;
+    text-transform: uppercase !important;
+}
+
+/* Responsive */
+@media (max-width: 1120px) {
+    .partners-hero {
+        padding: 44px 30px !important;
+    }
+
+    .partner-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 720px) {
+    .partners-hero .jpv-title {
+        font-size: clamp(46px, 13vw, 76px) !important;
+    }
+
+    .partner-card {
+        grid-template-columns: 48px 1fr !important;
+        padding: 18px !important;
+    }
+}
+
