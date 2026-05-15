@@ -143,9 +143,11 @@ The application exposes a health endpoint at `/health` that returns:
 ```json
 {
   "status": "healthy",
-  "timestamp": "2024-01-01T00:00:00.000Z"
+  "timestamp": "<ISO 8601 timestamp>"
 }
 ```
+
+Example response: `{"status":"healthy","timestamp":"2026-05-15T14:30:00.000Z"}`
 
 Most container platforms will automatically use this for health monitoring.
 

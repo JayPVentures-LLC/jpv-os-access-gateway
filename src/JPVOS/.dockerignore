@@ -20,6 +20,8 @@ dotnet_run.log
 # Documentation
 docs/
 *.md
+# PEOPLE-PROTECTION-NON-NEGOTIABLE.md is NOT excluded - it is required
+# by the application and copied to output via JPVOS.csproj CopyToPublishDirectory
 !PEOPLE-PROTECTION-NON-NEGOTIABLE.md
 
 # Scripts (not needed in container)
