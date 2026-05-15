@@ -59,8 +59,8 @@ public class CheckoutController : ControllerBase
             CancelUrl = string.IsNullOrWhiteSpace(req.CancelUrl) ? $"{domain}/pricing" : req.CancelUrl,
             Metadata = new Dictionary<string, string>
             {
-                ["package_key"] = req.PackageKey,
-                ["interval"] = req.Interval
+                ["package_key"] = req.PackageKey ?? "",
+                ["interval"] = req.Interval ?? "monthly"
             }
         };
 
