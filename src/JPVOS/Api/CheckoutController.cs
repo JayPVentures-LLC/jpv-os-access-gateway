@@ -3,29 +3,32 @@ using Microsoft.Extensions.Configuration;
 using Stripe.Checkout;
 
 [ApiController]
-[Route("api/[controller]")]
-public class CheckoutController : ControllerBase
-{
-    private readonly IConfiguration _config;
-    public CheckoutController(IConfiguration config)
-    {
-        _config = config;
-    }
-
-    public class CheckoutRequest
-    {
-        public string PackageKey { get; set; } = string.Empty;
-        public string Interval { get; set; } = "monthly";
-        public string SuccessUrl { get; set; } = string.Empty;
-        public string CancelUrl { get; set; } = string.Empty;
-    }
-
     [HttpPost("create")]
     public IActionResult Create([FromBody] CheckoutRequest req)
     {
-        var priceId = GetStripePriceId(req.PackageKey);
+        var requiredVars = new[]
+        {
+            "STRIPE_SECRET_KEY",
+            "STRIPE_WEBHOOK_SECRET",
+            "STRIPE_PRICE_ID_COMMUNITY",
+            "STRIPE_PRICE_ID_VIP"
+        };
+        var missing = requiredVars.Where(v => string.IsNullOrWhiteSpace(_config[v])).ToList();
+        if (missing.Count > 0)
+        {
+            return BadRequest($"Checkout is not configured yet. Missing server environment variable: {string.Join(", ", missing)}");
+        }
+
+        string priceId = req.PackageKey switch
+        {
+            "community" => _config["STRIPE_PRICE_ID_COMMUNITY"],
+            "vip" => _config["STRIPE_PRICE_ID_VIP"],
+            _ => null
+        };
         if (string.IsNullOrEmpty(priceId))
-            return BadRequest("Invalid package key.");
+        {
+            return BadRequest("Invalid or unavailable package key. Only Community and VIP are enabled for checkout.");
+        }
 
         var domain = Request.Scheme + "://" + Request.Host.Value;
         var options = new SessionCreateOptions
@@ -39,27 +42,18 @@ public class CheckoutController : ControllerBase
                     Quantity = 1
                 }
             },
-            Mode = req.PackageKey == "custom_implementation_one_time" ? "payment" : "subscription",
+            Mode = "subscription",
             SuccessUrl = string.IsNullOrEmpty(req.SuccessUrl) ? domain + "/success" : req.SuccessUrl,
             CancelUrl = string.IsNullOrEmpty(req.CancelUrl) ? domain + "/pricing" : req.CancelUrl,
         };
         var service = new SessionService();
         var session = service.Create(options);
+        if (string.IsNullOrEmpty(session.Url))
+        {
+            return StatusCode(500, "Stripe session creation failed: No URL returned.");
+        }
         return Ok(new { url = session.Url });
     }
-
-    private string GetStripePriceId(string packageKey)
-    {
-        // Map package keys to env vars
-        return packageKey switch
-        {
-            "member_access_monthly" => _config["STRIPE_PRICE_MEMBER_MONTHLY"],
-            "member_access_annual" => _config["STRIPE_PRICE_MEMBER_ANNUAL"],
-            "creator_launch_monthly" => _config["STRIPE_PRICE_CREATOR_MONTHLY"],
-            "creator_launch_annual" => _config["STRIPE_PRICE_CREATOR_ANNUAL"],
-            "partner_package_monthly" => _config["STRIPE_PRICE_PARTNER_MONTHLY"],
-            "partner_package_annual" => _config["STRIPE_PRICE_PARTNER_ANNUAL"],
-            "enterprise_infrastructure_monthly" => _config["STRIPE_PRICE_ENTERPRISE_MONTHLY"],
             "enterprise_infrastructure_annual" => _config["STRIPE_PRICE_ENTERPRISE_ANNUAL"],
             "custom_implementation_one_time" => _config["STRIPE_PRICE_CUSTOM_IMPLEMENTATION"],
             _ => null

@@ -18,11 +18,11 @@
 
     private Package[] Packages = new[]
     {
-        new Package("member_access", "Member", "Member Access", "Discord member role, updates, resource access", new[]{"Discord role","Updates","Resource access"}, 20, 200, "/access", "JPV Member"),
-        new Package("creator_launch", "Creator", "Creator Launch", "Creator role, launch resources, venture support", new[]{"Creator role","Launch resources","Venture support"}, 99, 990, "/access", "Creator Launch"),
-        new Package("partner_package", "Partner", "Partner Package", "Partner role, partner portal access", new[]{"Partner role","Partner portal"}, 199, 1990, "/partners", "Partner Access"),
-        new Package("enterprise_infrastructure", "Enterprise", "Enterprise Infrastructure", "Enterprise role, implementation intake, private access", new[]{"Enterprise role","Implementation intake","Private access"}, 999, 9990, "/access", "Enterprise Access"),
-        new Package("custom_implementation", "Custom", "Custom Implementation", "Manual quote, scoped delivery", new[]{"Manual quote","Scoped delivery"}, 4999, 0, "/contact", "Custom Implementation")
+        new Package("member_access", "Member", "Member Access", "Discord member role, updates, resource access", new[]{"Discord role","Updates","Resource access"}, 20, 200, "/access", "community"),
+        new Package("creator_launch", "Creator", "Creator Launch", "Creator role, launch resources, venture support", new[]{"Creator role","Launch resources","Venture support"}, 99, 990, "/access", "vip"),
+        new Package("partner_package", "Partner", "Partner Package", "Partner role, partner portal access", new[]{"Partner role","Partner portal"}, 199, 1990, "/partners", "partner"),
+        new Package("enterprise_infrastructure", "Enterprise", "Enterprise Infrastructure", "Enterprise role, implementation intake, private access", new[]{"Enterprise role","Implementation intake","Private access"}, 999, 9990, "/access", "enterprise"),
+        new Package("custom_implementation", "Custom", "Custom Implementation", "Manual quote, scoped delivery", new[]{"Manual quote","Scoped delivery"}, 4999, 0, "/contact", "custom")
     };
 
     private string GetPrice(Package pkg) => pkg.Key == "custom_implementation"
@@ -33,7 +33,16 @@
         ? annual ? "custom" : "one-time"
         : annual ? "annual" : "monthly";
 
-    private string GetPackageKey(Package pkg) => pkg.Key + (annual ? "_annual" : "_monthly");
+    private string GetPackageKey(Package pkg)
+    {
+        // Only wire real Stripe prices for Community and VIP
+        return pkg.Key switch
+        {
+            "member_access" => "community",
+            "creator_launch" => "vip",
+            _ => pkg.Key // fallback for inquiry
+        };
+    }
 }
 
 <div class="page-stack">
@@ -51,16 +60,61 @@
         <div class="pricing-grid">
             @foreach (var pkg in Packages)
             {
-                <PricingCard
-                    Eyebrow="@pkg.Eyebrow"
-                    Name="@pkg.Name"
-                    Price="@GetPrice(pkg)"
-                    Term="@GetTerm(pkg)"
-                    Description="@pkg.Description"
-                    Features="@pkg.Features"
-                    Cta="Get init"
-                    OnCheckout="() => StartCheckout(GetPackageKey(pkg), GetTerm(pkg))"
-                />
+                if (pkg.Key == "member_access" || pkg.Key == "creator_launch")
+                {
+                    <PricingCard
+                        Eyebrow="@pkg.Eyebrow"
+                        Name="@pkg.Name"
+                        Price="@GetPrice(pkg)"
+                        Term="@GetTerm(pkg)"
+                        Description="@pkg.Description"
+                        Features="@pkg.Features"
+                        Cta="Get init"
+                        OnCheckout="() => StartCheckout(GetPackageKey(pkg), GetTerm(pkg))"
+                    />
+                }
+                else if (pkg.Key == "partner_package")
+                {
+                    <PricingCard
+                        Eyebrow="@pkg.Eyebrow"
+                        Name="@pkg.Name"
+                        Price="@GetPrice(pkg)"
+                        Term="@GetTerm(pkg)"
+                        Description="@pkg.Description"
+                        Features="@pkg.Features"
+                        Cta="Request partner access"
+                        OnCheckout="null"
+                        IsDisabled="true"
+                    />
+                }
+                else if (pkg.Key == "enterprise_infrastructure")
+                {
+                    <PricingCard
+                        Eyebrow="@pkg.Eyebrow"
+                        Name="@pkg.Name"
+                        Price="@GetPrice(pkg)"
+                        Term="@GetTerm(pkg)"
+                        Description="@pkg.Description"
+                        Features="@pkg.Features"
+                        Cta="Request enterprise package"
+                        OnCheckout="null"
+                        IsDisabled="true"
+                    />
+                }
+                else if (pkg.Key == "custom_implementation")
+                {
+                    <PricingCard
+                        Eyebrow="@pkg.Eyebrow"
+                        Name="@pkg.Name"
+                        Price="@GetPrice(pkg)"
+                        Term="@GetTerm(pkg)"
+                        Description="@pkg.Description"
+                        Features="@pkg.Features"
+                        Cta="Contact for quote"
+                        OnCheckout="null"
+                        IsDisabled="true"
+                    />
+                }
             }
         </div>
     </section>
