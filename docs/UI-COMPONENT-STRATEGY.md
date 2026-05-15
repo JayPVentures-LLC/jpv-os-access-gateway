@@ -161,7 +161,7 @@ When Telerik UI for Blazor license becomes available:
 
 2. **Add Telerik Theme**
    - Add `<link href="https://kendo.cdn.telerik.com/themes/default/default-ocean-blue.css" rel="stylesheet" />`
-   - Or custom Telerik theme stylesheet
+   - Or use a custom Telerik theme stylesheet
 
 3. **Replace Components**
    - `GlassCard` → `TelerikCard`

@@ -29,6 +29,7 @@
                         PackageKey="@GetPackageKey(pkg)"
                         Cta="Get init"
                         OnCheckout="() => StartCheckout(GetPackageKey(pkg), GetTerm(pkg))"
+                        Href="/checkout"
                     />
                 }
                 else if (pkg.Key == "partner_package")
@@ -41,8 +42,10 @@
                         Description="@pkg.Description"
                         Features="@pkg.Features"
                         BillingInterval="@(annual ? "annual" : "monthly")"
+                        PackageKey="@pkg.Key"
                         Cta="Request partner access"
                         IsDisabled="true"
+                        Href="/contact"
                     />
                 }
                 else if (pkg.Key == "enterprise_infrastructure")
@@ -55,8 +58,10 @@
                         Description="@pkg.Description"
                         Features="@pkg.Features"
                         BillingInterval="@(annual ? "annual" : "monthly")"
+                        PackageKey="@pkg.Key"
                         Cta="Request enterprise package"
                         IsDisabled="true"
+                        Href="/contact"
                     />
                 }
                 else if (pkg.Key == "custom_implementation")
@@ -69,8 +74,10 @@
                         Description="@pkg.Description"
                         Features="@pkg.Features"
                         BillingInterval="@(annual ? "annual" : "monthly")"
+                        PackageKey="@pkg.Key"
                         Cta="Contact for quote"
                         IsDisabled="true"
+                        Href="/contact"
                     />
                 }
             }

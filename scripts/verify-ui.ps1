@@ -97,8 +97,9 @@ function Test-BannedTerms {
             if (-not $content) { continue }
             
             foreach ($term in $BannedTerms) {
-                # Case-insensitive search
-                $matches = [regex]::Matches($content, "\b$term\b", [Text.RegularExpressions.RegexOptions]::IgnoreCase)
+                # Case-insensitive search with proper escaping
+                $escapedTerm = [regex]::Escape($term)
+                $matches = [regex]::Matches($content, "\b$escapedTerm\b", [Text.RegularExpressions.RegexOptions]::IgnoreCase)
                 
                 foreach ($match in $matches) {
                     # Check if this match is in an allowed context
