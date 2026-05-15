@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="JPV-OS Brand System">
+  <defs>
+    <linearGradient id="jpv-bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#05070B"/>
+      <stop offset="48%" style="stop-color:#07101C"/>
+      <stop offset="100%" style="stop-color:#160018"/>
+    </linearGradient>
+    <linearGradient id="jpv-accent-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00D4FF"/>
+      <stop offset="100%" style="stop-color:#FF2D8A"/>
+    </linearGradient>
+    <radialGradient id="jpv-glow-cyan" cx="20%" cy="20%" r="40%">
+      <stop offset="0%" style="stop-color:rgba(0,212,255,0.15)"/>
+      <stop offset="100%" style="stop-color:transparent"/>
+    </radialGradient>
+    <radialGradient id="jpv-glow-magenta" cx="80%" cy="30%" r="40%">
+      <stop offset="0%" style="stop-color:rgba(255,45,138,0.12)"/>
+      <stop offset="100%" style="stop-color:transparent"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#jpv-bg-gradient)"/>
+  <rect width="800" height="600" fill="url(#jpv-glow-cyan)"/>
+  <rect width="800" height="600" fill="url(#jpv-glow-magenta)"/>
+
+  <!-- Grid overlay -->
+  <pattern id="grid" width="72" height="72" patternUnits="userSpaceOnUse">
+    <path d="M 72 0 L 0 0 0 72" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  </pattern>
+  <rect width="800" height="600" fill="url(#grid)"/>
+
+  <!-- Central brand panel -->
+  <rect x="140" y="120" width="520" height="360" rx="40" fill="rgba(8,12,24,0.86)" stroke="rgba(255,255,255,0.075)" stroke-width="1"/>
+
+  <!-- JPV-OS wordmark -->
+  <text x="400" y="260" text-anchor="middle" font-family="Inter, 'Space Grotesk', 'Segoe UI', Arial, sans-serif" font-size="96" font-weight="950" letter-spacing="-0.06em" fill="#F5F7FA">JPV-OS</text>
+
+  <!-- Tagline -->
+  <text x="400" y="310" text-anchor="middle" font-family="Inter, 'Space Grotesk', 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="850" letter-spacing="0.24em" text-transform="uppercase" fill="#00D4FF">INFRASTRUCTURE OPERATING SYSTEM</text>
+
+  <!-- Operating layers -->
+  <g transform="translate(180, 360)">
+    <!-- Layer boxes -->
+    <rect x="0" y="0" width="95" height="70" rx="14" fill="rgba(255,255,255,0.032)" stroke="rgba(255,255,255,0.075)" stroke-width="1"/>
+    <rect x="110" y="0" width="95" height="70" rx="14" fill="rgba(255,255,255,0.032)" stroke="rgba(255,255,255,0.075)" stroke-width="1"/>
+    <rect x="220" y="0" width="95" height="70" rx="14" fill="rgba(255,255,255,0.032)" stroke="rgba(255,255,255,0.075)" stroke-width="1"/>
+    <rect x="330" y="0" width="95" height="70" rx="14" fill="rgba(255,255,255,0.032)" stroke="rgba(255,255,255,0.075)" stroke-width="1"/>
+
+    <!-- Layer labels -->
+    <text x="47" y="30" text-anchor="middle" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="10" font-weight="900" letter-spacing="0.12em" fill="#00D4FF">ENTERPRISE</text>
+    <text x="47" y="50" text-anchor="middle" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="9" fill="rgba(245,247,250,0.76)">LLC</text>
+
+    <text x="157" y="30" text-anchor="middle" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="10" font-weight="900" letter-spacing="0.12em" fill="#00D4FF">CREATOR</text>
+    <text x="157" y="50" text-anchor="middle" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="9" fill="rgba(245,247,250,0.76)">Ventures</text>
+
+    <text x="267" y="30" text-anchor="middle" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="10" font-weight="900" letter-spacing="0.12em" fill="#00D4FF">LABS</text>
+    <text x="267" y="50" text-anchor="middle" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="9" fill="rgba(245,247,250,0.76)">Validation</text>
+
+    <text x="377" y="30" text-anchor="middle" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="10" font-weight="900" letter-spacing="0.12em" fill="#00D4FF">INSTITUTE</text>
+    <text x="377" y="50" text-anchor="middle" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="9" fill="rgba(245,247,250,0.76)">Research</text>
+  </g>
+
+  <!-- Accent line -->
+  <rect x="300" y="320" width="200" height="4" rx="2" fill="url(#jpv-accent-gradient)"/>
+</svg>

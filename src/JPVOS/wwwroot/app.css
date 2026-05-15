@@ -345,6 +345,13 @@ a {
     line-height: 1.52;
 }
 
+.brand-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 34px;
+}
+
 /* PARTNERS */
 
 .partners-hero {
