@@ -1,8 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 96" role="img" aria-label="IBM logo">
   <rect width="140" height="96" rx="22" fill="#07101C"/>
-  <g fill="#F5F7FA" font-family="Arial Black, IBM Plex Sans, Arial, sans-serif" font-size="42" font-weight="900">
-    <text x="22" y="62">IBM</text>
-  </g>
+  <text x="22" y="62" font-family="Arial Black, IBM Plex Sans, Arial, sans-serif" font-size="42" font-weight="900" fill="#F5F7FA">IBM</text>
   <g stroke="#07101C" stroke-width="4">
     <line x1="18" y1="35" x2="122" y2="35"/>
     <line x1="18" y1="47" x2="122" y2="47"/>

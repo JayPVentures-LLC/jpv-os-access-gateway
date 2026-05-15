@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Xbox logo">
   <rect width="96" height="96" rx="22" fill="#07101C"/>
-  <circle cx="48" cy="48" r="30" fill="#107C10"/>
-  <path d="M31 28c10 6 24 20 34 40M65 28C55 34 41 48 31 68" stroke="#F5F7FA" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="48" cy="48" r="31" fill="#107C10"/>
+  <path d="M31 29c11 7 24 20 34 38" stroke="#F5F7FA" stroke-width="7" stroke-linecap="round"/>
+  <path d="M65 29C54 36 41 49 31 67" stroke="#F5F7FA" stroke-width="7" stroke-linecap="round"/>
 </svg>
