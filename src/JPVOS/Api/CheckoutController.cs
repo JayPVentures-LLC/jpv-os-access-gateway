@@ -3,6 +3,16 @@ using Microsoft.Extensions.Configuration;
 using Stripe.Checkout;
 
 [ApiController]
+[Route("api/checkout")]
+public class CheckoutController : ControllerBase
+{
+    private readonly IConfiguration _config;
+
+    public CheckoutController(IConfiguration config)
+    {
+        _config = config;
+    }
+
     [HttpPost("create")]
     public IActionResult Create([FromBody] CheckoutRequest req)
     {
@@ -19,15 +29,18 @@ using Stripe.Checkout;
             return BadRequest($"Checkout is not configured yet. Missing server environment variable: {string.Join(", ", missing)}");
         }
 
-        string priceId = req.PackageKey switch
+        var packageKey = req.PackageKey?.Trim().ToLowerInvariant();
+        string? priceId = packageKey switch
         {
             "community" => _config["STRIPE_PRICE_ID_COMMUNITY"],
             "vip" => _config["STRIPE_PRICE_ID_VIP"],
+            "enterprise_infrastructure_annual" => _config["STRIPE_PRICE_ENTERPRISE_ANNUAL"],
+            "custom_implementation_one_time" => _config["STRIPE_PRICE_CUSTOM_IMPLEMENTATION"],
             _ => null
         };
         if (string.IsNullOrEmpty(priceId))
         {
-            return BadRequest("Invalid or unavailable package key. Only Community and VIP are enabled for checkout.");
+            return BadRequest("Invalid or unavailable package key.");
         }
 
         var domain = Request.Scheme + "://" + Request.Host.Value;
@@ -54,9 +67,12 @@ using Stripe.Checkout;
         }
         return Ok(new { url = session.Url });
     }
-            "enterprise_infrastructure_annual" => _config["STRIPE_PRICE_ENTERPRISE_ANNUAL"],
-            "custom_implementation_one_time" => _config["STRIPE_PRICE_CUSTOM_IMPLEMENTATION"],
-            _ => null
-        };
+
+    public sealed class CheckoutRequest
+    {
+        public string PackageKey { get; set; } = string.Empty;
+        public string? Interval { get; set; }
+        public string? SuccessUrl { get; set; }
+        public string? CancelUrl { get; set; }
     }
 }

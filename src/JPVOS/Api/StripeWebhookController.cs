@@ -93,7 +93,23 @@ public class StripeWebhookController : ControllerBase
                 {
                     ent.StripeSubscriptionId = sub.Id;
                     ent.Status = sub.Status;
-                    ent.AccessExpiration = sub.CurrentPeriodEnd;
+                    var currentPeriodEndProperty = sub.GetType().GetProperty("CurrentPeriodEnd");
+                    if (currentPeriodEndProperty?.GetValue(sub) is DateTime currentPeriodEnd)
+                    {
+                        ent.AccessExpiration = currentPeriodEnd;
+                    }
+                    else
+                    {
+                        var currentPeriodEndUnixProperty = sub.GetType().GetProperty("CurrentPeriodEndUnix");
+                        if (currentPeriodEndUnixProperty?.GetValue(sub) is long currentPeriodEndUnix)
+                        {
+                            ent.AccessExpiration = DateTimeOffset.FromUnixTimeSeconds(currentPeriodEndUnix).UtcDateTime;
+                        }
+                        else
+                        {
+                            ent.AccessExpiration = null;
+                        }
+                    }
                     _entitlementService.AddOrUpdate(ent);
                 }
                 break;
