@@ -472,9 +472,9 @@ p {
 .partner-tile img,
 .partner-tile-mark {
     flex: 0 0 auto;
-    width: 34px !important;
-    height: 34px !important;
-    max-width: 34px !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 72px !important;
     max-height: 34px !important;
     min-width: 0;
     min-height: 0;
@@ -489,6 +489,8 @@ p {
 .partner-tile-mark {
     display: grid;
     place-items: center;
+    width: 34px !important;
+    height: 34px !important;
     border: 1px solid rgba(120, 150, 255, .18);
     border-radius: 10px;
     color: #dce4f4;
