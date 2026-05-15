@@ -102,3 +102,40 @@ body{
   font-size:clamp(48px,14vw,84px);
  }
 }
+
+/* FINAL FORCE PARTNER PAGE OVERRIDE */
+.partners-hero {
+    padding-top: 42px !important;
+}
+
+.partners-hero .jpv-title {
+    font-size: clamp(48px, 5vw, 86px) !important;
+    line-height: .94 !important;
+    max-width: 1120px !important;
+}
+
+.partners-hero .jpv-lede {
+    margin-top: 22px !important;
+    margin-bottom: 34px !important;
+}
+
+.partner-category {
+    margin-top: 36px !important;
+}
+
+.partner-card {
+    min-height: 0 !important;
+    padding: 18px 20px !important;
+}
+
+.partner-icon-wrap {
+    width: 44px !important;
+    height: 44px !important;
+    background: rgba(255,255,255,.018) !important;
+}
+
+.partner-icon {
+    width: 26px !important;
+    height: 26px !important;
+    opacity: .92 !important;
+}
