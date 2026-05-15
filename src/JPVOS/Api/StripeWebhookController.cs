@@ -93,23 +93,7 @@ public class StripeWebhookController : ControllerBase
                 {
                     ent.StripeSubscriptionId = sub.Id;
                     ent.Status = sub.Status;
-                    var currentPeriodEndProperty = sub.GetType().GetProperty("CurrentPeriodEnd");
-                    if (currentPeriodEndProperty?.GetValue(sub) is DateTime currentPeriodEnd)
-                    {
-                        ent.AccessExpiration = currentPeriodEnd;
-                    }
-                    else
-                    {
-                        var currentPeriodEndUnixProperty = sub.GetType().GetProperty("CurrentPeriodEndUnix");
-                        if (currentPeriodEndUnixProperty?.GetValue(sub) is long currentPeriodEndUnix)
-                        {
-                            ent.AccessExpiration = DateTimeOffset.FromUnixTimeSeconds(currentPeriodEndUnix).UtcDateTime;
-                        }
-                        else
-                        {
-                            ent.AccessExpiration = null;
-                        }
-                    }
+                    ent.AccessExpiration = GetCurrentPeriodEnd(sub);
                     _entitlementService.AddOrUpdate(ent);
                 }
                 break;
@@ -132,5 +116,31 @@ public class StripeWebhookController : ControllerBase
             }
         }
         return Ok();
+    }
+
+    private DateTime? GetCurrentPeriodEnd(Subscription sub)
+    {
+        // Handle version compatibility for Stripe.net API
+        // CurrentPeriodEnd property may have different names/types across versions
+        var prop = sub.GetType().GetProperty("CurrentPeriodEnd");
+        if (prop != null && prop.GetValue(sub) is DateTime dt)
+        {
+            return dt;
+        }
+
+        prop = sub.GetType().GetProperty("CurrentPeriodEndUnix");
+        if (prop != null && prop.GetValue(sub) is long unix)
+        {
+            return UnixTimeStampToDateTime(unix);
+        }
+
+        return null;
+    }
+
+    private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+    {
+        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dateTime = dateTime.AddSeconds(unixTimeStamp).ToUniversalTime();
+        return dateTime;
     }
 }

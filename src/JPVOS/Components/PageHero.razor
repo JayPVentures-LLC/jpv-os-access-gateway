@@ -5,9 +5,12 @@
                        Description="@Description" />
     </div>
 
-    <figure class="image-panel page-hero-media">
-        <img src="@Image" alt="@ImageAlt" />
-    </figure>
+    @if (!string.IsNullOrEmpty(Image))
+    {
+        <figure class="image-panel page-hero-media">
+            <img src="@Image" alt="@ImageAlt" />
+        </figure>
+    }
 </section>
 
 @code {

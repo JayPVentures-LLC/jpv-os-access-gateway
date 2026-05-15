@@ -12,7 +12,7 @@
             <span>@feature</span>
         }
     </div>
-    <button class="button primary" @onclick="HandleCheckout" disabled="@IsDisabled">@Cta</button>
+    <button class="button primary" @onclick="OnClickCheckout" disabled="@IsDisabled">@Cta</button>
 </article>
 
 @code {
@@ -22,11 +22,11 @@
     [Parameter] public string Term { get; set; } = "";
     [Parameter] public string Description { get; set; } = "";
     [Parameter] public string[] Features { get; set; } = [];
-    [Parameter] public Func<Task>? OnCheckout { get; set; }
     [Parameter] public bool IsDisabled { get; set; } = false;
+    [Parameter] public Func<Task>? OnCheckout { get; set; }
     [Parameter] public string Cta { get; set; } = "Get init";
 
-    private async Task HandleCheckout()
+    private async Task OnClickCheckout()
     {
         if (OnCheckout != null)
         {

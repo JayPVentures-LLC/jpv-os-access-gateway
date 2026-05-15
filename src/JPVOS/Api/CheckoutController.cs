@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Stripe.Checkout;
 
+namespace JPVOS.Api;
+
 [ApiController]
 [Route("api/checkout")]
 public class CheckoutController : ControllerBase
@@ -76,12 +78,11 @@ public class CheckoutController : ControllerBase
         }
         return Ok(new { url = session.Url });
     }
+}
 
-    public sealed class CheckoutRequest
-    {
-        public string PackageKey { get; set; } = string.Empty;
-        public string? Interval { get; set; }
-        public string? SuccessUrl { get; set; }
-        public string? CancelUrl { get; set; }
-    }
+public class CheckoutRequest
+{
+    public required string PackageKey { get; set; }
+    public string? SuccessUrl { get; set; }
+    public string? CancelUrl { get; set; }
 }
