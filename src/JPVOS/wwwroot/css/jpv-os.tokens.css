@@ -1,46 +1,377 @@
-/* Component-specific styles using JPV-OS design tokens */
-/* Note: Base tokens are now defined in jpv-os.tokens.css */
+/* JPV-OS Design System Tokens
+ * Centralized CSS variables for the JPV-OS Blazor application
+ * Defines colors, spacing, typography, and layout scale
+ * Loaded globally via App.razor
+ */
+
+:root {
+  /* ============================================
+     COLOR PALETTE
+     ============================================ */
+
+  /* Core Neutrals & Backgrounds */
+  --jpv-black: #05070B;
+  --jpv-navy: #0A1020;
+  --jpv-panel: rgba(8, 12, 24, 0.88);
+  --jpv-panel-soft: rgba(255, 255, 255, 0.035);
+  --jpv-line: rgba(255, 255, 255, 0.075);
+  --jpv-line-soft: rgba(255, 255, 255, 0.055);
+
+  /* Electric Accent Colors */
+  --jpv-cyan: #00D4FF;       /* Electric blue - primary accent */
+  --jpv-purple: #7B30FF;     /* Royal purple - secondary accent */
+  --jpv-magenta: #FF2D8A;    /* Magenta - tertiary accent, CTA */
+
+  /* Typography Colors */
+  --jpv-text: #F5F7FA;       /* Primary text */
+  --jpv-muted: #B8C2D9;      /* Secondary text */
+  --jpv-muted-2: #8FA3C7;    /* Tertiary text */
+
+  /* Semantic Colors */
+  --jpv-success: #00D4FF;    /* Success state - uses cyan */
+  --jpv-warning: #FF2D8A;    /* Warning state - uses magenta */
+  --jpv-error: #FF2D8A;      /* Error state - uses magenta */
+  --jpv-info: #7B30FF;       /* Info state - uses purple */
+
+  /* ============================================
+     SPACING SCALE (8px base unit)
+     ============================================ */
+
+  --jpv-space-xs: 4px;
+  --jpv-space-sm: 8px;
+  --jpv-space-md: 16px;
+  --jpv-space-lg: 24px;
+  --jpv-space-xl: 32px;
+  --jpv-space-2xl: 48px;
+  --jpv-space-3xl: 64px;
+
+  /* ============================================
+     BORDER RADIUS SCALE
+     ============================================ */
+
+  --jpv-radius-sm: 4px;
+  --jpv-radius-md: 8px;
+  --jpv-radius-lg: 16px;
+  --jpv-radius-xl: 24px;
+  --jpv-radius-full: 999px;
+
+  /* ============================================
+     TYPOGRAPHY
+     ============================================ */
+
+  /* Font Families */
+  --jpv-font-primary: Inter, "Segoe UI", Arial, sans-serif;
+  --jpv-font-display: "Space Grotesk", Inter, sans-serif;
+
+  /* Font Sizes - Responsive using clamp() */
+  --jpv-text-xs: 13px;
+  --jpv-text-sm: 14px;
+  --jpv-text-base: 16px;
+  --jpv-text-lg: clamp(18px, 1.5vw, 26px);
+  --jpv-text-xl: clamp(28px, 4vw, 64px);
+  --jpv-text-2xl: clamp(36px, 6vw, 96px);
+  --jpv-text-3xl: clamp(48px, 8vw, 140px);
+
+  /* Font Weights */
+  --jpv-font-weight-normal: 400;
+  --jpv-font-weight-semibold: 600;
+  --jpv-font-weight-bold: 700;
+  --jpv-font-weight-extrabold: 800;
+  --jpv-font-weight-black: 900;
+
+  /* Line Heights */
+  --jpv-line-height-tight: 0.9;
+  --jpv-line-height-normal: 1.2;
+  --jpv-line-height-relaxed: 1.6;
+  --jpv-line-height-generous: 1.8;
+
+  /* Letter Spacing (for uppercase text) */
+  --jpv-letter-spacing-normal: 0;
+  --jpv-letter-spacing-wide: 0.1em;
+  --jpv-letter-spacing-wider: 0.24em;
+
+  /* ============================================
+     LAYOUT & CONSTRAINTS
+     ============================================ */
+
+  --jpv-max-width: min(1880px, calc(100vw - 56px));
+  --jpv-padding-x: clamp(18px, 3vw, 46px);
+  --jpv-padding-x-lg: clamp(18px, 3vw, 56px);
+
+  /* ============================================
+     GLASS MORPHISM & DEPTH
+     ============================================ */
+
+  /* Glass Panel - Opaque */
+  --jpv-glass-panel-bg: rgba(8, 12, 24, 0.88);
+  --jpv-glass-panel-border: 1px solid rgba(255, 255, 255, 0.08);
+  --jpv-glass-panel-blur: blur(20px);
+
+  /* Glass Panel - Soft */
+  --jpv-glass-soft-bg: rgba(255, 255, 255, 0.03);
+  --jpv-glass-soft-border: 1px solid rgba(255, 255, 255, 0.08);
+  --jpv-glass-soft-blur: blur(12px);
+
+  /* ============================================
+     GLOWS & SHADOWS
+     ============================================ */
+
+  /* Accent Glow - Cyan */
+  --jpv-glow-cyan: 0 0 40px rgba(0, 212, 255, 0.12);
+  --jpv-glow-cyan-strong: 0 0 60px rgba(0, 212, 255, 0.20);
+
+  /* Accent Glow - Purple */
+  --jpv-glow-purple: 0 0 40px rgba(123, 48, 255, 0.12);
+  --jpv-glow-purple-strong: 0 0 60px rgba(123, 48, 255, 0.20);
+
+  /* Accent Glow - Magenta */
+  --jpv-glow-magenta: 0 0 40px rgba(255, 45, 138, 0.12);
+  --jpv-glow-magenta-strong: 0 0 60px rgba(255, 45, 138, 0.20);
+
+  /* ============================================
+     ANIMATIONS & TRANSITIONS
+     ============================================ */
+
+  --jpv-transition-fast: 0.2s ease;
+  --jpv-transition-base: 0.3s ease;
+  --jpv-transition-slow: 0.4s ease;
+  --jpv-transition-interaction: all 0.4s ease;
+
+  /* Easing Functions */
+  --jpv-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --jpv-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --jpv-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ============================================
+     HOVER & INTERACTIVE STATES
+     ============================================ */
+
+  --jpv-hover-lift: translateY(-6px);
+  --jpv-hover-opacity: 0.8;
+  --jpv-active-opacity: 1;
+  --jpv-disabled-opacity: 0.5;
+
+  /* ============================================
+     BACKDROP FILTERS
+     ============================================ */
+
+  --jpv-backdrop-blur-sm: blur(12px);
+  --jpv-backdrop-blur-md: blur(20px);
+  --jpv-backdrop-blur-lg: blur(32px);
+
+  /* ============================================
+     Z-INDEX SCALE
+     ============================================ */
+
+  --jpv-z-base: 0;
+  --jpv-z-dropdown: 50;
+  --jpv-z-sticky: 20;
+  --jpv-z-fixed: 999;
+  --jpv-z-modal: 1000;
+  --jpv-z-tooltip: 1100;
+}
+
+/* ============================================
+   REDUCE MOTION SUPPORT
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --jpv-transition-fast: 0s;
+    --jpv-transition-base: 0s;
+    --jpv-transition-slow: 0s;
+    --jpv-transition-interaction: 0s;
+  }
+}
+
+/* ============================================
+   BASE STYLES USING TOKENS
+   ============================================ */
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 html,
 body {
-    margin: 0;
-    min-height: 100%;
-    color: var(--jpv-text);
-    font-family: Inter, "Space Grotesk", "Segoe UI", Arial, sans-serif;
-    background:
-        radial-gradient(circle at 12% 8%, rgba(0, 212, 255, .13), transparent 28%),
-        radial-gradient(circle at 88% 4%, rgba(255, 45, 138, .11), transparent 26%),
-        radial-gradient(circle at 50% 90%, rgba(123, 48, 255, .10), transparent 34%),
-        linear-gradient(135deg, #03050a 0%, #07111f 48%, #100612 100%);
-    overflow-x: hidden;
+  margin: 0;
+  min-height: 100%;
+  color: var(--jpv-text);
+  font-family: var(--jpv-font-primary);
+  font-size: var(--jpv-text-base);
+  font-weight: var(--jpv-font-weight-normal);
+  line-height: var(--jpv-line-height-relaxed);
+
+  /* Premium cinematic background with subtle radial gradients */
+  background:
+    radial-gradient(circle at 12% 8%, rgba(0, 212, 255, 0.13), transparent 28%),
+    radial-gradient(circle at 88% 4%, rgba(255, 45, 138, 0.11), transparent 26%),
+    radial-gradient(circle at 50% 90%, rgba(123, 48, 255, 0.10), transparent 34%),
+    linear-gradient(135deg, #03050a 0%, #07111f 48%, #100612 100%);
+
+  overflow-x: hidden;
 }
 
+/* Grid overlay for visual depth (fixed, non-interactive) */
 body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background:
-        linear-gradient(rgba(255, 255, 255, .022) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, .017) 1px, transparent 1px);
-    background-size: 72px 72px;
-    mask-image: radial-gradient(circle at 50% 20%, black, transparent 72%);
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--jpv-z-base);
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.017) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(circle at 50% 20%, black, transparent 72%);
 }
 
+/* Links inherit text color and remove underline */
 a {
-    color: inherit;
+  color: inherit;
+  text-decoration: none;
 }
 
-.init-shell {
+a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================
+   UTILITY CLASSES (Optional)
+   ============================================ */
+
+/* Container - respects max-width */
+.jpv-container {
+  width: var(--jpv-max-width);
+  margin: 0 auto;
+  padding: 0 var(--jpv-padding-x);
+}
+
+/* Glass panel utility */
+.jpv-glass {
+  background: var(--jpv-glass-panel-bg);
+  border: var(--jpv-glass-panel-border);
+  backdrop-filter: var(--jpv-glass-panel-blur);
+  -webkit-backdrop-filter: var(--jpv-glass-panel-blur);
+  border-radius: var(--jpv-radius-xl);
+}
+
+/* Soft glass utility */
+.jpv-glass-soft {
+  background: var(--jpv-glass-soft-bg);
+  border: var(--jpv-glass-soft-border);
+  backdrop-filter: var(--jpv-glass-soft-blur);
+  -webkit-backdrop-filter: var(--jpv-glass-soft-blur);
+  border-radius: var(--jpv-radius-lg);
+}
+
+/* Glow utilities for interactive elements */
+.jpv-glow-cyan {
+  box-shadow: var(--jpv-glow-cyan);
+}
+
+.jpv-glow-cyan:hover,
+.jpv-glow-cyan:focus {
+  box-shadow: var(--jpv-glow-cyan-strong);
+}
+
+.jpv-glow-purple {
+  box-shadow: var(--jpv-glow-purple);
+}
+
+.jpv-glow-purple:hover,
+.jpv-glow-purple:focus {
+  box-shadow: var(--jpv-glow-purple-strong);
+}
+
+.jpv-glow-magenta {
+  box-shadow: var(--jpv-glow-magenta);
+}
+
+.jpv-glow-magenta:hover,
+.jpv-glow-magenta:focus {
+  box-shadow: var(--jpv-glow-magenta-strong);
+}
+
+/* Responsive spacing utilities */
+.jpv-p-xs { padding: var(--jpv-space-xs); }
+.jpv-p-sm { padding: var(--jpv-space-sm); }
+.jpv-p-md { padding: var(--jpv-space-md); }
+.jpv-p-lg { padding: var(--jpv-space-lg); }
+.jpv-p-xl { padding: var(--jpv-space-xl); }
+.jpv-p-2xl { padding: var(--jpv-space-2xl); }
+.jpv-p-3xl { padding: var(--jpv-space-3xl); }
+
+.jpv-m-xs { margin: var(--jpv-space-xs); }
+.jpv-m-sm { margin: var(--jpv-space-sm); }
+.jpv-m-md { margin: var(--jpv-space-md); }
+.jpv-m-lg { margin: var(--jpv-space-lg); }
+.jpv-m-xl { margin: var(--jpv-space-xl); }
+.jpv-m-2xl { margin: var(--jpv-space-2xl); }
+.jpv-m-3xl { margin: var(--jpv-space-3xl); }
+
+/* Transition utilities */
+.jpv-transition-fast {
+  transition: var(--jpv-transition-fast);
+}
+
+.jpv-transition-base {
+  transition: var(--jpv-transition-base);
+}
+
+.jpv-transition-slow {
+  transition: var(--jpv-transition-slow);
+}
+
+.jpv-transition-interaction {
+  transition: var(--jpv-transition-interaction);
+}
+
+/* Color utilities */
+.jpv-text-primary {
+  color: var(--jpv-text);
+}
+
+.jpv-text-muted {
+  color: var(--jpv-muted);
+}
+
+.jpv-text-muted-2 {
+  color: var(--jpv-muted-2);
+}
+
+.jpv-text-cyan {
+  color: var(--jpv-cyan);
+}
+
+.jpv-text-purple {
+  color: var(--jpv-purple);
+}
+
+.jpv-text-magenta {
+  color: var(--jpv-magenta);
+}
+
+/* Background utilities */
+.jpv-bg-black {
+  background-color: var(--jpv-black);
+}
+
+.jpv-bg-navy {
+  background-color: var(--jpv-navy);
+}
+
+.jpv-bg-panel {
+  background-color: var(--jpv-panel);
+}
+
+.jpv-bg-panel-soft {
+  background-color: var(--jpv-panel-soft);
+}
     min-height: 100vh;
 }
 
