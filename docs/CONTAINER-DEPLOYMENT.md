@@ -134,7 +134,7 @@ fly deploy
 ### Google Cloud Run
 
 ```bash
-# Pull from GHCR and push to Artifact Registry (recommended over deprecated gcr.io)
+# Pull from GHCR and push to Artifact Registry (gcr.io is being deprecated)
 docker pull ghcr.io/jaypventures-llc/jpv-os:<commit-sha>
 docker tag ghcr.io/jaypventures-llc/jpv-os:<commit-sha> REGION-docker.pkg.dev/YOUR_PROJECT/YOUR_REPO/jpv-os:<commit-sha>
 docker push REGION-docker.pkg.dev/YOUR_PROJECT/YOUR_REPO/jpv-os:<commit-sha>

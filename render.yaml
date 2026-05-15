@@ -15,5 +15,5 @@ services:
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
-      - key: PORT
+      - key: ASPNETCORE_HTTP_PORTS
         value: "8080"

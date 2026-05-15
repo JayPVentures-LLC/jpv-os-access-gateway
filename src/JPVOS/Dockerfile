@@ -26,13 +26,12 @@ COPY --from=build /app/publish .
 # Expose port (container platforms typically assign their own port)
 EXPOSE 8080
 
-# Configure ASP.NET Core to listen on all interfaces
-# Default to port 8080, but allow override via PORT env var at runtime
+# Configure ASP.NET Core to listen on all interfaces on port 8080
+# To use a different port, set ASPNETCORE_HTTP_PORTS environment variable
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ASPNETCORE_HTTP_PORTS=8080
 
 # Note: Container platforms (Render, Railway, Fly.io) provide their own health checks.
 # The /health endpoint is available for platform health probes.
-# Platforms that set PORT env var should also set ASPNETCORE_HTTP_PORTS=$PORT
 
 ENTRYPOINT ["dotnet", "JPVOS.dll"]
