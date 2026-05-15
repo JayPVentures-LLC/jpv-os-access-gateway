@@ -826,3 +826,14 @@ nav a:hover {
     }
 }
 
+
+/* ROUTE FIX PROOF: partners connected */
+.partners-hero {
+    outline: 1px solid rgba(0,212,255,.22) !important;
+}
+
+.partner-section-label::after {
+    content: " / CONNECTED";
+    opacity: .42;
+    letter-spacing: .22em;
+}
