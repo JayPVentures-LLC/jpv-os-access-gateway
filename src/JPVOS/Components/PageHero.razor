@@ -1,0 +1,19 @@
+<section class="content-section page-hero">
+    <div class="page-hero-copy">
+        <SectionHeader Kicker="@Kicker"
+                       Title="@Title"
+                       Description="@Description" />
+    </div>
+
+    <figure class="image-panel page-hero-media">
+        <img src="@Image" alt="@ImageAlt" />
+    </figure>
+</section>
+
+@code {
+    [Parameter] public string Kicker { get; set; } = "";
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Description { get; set; } = "";
+    [Parameter] public string Image { get; set; } = AssetPaths.Init.Hero;
+    [Parameter] public string ImageAlt { get; set; } = "init ecosystem visual";
+}

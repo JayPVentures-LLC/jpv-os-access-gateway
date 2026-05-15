@@ -2,10 +2,13 @@
 @page "/packages"
 
 <div class="page-stack">
+    <PageHero Kicker="Pricing"
+              Title="Packages and checkout-ready cards."
+              Description="init keeps the commercial paths visible: member access, creator launch, partner package, enterprise infrastructure, and custom implementation."
+              Image="@AssetPaths.Init.Hero"
+              ImageAlt="init package and access interface visual" />
+
     <section class="content-section">
-        <SectionHeader Kicker="Pricing"
-                       Title="Packages and checkout-ready cards."
-                       Description="init keeps the commercial paths visible: member access, creator launch, partner package, enterprise infrastructure, and custom implementation." />
         <div class="pricing-grid">
             <PricingCard Eyebrow="Member" Name="Member Access" Price="$25" Term="monthly" Description="Community and member access for updates, selected resources, and guided ecosystem entry." Features="@(new[] { "Member routing", "Updates", "Resource path" })" />
             <PricingCard Eyebrow="Creator" Name="Creator Launch" Price="$297" Term="one-time" Description="A launch package for creator positioning, content direction, offer outline, and audience access setup." Features="@(new[] { "Launch profile", "Offer outline", "Content direction" })" />

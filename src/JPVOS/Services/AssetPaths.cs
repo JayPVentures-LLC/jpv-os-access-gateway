@@ -59,6 +59,7 @@ public static class AssetPaths
     {
         public const string Hero = "/assets/jpv-os/jpv-os-hero.png";
         public const string EcosystemBoard = "/assets/jpv-os/jpv-os-topology.png";
+        public const string PartnerBoard = "/assets/reference/allbrands-logos.png";
     }
 
     public static class Textures
