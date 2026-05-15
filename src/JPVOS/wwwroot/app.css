@@ -2018,3 +2018,270 @@ nav a:hover {
     }
 }
 
+
+/* =========================================================
+   JPV-OS PRODUCTION FINALIZATION
+   Icons, imagery, branded pages, pricing packages
+   ========================================================= */
+
+.brand-page {
+    padding: clamp(38px, 4vw, 72px) !important;
+}
+
+.brand-layout {
+    display: grid !important;
+    grid-template-columns: minmax(420px, .92fr) minmax(520px, 1.08fr) !important;
+    gap: clamp(34px, 4vw, 68px) !important;
+    align-items: stretch !important;
+}
+
+.brand-media {
+    min-height: 560px !important;
+    max-height: 720px !important;
+    border-radius: 30px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255,255,255,.075) !important;
+    background: rgba(255,255,255,.025) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.04),
+        0 24px 70px rgba(0,0,0,.30) !important;
+}
+
+.brand-media img {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 560px !important;
+    max-height: 720px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    display: block !important;
+}
+
+.brand-copy {
+    align-self: center !important;
+    padding: 10px 0 !important;
+}
+
+.brand-page .jpv-title {
+    font-size: clamp(56px, 6vw, 110px) !important;
+    line-height: .91 !important;
+    max-width: 900px !important;
+}
+
+.brand-page .jpv-lede {
+    font-size: clamp(18px, 1.25vw, 23px) !important;
+    line-height: 1.68 !important;
+    max-width: 880px !important;
+}
+
+.brand-capabilities {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+    margin-top: 34px !important;
+}
+
+.brand-capability {
+    border-radius: 20px !important;
+    border: 1px solid rgba(255,255,255,.07) !important;
+    background: rgba(255,255,255,.032) !important;
+    padding: 20px !important;
+}
+
+.brand-capability span {
+    display: block !important;
+    color: #F5F7FA !important;
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    letter-spacing: -.02em !important;
+    margin-bottom: 8px !important;
+}
+
+.brand-capability p {
+    margin: 0 !important;
+    color: rgba(214,223,238,.74) !important;
+    font-size: 14.5px !important;
+    line-height: 1.52 !important;
+}
+
+.pricing-section {
+    margin-top: 58px !important;
+    padding-top: 34px !important;
+    border-top: 1px solid rgba(255,255,255,.075) !important;
+}
+
+.package-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 18px !important;
+    margin-top: 18px !important;
+}
+
+.package-card {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 360px !important;
+    padding: 24px !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(255,255,255,.075) !important;
+    background:
+        radial-gradient(circle at top left, rgba(0,212,255,.07), transparent 38%),
+        rgba(8,12,24,.86) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.035),
+        0 20px 55px rgba(0,0,0,.22) !important;
+}
+
+.package-eyebrow {
+    color: #00D4FF !important;
+    font-size: 11px !important;
+    font-weight: 950 !important;
+    letter-spacing: .28em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 16px !important;
+}
+
+.package-card h3 {
+    margin: 0 0 10px !important;
+    color: #F5F7FA !important;
+    font-size: 24px !important;
+    line-height: 1.08 !important;
+    letter-spacing: -.035em !important;
+}
+
+.package-card p {
+    margin: 0 !important;
+    color: rgba(214,223,238,.74) !important;
+    font-size: 14.5px !important;
+    line-height: 1.58 !important;
+}
+
+.package-price {
+    margin: 24px 0 16px !important;
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 10px !important;
+}
+
+.package-price span {
+    color: #F5F7FA !important;
+    font-size: 42px !important;
+    line-height: 1 !important;
+    font-weight: 950 !important;
+    letter-spacing: -.06em !important;
+}
+
+.package-price small {
+    color: rgba(184,194,217,.70) !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .08em !important;
+}
+
+.package-features {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-top: 2px !important;
+    margin-bottom: 24px !important;
+}
+
+.package-features span {
+    border-radius: 999px !important;
+    padding: 6px 10px !important;
+    border: 1px solid rgba(255,255,255,.06) !important;
+    background: rgba(255,255,255,.035) !important;
+    color: rgba(190,207,235,.78) !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    letter-spacing: .10em !important;
+    text-transform: uppercase !important;
+}
+
+.package-checkout {
+    margin-top: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    border-radius: 16px !important;
+    padding: 14px 18px !important;
+    border: 1px solid rgba(0,212,255,.24) !important;
+    background:
+        linear-gradient(135deg, rgba(0,212,255,.88), rgba(255,45,138,.82)) !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    font-weight: 950 !important;
+    letter-spacing: .04em !important;
+}
+
+.checkout-placeholder {
+    max-width: 1180px !important;
+}
+
+.checkout-note {
+    margin-top: 28px !important;
+    border-radius: 22px !important;
+    border: 1px solid rgba(255,255,255,.075) !important;
+    background: rgba(255,255,255,.035) !important;
+    padding: 22px !important;
+    color: rgba(214,223,238,.82) !important;
+    line-height: 1.6 !important;
+}
+
+.partner-logo,
+.partner-icon {
+    object-fit: contain !important;
+}
+
+.partner-icon-shell {
+    overflow: hidden !important;
+}
+
+/* Optical logo balancing */
+.partner-card img[src*="ibm"],
+.partner-card img[src*="google-workspace"],
+.partner-card img[src*="verizon"] {
+    transform: scale(1.18) !important;
+}
+
+.partner-card img[src*="microsoft.svg"] {
+    transform: scale(1.08) !important;
+}
+
+.partner-card img[src*="cloudflare"] {
+    transform: scale(1.12) !important;
+}
+
+@media (max-width: 1280px) {
+    .brand-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    .brand-media,
+    .brand-media img {
+        min-height: 460px !important;
+        max-height: 560px !important;
+    }
+
+    .package-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 740px) {
+    .brand-capabilities {
+        grid-template-columns: 1fr !important;
+    }
+
+    .brand-page .jpv-title {
+        font-size: clamp(46px, 13vw, 76px) !important;
+    }
+
+    .brand-media,
+    .brand-media img {
+        min-height: 360px !important;
+    }
+}
+

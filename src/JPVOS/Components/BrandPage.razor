@@ -1,45 +1,40 @@
-<section class="brand-page">
-    <div class="brand-page-image">
-        <img src="@Image" alt="@Title" loading="lazy" />
-    </div>
-
-    <div class="brand-page-content">
-        <div class="eyebrow">@Label</div>
-        <h1>@Title</h1>
-        <p class="hero-copy">@Body</p>
-
-        <div class="detail-grid">
-            @foreach (var point in PointItems)
-            {
-                <div class="detail-card">
-                    <span>@point.Number</span>
-                    <strong>@point.Title</strong>
-                    <p>@point.Text</p>
-                </div>
-            }
+<section class="brand-page jpv-section">
+    <div class="brand-layout">
+        <div class="brand-media">
+            <img src="@Image" alt="@Title image" />
         </div>
 
-        <div class="hero-actions">
-            <NavLink class="primary-btn" href="/init">Access Init</NavLink>
-            <NavLink class="ghost-btn" href="/access-routing">Route Request</NavLink>
+        <div class="brand-copy">
+            <div class="jpv-kicker">@Kicker</div>
+            <h1 class="jpv-title">@Title</h1>
+            <p class="jpv-lede">@Lead</p>
+
+            <div class="brand-capabilities">
+                @foreach (var item in Capabilities.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                {
+                    var parts = item.Split("::", 2, StringSplitOptions.TrimEntries);
+                    <div class="brand-capability">
+                        <span>@(parts.Length > 0 ? parts[0] : item)</span>
+                        <p>@(parts.Length > 1 ? parts[1] : "")</p>
+                    </div>
+                }
+            </div>
         </div>
     </div>
+
+    <section class="pricing-section">
+        <div class="partner-section-label">Packages & Checkout</div>
+        <div class="package-grid">
+            @ChildContent
+        </div>
+    </section>
 </section>
 
 @code {
-    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string Kicker { get; set; } = "";
     [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Lead { get; set; } = "";
     [Parameter] public string Image { get; set; } = "";
-    [Parameter] public string Body { get; set; } = "";
-    [Parameter] public string Points { get; set; } = "";
-
-    private IEnumerable<(string Number, string Title, string Text)> PointItems =>
-        Points.Split('|', StringSplitOptions.RemoveEmptyEntries)
-              .Select((raw, index) =>
-              {
-                  var parts = raw.Split("::", StringSplitOptions.None);
-                  var title = parts.ElementAtOrDefault(0) ?? "";
-                  var text = parts.ElementAtOrDefault(1) ?? "";
-                  return (((index + 1).ToString("00")), title, text);
-              });
+    [Parameter] public string Capabilities { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 }

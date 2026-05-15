@@ -1,0 +1,34 @@
+<div class="package-card">
+    <div class="package-eyebrow">@Eyebrow</div>
+    <h3>@Name</h3>
+    <p>@Detail</p>
+
+    <div class="package-price">
+        <span>@Price</span>
+        <small>@Term</small>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Features))
+    {
+        <div class="package-features">
+            @foreach (var feature in Features.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                <span>@feature</span>
+            }
+        </div>
+    }
+
+    <a class="package-checkout" href="@CheckoutUrl" target="_blank" rel="noopener">
+        Start Checkout
+    </a>
+</div>
+
+@code {
+    [Parameter] public string Eyebrow { get; set; } = "";
+    [Parameter] public string Name { get; set; } = "";
+    [Parameter] public string Detail { get; set; } = "";
+    [Parameter] public string Price { get; set; } = "";
+    [Parameter] public string Term { get; set; } = "";
+    [Parameter] public string Features { get; set; } = "";
+    [Parameter] public string CheckoutUrl { get; set; } = "#checkout-not-configured";
+}
