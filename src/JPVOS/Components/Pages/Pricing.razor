@@ -1,6 +1,41 @@
 @page "/pricing"
 @page "/packages"
 
+@code {
+    private bool annual = false;
+
+    private record Package(
+        string Key,
+        string Eyebrow,
+        string Name,
+        string Description,
+        string[] Features,
+        int Monthly,
+        int Annual,
+        string Access,
+        string DiscordRole
+    );
+
+    private Package[] Packages = new[]
+    {
+        new Package("member_access", "Member", "Member Access", "Discord member role, updates, resource access", new[]{"Discord role","Updates","Resource access"}, 20, 200, "/access", "JPV Member"),
+        new Package("creator_launch", "Creator", "Creator Launch", "Creator role, launch resources, venture support", new[]{"Creator role","Launch resources","Venture support"}, 99, 990, "/access", "Creator Launch"),
+        new Package("partner_package", "Partner", "Partner Package", "Partner role, partner portal access", new[]{"Partner role","Partner portal"}, 199, 1990, "/partners", "Partner Access"),
+        new Package("enterprise_infrastructure", "Enterprise", "Enterprise Infrastructure", "Enterprise role, implementation intake, private access", new[]{"Enterprise role","Implementation intake","Private access"}, 999, 9990, "/access", "Enterprise Access"),
+        new Package("custom_implementation", "Custom", "Custom Implementation", "Manual quote, scoped delivery", new[]{"Manual quote","Scoped delivery"}, 4999, 0, "/contact", "Custom Implementation")
+    };
+
+    private string GetPrice(Package pkg) => pkg.Key == "custom_implementation"
+        ? annual ? "Custom" : "$4,999+"
+        : annual ? $"${pkg.Annual}" : $"${pkg.Monthly}";
+
+    private string GetTerm(Package pkg) => pkg.Key == "custom_implementation"
+        ? annual ? "custom" : "one-time"
+        : annual ? "annual" : "monthly";
+
+    private string GetPackageKey(Package pkg) => pkg.Key + (annual ? "_annual" : "_monthly");
+}
+
 <div class="page-stack">
     <PageHero Kicker="Pricing"
               Title="Packages and checkout-ready cards."
@@ -9,12 +44,24 @@
               ImageAlt="init package and access interface visual" />
 
     <section class="content-section">
+        <div class="pricing-toggle">
+            <button class="toggle-btn @(annual ? "" : "active")" @onclick="() => annual = false">Monthly</button>
+            <button class="toggle-btn @(annual ? "active" : "")" @onclick="() => annual = true">Annual <span class="toggle-save">(2 months free)</span></button>
+        </div>
         <div class="pricing-grid">
-            <PricingCard Eyebrow="Member" Name="Member Access" Price="$25" Term="monthly" Description="Community and member access for updates, selected resources, and guided ecosystem entry." Features="@(new[] { "Member routing", "Updates", "Resource path" })" />
-            <PricingCard Eyebrow="Creator" Name="Creator Launch" Price="$297" Term="one-time" Description="A launch package for creator positioning, content direction, offer outline, and audience access setup." Features="@(new[] { "Launch profile", "Offer outline", "Content direction" })" />
-            <PricingCard Eyebrow="Partner" Name="Partner Package" Price="$0" Term="intake" Description="Structured intake for technology ecosystem alignment, collaboration review, and next-step routing." Features="@(new[] { "Partner intake", "Fit review", "Routing notes" })" Href="/partners" Cta="Explore Partners" />
-            <PricingCard Eyebrow="Enterprise" Name="Enterprise Infrastructure" Price="$750" Term="review" Description="A focused review of business infrastructure, identity posture, web presence, deployment, and operational readiness." Features="@(new[] { "Architecture", "Governance", "Security" })" />
-            <PricingCard Eyebrow="Custom" Name="Custom Implementation" Price="Custom" Term="scoped" Description="Implementation support for systems, access routing, venture surfaces, deployment, and operational documentation." Features="@(new[] { "Scope map", "Build plan", "Delivery route" })" Href="/access" Cta="Route Access" />
+            @foreach (var pkg in Packages)
+            {
+                <PricingCard
+                    Eyebrow="@pkg.Eyebrow"
+                    Name="@pkg.Name"
+                    Price="@GetPrice(pkg)"
+                    Term="@GetTerm(pkg)"
+                    Description="@pkg.Description"
+                    Features="@pkg.Features"
+                    Cta="Get init"
+                    OnCheckout="() => StartCheckout(GetPackageKey(pkg), GetTerm(pkg))"
+                />
+            }
         </div>
     </section>
 
@@ -25,3 +72,11 @@
                 SecondaryCta="Route Access"
                 SecondaryHref="/access" />
 </div>
+
+@code {
+    private async Task StartCheckout(string packageKey, string interval)
+    {
+        // Call backend endpoint to create Stripe Checkout Session
+        // Example: await Http.PostAsJsonAsync("/api/checkout/create", new { packageKey, interval });
+    }
+}
