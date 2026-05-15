@@ -1079,3 +1079,23 @@ body{
     color:#AAB5CA !important;
 }
 
+
+/* Built-in partner SVG icon system */
+.partner-icon-wrap {
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 14px !important;
+    display: grid !important;
+    place-items: center !important;
+    background: rgba(255,255,255,.025) !important;
+    border: 1px solid rgba(255,255,255,.065) !important;
+}
+
+.partner-icon {
+    width: 38px !important;
+    height: 38px !important;
+    object-fit: contain !important;
+    filter: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
