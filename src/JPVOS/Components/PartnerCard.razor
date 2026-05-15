@@ -1,7 +1,5 @@
 <div class="partner-card">
-    <div class="partner-icon-wrap">
-        <img src="@Icon" alt="@Name logo" class="partner-icon" />
-    </div>
+    <div class="partner-mark" aria-hidden="true">@Mark</div>
 
     <div class="partner-copy">
         <h3>@Name</h3>
@@ -23,5 +21,6 @@
     [Parameter] public string Name { get; set; } = "";
     [Parameter] public string Detail { get; set; } = "";
     [Parameter] public string Icon { get; set; } = "";
+    [Parameter] public string Mark { get; set; } = "JPV";
     [Parameter] public string Badges { get; set; } = "";
 }
