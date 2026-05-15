@@ -31,8 +31,18 @@ if ($slnFiles.Count -eq 0) {
   exit 1
 }
 
+if ($slnFiles.Count -gt 1) {
+  Write-Host "WARNING: Multiple .sln files found; using the first one" -ForegroundColor Yellow
+}
+
 $slnPath = $slnFiles[0].FullName
 $slnName = $slnFiles[0].Name
+
+# Verify src directory exists
+if (-not (Test-Path "src")) {
+  Write-Host "FAIL: src directory not found" -ForegroundColor Red
+  exit 1
+}
 
 $csprojFiles = @(Get-ChildItem -Path "src" -Recurse -Filter "*.csproj" -ErrorAction SilentlyContinue | Where-Object { $_.FullName -match "src[\/\\][^\/\\]+[\/\\]" })
 
