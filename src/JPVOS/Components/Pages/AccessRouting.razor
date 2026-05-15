@@ -1,40 +1,25 @@
 @page "/access"
 @page "/access-routing"
 
-<section class="jpv-section access-page">
-    <div class="jpv-kicker">Access Gateway</div>
-    <h1 class="jpv-title">Route the right request to the right operating layer.</h1>
-    <p class="jpv-lede">
-        Access Gateway routes member access, enterprise requests, creator inquiries,
-        partner collaboration, and venture packages through the correct JPV-OS layer.
-    </p>
+<div class="page-stack">
+    <section class="content-section">
+        <SectionHeader Kicker="Access"
+                       Title="Login and environment routing."
+                       Description="init routes people into the right access environment: member access, partner portal, enterprise console, admin operations, developer hub, and support center." />
+        <div class="access-grid">
+            <AccessCard Environment="Member" Title="Member Access" Description="Community entry, updates, selected resources, and guided ecosystem movement." Href="/pricing" />
+            <AccessCard Environment="Partner" Title="Partner Portal" Description="Technology ecosystem intake, collaboration review, and partner routing." Href="/partners" />
+            <AccessCard Environment="Enterprise" Title="Enterprise Console" Description="Architecture, governance, identity, security, deployment, and operations requests." Href="/jaypventures-llc" />
+            <AccessCard Environment="Admin" Title="Admin Operations" Description="Internal review pathway for governance, security posture, deployment, and delivery decisions." Href="/checkout-not-configured" />
+            <AccessCard Environment="Developer" Title="Developer Hub" Description="Development workflow, repositories, automation, runtime tooling, and implementation routing." Href="/ecosystem" />
+            <AccessCard Environment="Support" Title="Support Center" Description="Support routing for account, package, access, partner, and implementation questions." Href="/contact" />
+        </div>
+    </section>
 
-    <div class="package-grid access-package-grid">
-        <PackageCard
-            Eyebrow="Members"
-            Name="Member Access"
-            Price="$25"
-            Term="monthly"
-            Detail="Community and member access for public-facing updates, selected resources, and guided ecosystem entry."
-            Features="Member routing|Updates|Community access|Resource path"
-            CheckoutUrl="/checkout-not-configured" />
-
-        <PackageCard
-            Eyebrow="Partners"
-            Name="Partner Intake"
-            Price="$0"
-            Term="application"
-            Detail="Structured intake for enterprise, platform, creator, and institutional collaboration requests."
-            Features="Partner form|Routing review|Fit assessment|Next steps"
-            CheckoutUrl="/partners" />
-
-        <PackageCard
-            Eyebrow="Ventures"
-            Name="Packages & Pricing"
-            Price="View"
-            Term="ventures"
-            Detail="Review all public packages, pricing tiers, and checkout options from the centralized Ventures page."
-            Features="Enterprise|Creator|Labs|Institute"
-            CheckoutUrl="/ventures" />
-    </div>
-</section>
+    <CTASection Title="Get init access."
+                Description="Start with the path that matches who you are and what you need to do next."
+                PrimaryCta="Get init"
+                PrimaryHref="/pricing"
+                SecondaryCta="Explore Ecosystem"
+                SecondaryHref="/ecosystem" />
+</div>

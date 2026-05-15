@@ -1,14 +1,25 @@
 @page "/jaypventures"
 @page "/creator"
 
-<BrandPage
-    Kicker="Creator Ecosystem"
-    Title="jaypventures"
-    Image="/assets/jaypventures/jaypventures-hero.png"
-    Lead="jaypventures is the market-facing creator and venture ecosystem for launches, audience experience, membership routing, public engagement, and creator-led execution."
-    Capabilities="Venture Launches::Packages ideas, campaigns, and creator initiatives into public-facing launch paths.|Creator Systems::Supports content, community, access, and membership experiences with structured routing.|Public Engagement::Connects ecosystem work to audiences through accessible brand surfaces.|Market-Facing Experiences::Turns validated concepts into brand experiences designed for real-world adoption.">
+<div class="page-stack">
+    <section class="content-section">
+        <SectionHeader Kicker="jaypventures"
+                       Title="Creator-facing venture ecosystem."
+                       Description="jaypventures is where we route community, launches, memberships, digital products, creator access, and market-facing venture work." />
+        <div class="grid-3">
+            <GlassCard Eyebrow="Community" Title="Community pathways" Description="Member updates, public engagement, creator access, and audience movement." />
+            <GlassCard Eyebrow="Launches" Title="Creator launches" Description="Campaign direction, offer packaging, product positioning, and launch surfaces." />
+            <GlassCard Eyebrow="Memberships" Title="Membership access" Description="Member experiences, recurring access, digital resources, and community routes." />
+            <GlassCard Eyebrow="Products" Title="Digital products" Description="Creator products, guides, offers, and checkout-ready packages." />
+            <GlassCard Eyebrow="Access" Title="Creator access" Description="Routing for creators who need support entering or expanding the ecosystem." />
+            <GlassCard Eyebrow="Growth" Title="Venture growth" Description="Ongoing refinement for audience experience, packages, and public venture development." />
+        </div>
+    </section>
 
-    <PackageCard Eyebrow="Creator" Name="Creator Launch Kit" Price="$297" Term="one-time" Detail="A starter package for creator positioning, launch routing, content direction, and audience access setup." Features="Launch profile|Link routing|Offer outline|Content direction" CheckoutUrl="/checkout-not-configured" />
-    <PackageCard Eyebrow="Creator" Name="Venture Buildout" Price="$997" Term="one-time" Detail="A structured buildout for creator brands, digital offers, community access, and public-facing web presentation." Features="Brand page|Offer structure|Community path|Launch checklist" CheckoutUrl="/checkout-not-configured" />
-    <PackageCard Eyebrow="Creator" Name="Momentum Support" Price="$250" Term="monthly" Detail="Ongoing creator support for launch refinement, content operations, and market-facing execution." Features="Monthly strategy|Content alignment|Offer updates|Community routing" CheckoutUrl="/checkout-not-configured" />
-</BrandPage>
+    <CTASection Title="Build the creator path through init."
+                Description="Use init to connect creator access, launches, memberships, products, and pricing."
+                PrimaryCta="Get init"
+                PrimaryHref="/pricing"
+                SecondaryCta="View Ventures"
+                SecondaryHref="/ventures" />
+</div>

@@ -1,49 +1,28 @@
 @page "/ventures"
-@page "/pricing"
-@page "/packages"
 
-<section class="ventures-page jpv-section">
-    <div class="jpv-kicker">Ventures & Packages</div>
-    <h1 class="jpv-title">Packages for enterprise, creator, research, and innovation pathways.</h1>
-    <p class="jpv-lede">
-        Pricing is centralized here so each venture path has a clear offer, defined scope,
-        and checkout route. Replace placeholder checkout links with live Stripe Payment Links
-        before accepting payments.
-    </p>
-
-    <section class="ventures-pricing-group">
-        <div class="partner-section-label">JayPVentures LLC</div>
-        <div class="package-grid">
-            <PackageCard Eyebrow="Enterprise" Name="Infrastructure Review" Price="$750" Term="one-time" Detail="A focused review of business infrastructure, identity posture, web presence, and operational readiness." Features="Infrastructure audit|Risk notes|Priority recommendations|30-minute review" CheckoutUrl="/checkout-not-configured" />
-            <PackageCard Eyebrow="Enterprise" Name="Operating System Setup" Price="$2,500" Term="starting package" Detail="Structured implementation package for business systems, access routing, web infrastructure, and operational documentation." Features="System architecture|Workflow map|Security alignment|Launch checklist" CheckoutUrl="/checkout-not-configured" />
-            <PackageCard Eyebrow="Enterprise" Name="Strategic Infrastructure Retainer" Price="$1,500" Term="monthly" Detail="Ongoing operational alignment for infrastructure, governance, content systems, and delivery readiness." Features="Monthly planning|System updates|Governance review|Priority support" CheckoutUrl="/checkout-not-configured" />
+<div class="page-stack">
+    <section class="content-section">
+        <SectionHeader Kicker="Ventures"
+                       Title="Venture pathways for launches, products, and ecosystem growth."
+                       Description="init organizes the venture side of the ecosystem into pathways for public launches, digital products, creator systems, enterprise opportunities, and long-range growth." />
+        <div class="grid-3">
+            <GlassCard Eyebrow="Launches" Title="Launch pathways" Description="Plan the offer, public surface, audience route, and access path before a venture goes live." />
+            <GlassCard Eyebrow="Products" Title="Digital products" Description="Shape products, memberships, resources, and checkout-ready packages around clear user entry points." />
+            <GlassCard Eyebrow="Creators" Title="Creator systems" Description="Connect content, community, launches, memberships, and product development for creator-led ventures." />
+            <GlassCard Eyebrow="Enterprise" Title="Enterprise opportunities" Description="Route infrastructure, governance, identity, security, deployment, and operations opportunities into JayPVentures LLC." />
+            <GlassCard Eyebrow="Growth" Title="Ecosystem growth" Description="Use the application surface to keep ventures connected to access, partners, pricing, and delivery." />
+            <GlassCard Eyebrow="Pipeline" Title="Future launches" Description="Keep experiments, offers, and implementation paths organized around real pathways and package readiness." />
         </div>
     </section>
 
-    <section class="ventures-pricing-group">
-        <div class="partner-section-label">jaypventures</div>
-        <div class="package-grid">
-            <PackageCard Eyebrow="Creator" Name="Creator Launch Kit" Price="$297" Term="one-time" Detail="Starter package for creator positioning, launch routing, content direction, and audience access setup." Features="Launch profile|Link routing|Offer outline|Content direction" CheckoutUrl="/checkout-not-configured" />
-            <PackageCard Eyebrow="Creator" Name="Venture Buildout" Price="$997" Term="one-time" Detail="Structured buildout for creator brands, digital offers, community access, and public-facing web presentation." Features="Brand page|Offer structure|Community path|Launch checklist" CheckoutUrl="/checkout-not-configured" />
-            <PackageCard Eyebrow="Creator" Name="Momentum Support" Price="$250" Term="monthly" Detail="Ongoing creator support for launch refinement, content operations, and market-facing execution." Features="Monthly strategy|Content alignment|Offer updates|Community routing" CheckoutUrl="/checkout-not-configured" />
+    <section class="content-section">
+        <SectionHeader Kicker="Venture Routes"
+                       Title="Choose the path that matches the work."
+                       Description="We route creator, enterprise, partner, and custom implementation work through dedicated surfaces so the ecosystem stays legible." />
+        <div class="grid-3">
+            <RouteTile Href="/jaypventures" Eyebrow="Creator" Title="jaypventures" Description="Community, launches, memberships, digital products, and creator access." />
+            <RouteTile Href="/jaypventures-llc" Eyebrow="Enterprise" Title="JayPVentures LLC" Description="Architecture, governance, identity, security, deployment, and operations." />
+            <RouteTile Href="/pricing" Eyebrow="Packages" Title="Pricing" Description="Checkout-ready package paths for the next step." />
         </div>
     </section>
-
-    <section class="ventures-pricing-group">
-        <div class="partner-section-label">jaypVLabs</div>
-        <div class="package-grid">
-            <PackageCard Eyebrow="Labs" Name="Prototype Review" Price="$500" Term="one-time" Detail="Focused validation review for prototypes, workflows, automations, or AI-assisted concepts." Features="Prototype audit|Risk review|Readiness notes|Improvement path" CheckoutUrl="/checkout-not-configured" />
-            <PackageCard Eyebrow="Labs" Name="AI Behavior Validation" Price="$1,250" Term="one-time" Detail="Review of AI-facing workflows, prompts, escalation rules, safety boundaries, and production readiness." Features="Behavior review|Guardrail notes|Escalation paths|Readiness report" CheckoutUrl="/checkout-not-configured" />
-            <PackageCard Eyebrow="Labs" Name="Implementation Sprint" Price="$2,000" Term="starting package" Detail="Structured sprint to move a validated concept toward deployable operating logic." Features="System mapping|Implementation plan|Testing checklist|Deployment notes" CheckoutUrl="/checkout-not-configured" />
-        </div>
-    </section>
-
-    <section class="ventures-pricing-group">
-        <div class="partner-section-label">JPV Institute</div>
-        <div class="package-grid">
-            <PackageCard Eyebrow="Institute" Name="Research Review" Price="$350" Term="one-time" Detail="Structured review of claims, concepts, frameworks, or system models for clarity and evidence readiness." Features="Evidence review|Framework notes|Citation path|Improvement summary" CheckoutUrl="/checkout-not-configured" />
-            <PackageCard Eyebrow="Institute" Name="Doctrine Development" Price="$1,200" Term="one-time" Detail="Development package for standards, principles, review models, or institutional knowledge documents." Features="Doctrine outline|Policy language|Review checklist|Publication prep" CheckoutUrl="/checkout-not-configured" />
-            <PackageCard Eyebrow="Institute" Name="Education Framework" Price="$2,500" Term="starting package" Detail="Structured education or literacy framework for teams, members, or institutional audiences." Features="Learning map|Standards model|Review structure|Implementation guide" CheckoutUrl="/checkout-not-configured" />
-        </div>
-    </section>
-</section>
+</div>

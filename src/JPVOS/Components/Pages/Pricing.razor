@@ -1,0 +1,24 @@
+@page "/pricing"
+@page "/packages"
+
+<div class="page-stack">
+    <section class="content-section">
+        <SectionHeader Kicker="Pricing"
+                       Title="Packages and checkout-ready cards."
+                       Description="init keeps the commercial paths visible: member access, creator launch, partner package, enterprise infrastructure, and custom implementation." />
+        <div class="pricing-grid">
+            <PricingCard Eyebrow="Member" Name="Member Access" Price="$25" Term="monthly" Description="Community and member access for updates, selected resources, and guided ecosystem entry." Features="@(new[] { "Member routing", "Updates", "Resource path" })" />
+            <PricingCard Eyebrow="Creator" Name="Creator Launch" Price="$297" Term="one-time" Description="A launch package for creator positioning, content direction, offer outline, and audience access setup." Features="@(new[] { "Launch profile", "Offer outline", "Content direction" })" />
+            <PricingCard Eyebrow="Partner" Name="Partner Package" Price="$0" Term="intake" Description="Structured intake for technology ecosystem alignment, collaboration review, and next-step routing." Features="@(new[] { "Partner intake", "Fit review", "Routing notes" })" Href="/partners" Cta="Explore Partners" />
+            <PricingCard Eyebrow="Enterprise" Name="Enterprise Infrastructure" Price="$750" Term="review" Description="A focused review of business infrastructure, identity posture, web presence, deployment, and operational readiness." Features="@(new[] { "Architecture", "Governance", "Security" })" />
+            <PricingCard Eyebrow="Custom" Name="Custom Implementation" Price="Custom" Term="scoped" Description="Implementation support for systems, access routing, venture surfaces, deployment, and operational documentation." Features="@(new[] { "Scope map", "Build plan", "Delivery route" })" Href="/access" Cta="Route Access" />
+        </div>
+    </section>
+
+    <CTASection Title="Get init."
+                Description="Choose the package path that fits the next move, then route into the right access environment."
+                PrimaryCta="Get init"
+                PrimaryHref="/pricing"
+                SecondaryCta="Route Access"
+                SecondaryHref="/access" />
+</div>

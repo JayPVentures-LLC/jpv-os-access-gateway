@@ -1,14 +1,25 @@
 @page "/jaypventures-llc"
 @page "/enterprise"
 
-<BrandPage
-    Kicker="Enterprise Infrastructure"
-    Title="JayPVentures LLC"
-    Image="/assets/jaypventures-llc/jaypventures-llc-hero.png"
-    Lead="JayPVentures LLC is the enterprise infrastructure authority for architecture, operational execution, strategic alignment, governance integrity, and long-range business readiness."
-    Capabilities="Infrastructure Architecture::Designs systems for reliability, continuity, and scalable execution.|Strategic Alignment::Keeps enterprise work connected to clear priorities and measurable outcomes.|Governance Integrity::Supports disciplined operating standards, documentation, and review practices.|Business Readiness::Prepares systems, packages, and delivery models for operational scale.">
+<div class="page-stack">
+    <section class="content-section">
+        <SectionHeader Kicker="JayPVentures LLC"
+                       Title="Enterprise infrastructure authority."
+                       Description="JayPVentures LLC is the enterprise infrastructure layer for architecture, governance, identity, security, deployment, and operations." />
+        <div class="grid-3">
+            <GlassCard Eyebrow="Architecture" Title="Infrastructure architecture" Description="System design, operating models, web infrastructure, and readiness planning." />
+            <GlassCard Eyebrow="Governance" Title="Governance" Description="Documentation, review pathways, operating standards, and decision records." />
+            <GlassCard Eyebrow="Identity" Title="Identity and security" Description="Authentication posture, access routing, security alignment, and account readiness." />
+            <GlassCard Eyebrow="Deployment" Title="Deployment" Description="Hosting paths, release readiness, environment setup, and delivery support." />
+            <GlassCard Eyebrow="Operations" Title="Operations" Description="Process alignment, support pathways, package delivery, and implementation continuity." />
+            <GlassCard Eyebrow="Enterprise" Title="Opportunity routing" Description="Enterprise inquiries route into scoped review, implementation, or custom work." />
+        </div>
+    </section>
 
-    <PackageCard Eyebrow="Enterprise" Name="Infrastructure Review" Price="$750" Term="one-time" Detail="A focused review of current business infrastructure, identity, web presence, and operational readiness." Features="Infrastructure audit|Risk notes|Priority recommendations|30-minute review" CheckoutUrl="/checkout-not-configured" />
-    <PackageCard Eyebrow="Enterprise" Name="Operating System Setup" Price="$2,500" Term="starting package" Detail="Structured implementation package for business systems, access routing, web infrastructure, and operational documentation." Features="System architecture|Workflow map|Security alignment|Launch checklist" CheckoutUrl="/checkout-not-configured" />
-    <PackageCard Eyebrow="Enterprise" Name="Strategic Infrastructure Retainer" Price="$1,500" Term="monthly" Detail="Ongoing operational alignment for infrastructure, governance, content systems, and delivery readiness." Features="Monthly planning|System updates|Governance review|Priority support" CheckoutUrl="/checkout-not-configured" />
-</BrandPage>
+    <CTASection Title="Route enterprise work through init."
+                Description="Use init to connect enterprise requests to architecture, governance, identity, security, deployment, and operations."
+                PrimaryCta="Get init"
+                PrimaryHref="/pricing"
+                SecondaryCta="Route Access"
+                SecondaryHref="/access" />
+</div>
