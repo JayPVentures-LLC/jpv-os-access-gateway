@@ -1,15 +1,88 @@
-@* legacy route disabled: route owned by /Pages *@
-<main class="brand-page">
-    <section class="brand-hero">
-        <div class="brand-copy">
-            <p class="brand-kicker">init</p>
-            <h1>Access Gateway.</h1>
-            <p>The application interface for ecosystem entry, routing, and unified access.</p>
+@page "/init"
+
+<section class="jpv-section partner-ecosystem-page">
+    <div class="ecosystem-hero-grid">
+        <div class="ecosystem-hero-copy">
+            <div class="jpv-kicker">init application</div>
+            <h1 class="jpv-title">Operational technology environment.</h1>
+            <p class="jpv-lede">
+                The init application maps the integrated ecosystem powering JPV-OS: infrastructure,
+                identity, development workflow, deployment ecosystem, research support, and platform
+                capabilities. These systems are represented as an operational environment, not as
+                sponsorship, endorsement, or official partnership claims.
+            </p>
+            <div class="ecosystem-terms" aria-label="Ecosystem categories">
+                <span>Infrastructure ecosystem</span>
+                <span>Platform ecosystem</span>
+                <span>Operational ecosystem</span>
+                <span>Technology integrations</span>
+                <span>Development environment</span>
+                <span>Deployment environment</span>
+                <span>Research and productivity environment</span>
+            </div>
         </div>
 
-        <div class="brand-hero-art">
-            <img src="/assets/brand/jpv-os/3ab9453f-2e4e-46a5-a118-b24134dd5f65.png" alt="init visual" />
-        </div>
-    </section>
-</main>
+        <InfrastructureMap Title="JPV-OS ecosystem topology" Subtitle="Identity, routing, workflow, deployment, research, and operating layers">
+            <PartnerNode Name="Microsoft" X="50" Y="18" />
+            <PartnerNode Name="Azure" X="72" Y="28" />
+            <PartnerNode Name="Cloudflare" X="84" Y="52" />
+            <PartnerNode Name="GitHub" X="64" Y="72" />
+            <PartnerNode Name="OpenAI" X="38" Y="78" />
+            <PartnerNode Name="Stripe" X="18" Y="58" />
+            <PartnerNode Name="HP + Intel" X="20" Y="34" />
+            <PartnerNode Name="Research" X="46" Y="50" IsCore="true" />
+        </InfrastructureMap>
+    </div>
 
+    <PartnerCategorySection Title="Infrastructure and Identity"
+                            Label="Infrastructure ecosystem"
+                            Explanation="Identity infrastructure, cloud services, productivity systems, edge routing, enterprise platforms, and network connectivity form the infrastructure layer for the JPV-OS operating environment.">
+        <PartnerCapabilityCard Name="Microsoft" Icon="/assets/partners/microsoft.svg" Layer="Platform" Capability="Productivity, operating systems, organizational administration, and infrastructure alignment." />
+        <PartnerCapabilityCard Name="Azure" Icon="/assets/partners/azure.svg" Layer="Cloud" Capability="Cloud hosting, deployment pathways, application services, and platform capabilities." />
+        <PartnerCapabilityCard Name="Microsoft 365" Icon="/assets/partners/microsoft.svg" Layer="Productivity" Capability="Email, documents, collaboration, and operational coordination across the environment." />
+        <PartnerCapabilityCard Name="Microsoft Entra ID" Icon="/assets/partners/entra-id.svg" Layer="Identity" Capability="Authentication, access control, identity routing, and secure account posture." />
+        <PartnerCapabilityCard Name="Cloudflare" Icon="/assets/partners/cloudflare.svg" Layer="Edge" Capability="DNS, edge delivery, traffic routing, and public web infrastructure support." />
+        <PartnerCapabilityCard Name="IBM" Icon="/assets/partners/ibm.svg" Layer="Enterprise" Capability="Enterprise systems influence, infrastructure thinking, and institutional technology context." />
+        <PartnerCapabilityCard Name="Verizon" Icon="/assets/partners/verizon.svg" Layer="Network" Capability="Connectivity, communications infrastructure, and network ecosystem relevance." />
+    </PartnerCategorySection>
+
+    <PartnerCategorySection Title="Development and AI"
+                            Label="Development environment"
+                            Explanation="Engineering systems, editor workflows, code collaboration, AI assistance, runtime tooling, and automation support the development workflow inside the broader JPV-OS ecosystem.">
+        <PartnerCapabilityCard Name="GitHub" Icon="/assets/partners/github.svg" Layer="Source" Capability="Repositories, pull requests, versioned delivery, governance gates, and workflow visibility." />
+        <PartnerCapabilityCard Name="VS Code" Icon="/assets/partners/vscode.svg" Layer="Editor" Capability="Code editing, extensions, implementation workflow, and development environment alignment." />
+        <PartnerCapabilityCard Name="OpenAI" Icon="/assets/partners/openai.svg" Layer="AI" Capability="Reasoning support, implementation assistance, operational analysis, and intelligence-layer workflow." />
+        <PartnerCapabilityCard Name="GitHub Copilot" Icon="/assets/partners/github-copilot.svg" Layer="AI code" Capability="AI-assisted coding, review support, and developer workflow acceleration." />
+        <PartnerCapabilityCard Name="Node.js" Icon="/assets/partners/nodejs.svg" Layer="Runtime" Capability="Web tooling, build pipelines, package workflows, and application runtime support." />
+        <PartnerCapabilityCard Name="PowerShell" Icon="/assets/partners/powershell.svg" Layer="Automation" Capability="Diagnostics, administrative scripting, deployment support, and Windows-first operations." />
+    </PartnerCategorySection>
+
+    <PartnerCategorySection Title="Payments and Ecosystem Access"
+                            Label="Operational ecosystem"
+                            Explanation="Commerce, community access, web publishing, public routing, and workspace coordination provide access paths for people moving through the ecosystem.">
+        <PartnerCapabilityCard Name="Stripe" Icon="/assets/partners/stripe.svg" Layer="Payments" Capability="Payments, subscriptions, commerce paths, and entitlement-adjacent operational flows." />
+        <PartnerCapabilityCard Name="Discord" Icon="/assets/partners/discord.svg" Layer="Community" Capability="Community access, member communication, and engagement routing." />
+        <PartnerCapabilityCard Name="Wix" Icon="/assets/partners/wix.svg" Layer="Publishing" Capability="Public web presence, brand surfaces, and rapid publishing workflows." />
+        <PartnerCapabilityCard Name="Linktree" Icon="/assets/partners/linktree.svg" Layer="Routing" Capability="Public link routing, discovery paths, and lightweight ecosystem access." />
+        <PartnerCapabilityCard Name="Google Workspace" Icon="/assets/partners/google-workspace.svg" Layer="Workspace" Capability="Email, calendar, documents, collaboration, and productivity coordination." />
+    </PartnerCategorySection>
+
+    <PartnerCategorySection Title="Hardware and Operating Environment"
+                            Label="Technology integrations"
+                            Explanation="Workstation hardware, compute platforms, desktop operating systems, creative devices, and cloud continuity define the operating environment used to build and run JPV-OS work.">
+        <PartnerCapabilityCard Name="HP" Icon="/assets/partners/hp.svg" Layer="Hardware" Capability="Workstation hardware, device operations, and creator-enterprise execution environment." />
+        <PartnerCapabilityCard Name="Intel" Icon="/assets/partners/intel.svg" Layer="Compute" Capability="Compute platform support, graphics capability, and workstation performance alignment." />
+        <PartnerCapabilityCard Name="Windows" Icon="/assets/partners/windows.svg" Layer="OS" Capability="Desktop operating environment for development, administration, automation, and execution." />
+        <PartnerCapabilityCard Name="Apple" Icon="/assets/partners/icloud.svg" Layer="Creative OS" Capability="Creative production devices, continuity workflows, and media operating context." />
+        <PartnerCapabilityCard Name="iCloud" Icon="/assets/partners/icloud.svg" Layer="Continuity" Capability="Storage, device continuity, and creative workflow support." />
+    </PartnerCategorySection>
+
+    <PartnerCategorySection Title="Research and Innovation"
+                            Label="Research and productivity environment"
+                            Explanation="Learning systems, academic context, real-time production tools, and interactive engine capabilities support research, prototyping, and ecosystem alignment.">
+        <PartnerCapabilityCard Name="Coursera" Icon="/assets/partners/coursera.svg" Layer="Learning" Capability="Skills development, professional learning pathways, and research support." />
+        <PartnerCapabilityCard Name="University of Phoenix" Icon="/assets/partners/university-phoenix.svg" Layer="Education" Capability="Academic development, institutional learning, and professional education foundation." />
+        <PartnerCapabilityCard Name="Epic Games" Icon="/assets/partners/unreal-editor.svg" Layer="Production" Capability="Interactive production ecosystem context, real-time media, and creative technology alignment." />
+        <PartnerCapabilityCard Name="Unreal Engine" Icon="/assets/partners/unreal-editor.svg" Layer="Engine" Capability="Real-time visualization, cinematic systems, virtual environments, and immersive prototyping." />
+    </PartnerCategorySection>
+</section>

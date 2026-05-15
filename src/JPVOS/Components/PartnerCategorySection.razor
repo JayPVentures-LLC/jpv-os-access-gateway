@@ -1,0 +1,24 @@
+<section class="partner-category-section">
+    <div class="partner-category-copy">
+        <span class="partner-category-label">@Label</span>
+        <h2>@Title</h2>
+        <p>@Explanation</p>
+    </div>
+
+    <div class="partner-category-map" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="partner-capability-grid">
+        @ChildContent
+    </div>
+</section>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string Explanation { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

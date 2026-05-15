@@ -1,0 +1,26 @@
+<div class="infrastructure-map">
+    <div class="map-orbit orbit-one"></div>
+    <div class="map-orbit orbit-two"></div>
+    <div class="map-orbit orbit-three"></div>
+    <div class="map-route route-one"></div>
+    <div class="map-route route-two"></div>
+    <div class="map-route route-three"></div>
+
+    <div class="map-core">
+        <span>JPV-OS</span>
+        <strong>init</strong>
+    </div>
+
+    @ChildContent
+
+    <div class="map-caption">
+        <span>@Title</span>
+        <p>@Subtitle</p>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Subtitle { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

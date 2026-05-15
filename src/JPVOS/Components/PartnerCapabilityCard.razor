@@ -1,0 +1,42 @@
+<article class="partner-capability-card">
+    <div class="partner-capability-icon">
+        @if (!string.IsNullOrWhiteSpace(Icon))
+        {
+            <img src="@Icon" alt="" loading="lazy" />
+        }
+        else
+        {
+            <span>@Initials</span>
+        }
+    </div>
+
+    <div>
+        <span class="partner-layer">@Layer</span>
+        <h3>@Name</h3>
+        <p>@Capability</p>
+    </div>
+</article>
+
+@code {
+    [Parameter] public string Name { get; set; } = "";
+    [Parameter] public string Icon { get; set; } = "";
+    [Parameter] public string Layer { get; set; } = "";
+    [Parameter] public string Capability { get; set; } = "";
+
+    private string Initials
+    {
+        get
+        {
+            var parts = Name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+            {
+                return "";
+            }
+
+            return parts.Length == 1
+                ? parts[0][..1].ToUpperInvariant()
+                : $"{parts[0][0]}{parts[1][0]}".ToUpperInvariant();
+        }
+    }
+}
