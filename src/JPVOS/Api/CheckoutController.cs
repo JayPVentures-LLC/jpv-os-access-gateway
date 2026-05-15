@@ -30,7 +30,13 @@ public class CheckoutController : ControllerBase
             return BadRequest($"Checkout is not configured yet. Missing server environment variable: {string.Join(", ", missing)}");
         }
 
-        var priceId = req.PackageKey?.ToLowerInvariant() switch
+        var normalizedPackageKey = req.PackageKey?.Trim().ToLowerInvariant();
+        if (string.IsNullOrWhiteSpace(normalizedPackageKey))
+        {
+            return BadRequest("Package key is required.");
+        }
+
+        var priceId = normalizedPackageKey switch
         {
             "community" => _config["STRIPE_PRICE_ID_COMMUNITY"],
             "vip" => _config["STRIPE_PRICE_ID_VIP"],
@@ -59,7 +65,7 @@ public class CheckoutController : ControllerBase
             CancelUrl = string.IsNullOrWhiteSpace(req.CancelUrl) ? $"{domain}/pricing" : req.CancelUrl,
             Metadata = new Dictionary<string, string>
             {
-                ["package_key"] = req.PackageKey ?? "",
+                ["package_key"] = normalizedPackageKey,
                 ["interval"] = req.Interval ?? "monthly"
             }
         };
