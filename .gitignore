@@ -1,2 +1,6 @@
 **/bin/
 **/obj/
+
+# Local release artifacts
+release-artifacts/
+
