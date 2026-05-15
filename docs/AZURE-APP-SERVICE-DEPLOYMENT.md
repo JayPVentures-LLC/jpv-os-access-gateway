@@ -20,7 +20,8 @@ Deploy JPVOS as an ASP.NET Core Blazor web app.
 - [ ] Web App created with .NET 8 runtime
 - [ ] Runtime stack configured for .NET 8
 - [ ] HTTPS enforced
-- [ ] App settings configured
+- [ ] App settings configured:
+  - `AllowedHosts` - Your domain(s), e.g., `yourdomain.azurewebsites.net;yourdomain.com`
 - [ ] Deployment credentials or publish profile configured
 - [ ] GitHub Actions secrets added:
   - `AZURE_WEBAPP_NAME` - Your Web App name
