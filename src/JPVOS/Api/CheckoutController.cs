@@ -1,62 +1,71 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Stripe.Checkout;
+using JPVOS.Models;
 
-[ApiController]
-    [HttpPost("create")]
-    public IActionResult Create([FromBody] CheckoutRequest req)
+namespace JPVOS.Api
+{
+    [ApiController]
+    [Route("api/checkout")]
+    public class CheckoutController : ControllerBase
     {
-        var requiredVars = new[]
+        private readonly IConfiguration _config;
+
+        public CheckoutController(IConfiguration config)
         {
-            "STRIPE_SECRET_KEY",
-            "STRIPE_WEBHOOK_SECRET",
-            "STRIPE_PRICE_ID_COMMUNITY",
-            "STRIPE_PRICE_ID_VIP"
-        };
-        var missing = requiredVars.Where(v => string.IsNullOrWhiteSpace(_config[v])).ToList();
-        if (missing.Count > 0)
-        {
-            return BadRequest($"Checkout is not configured yet. Missing server environment variable: {string.Join(", ", missing)}");
+            _config = config;
         }
 
-        string priceId = req.PackageKey switch
+        [HttpPost("create")]
+        public IActionResult Create([FromBody] CheckoutRequest req)
         {
-            "community" => _config["STRIPE_PRICE_ID_COMMUNITY"],
-            "vip" => _config["STRIPE_PRICE_ID_VIP"],
-            _ => null
-        };
-        if (string.IsNullOrEmpty(priceId))
-        {
-            return BadRequest("Invalid or unavailable package key. Only Community and VIP are enabled for checkout.");
-        }
-
-        var domain = Request.Scheme + "://" + Request.Host.Value;
-        var options = new SessionCreateOptions
-        {
-            PaymentMethodTypes = new List<string> { "card" },
-            LineItems = new List<SessionLineItemOptions>
+            var requiredVars = new[]
             {
-                new SessionLineItemOptions
+                "STRIPE_SECRET_KEY",
+                "STRIPE_WEBHOOK_SECRET",
+                "STRIPE_PRICE_ENTERPRISE_ANNUAL",
+                "STRIPE_PRICE_CUSTOM_IMPLEMENTATION"
+            };
+            var missing = requiredVars.Where(v => string.IsNullOrWhiteSpace(_config[v])).ToList();
+            if (missing.Count > 0)
+            {
+                return BadRequest($"Checkout is not configured yet. Missing server environment variable: {string.Join(", ", missing)}");
+            }
+
+            string priceId = req.PackageKey switch
+            {
+                "enterprise_infrastructure_annual" => _config["STRIPE_PRICE_ENTERPRISE_ANNUAL"],
+                "custom_implementation_one_time" => _config["STRIPE_PRICE_CUSTOM_IMPLEMENTATION"],
+                _ => null
+            };
+            if (string.IsNullOrEmpty(priceId))
+            {
+                return BadRequest("Invalid or unavailable package key. Only enterprise and custom implementation are enabled for checkout.");
+            }
+
+            var domain = Request.Scheme + "://" + Request.Host.Value;
+            var options = new SessionCreateOptions
+            {
+                PaymentMethodTypes = new List<string> { "card" },
+                LineItems = new List<SessionLineItemOptions>
                 {
-                    Price = priceId,
-                    Quantity = 1
-                }
-            },
-            Mode = "subscription",
-            SuccessUrl = string.IsNullOrEmpty(req.SuccessUrl) ? domain + "/success" : req.SuccessUrl,
-            CancelUrl = string.IsNullOrEmpty(req.CancelUrl) ? domain + "/pricing" : req.CancelUrl,
-        };
-        var service = new SessionService();
-        var session = service.Create(options);
-        if (string.IsNullOrEmpty(session.Url))
-        {
-            return StatusCode(500, "Stripe session creation failed: No URL returned.");
+                    new SessionLineItemOptions
+                    {
+                        Price = priceId,
+                        Quantity = 1
+                    }
+                },
+                Mode = "subscription",
+                SuccessUrl = string.IsNullOrEmpty(req.SuccessUrl) ? domain + "/success" : req.SuccessUrl,
+                CancelUrl = string.IsNullOrEmpty(req.CancelUrl) ? domain + "/pricing" : req.CancelUrl,
+            };
+            var service = new SessionService();
+            var session = service.Create(options);
+            if (string.IsNullOrEmpty(session.Url))
+            {
+                return StatusCode(500, "Stripe session creation failed: No URL returned.");
+            }
+            return Ok(new { url = session.Url });
         }
-        return Ok(new { url = session.Url });
-    }
-            "enterprise_infrastructure_annual" => _config["STRIPE_PRICE_ENTERPRISE_ANNUAL"],
-            "custom_implementation_one_time" => _config["STRIPE_PRICE_CUSTOM_IMPLEMENTATION"],
-            _ => null
-        };
     }
 }

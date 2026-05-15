@@ -28,15 +28,10 @@
     [Parameter] public bool IsDisabled { get; set; } = false;
     [Parameter] public EventCallback OnCheckout { get; set; }
     [Parameter] public string Cta { get; set; } = "Get init";
-}
-
-@code {
-    [Parameter] public string Eyebrow { get; set; } = "";
-    [Parameter] public string Name { get; set; } = "";
+    
+    // Alternative properties for simpler billing models
     [Parameter] public string Price { get; set; } = "";
     [Parameter] public string Term { get; set; } = "";
-    [Parameter] public string Description { get; set; } = "";
-    [Parameter] public string[] Features { get; set; } = [];
     [Parameter] public string Href { get; set; } = "/checkout-not-configured";
-    [Parameter] public string Cta { get; set; } = "Get init";
 }
+

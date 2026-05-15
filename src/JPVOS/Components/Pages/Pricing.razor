@@ -43,6 +43,8 @@
             _ => pkg.Key // fallback for inquiry
         };
     }
+
+    private async Task NoOpCallback() => await Task.CompletedTask;
 }
 
 <div class="page-stack">
@@ -83,7 +85,7 @@
                         Description="@pkg.Description"
                         Features="@pkg.Features"
                         Cta="Request partner access"
-                        OnCheckout="null"
+                        OnCheckout="NoOpCallback"
                         IsDisabled="true"
                     />
                 }
@@ -97,7 +99,7 @@
                         Description="@pkg.Description"
                         Features="@pkg.Features"
                         Cta="Request enterprise package"
-                        OnCheckout="null"
+                        OnCheckout="NoOpCallback"
                         IsDisabled="true"
                     />
                 }
@@ -111,7 +113,7 @@
                         Description="@pkg.Description"
                         Features="@pkg.Features"
                         Cta="Contact for quote"
-                        OnCheckout="null"
+                        OnCheckout="NoOpCallback"
                         IsDisabled="true"
                     />
                 }
@@ -129,6 +131,8 @@
 
 @code {
     [Inject] private HttpClient Http { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    
     private async Task StartCheckout(string packageKey, string interval)
     {
         var response = await Http.PostAsJsonAsync("/api/checkout/create", new { packageKey, interval });

@@ -87,13 +87,30 @@ public class StripeWebhookController : ControllerBase
             case "customer.subscription.updated":
             {
                 var sub = stripeEvent.Data.Object as Stripe.Subscription ?? JsonSerializer.Deserialize<Stripe.Subscription>(stripeEvent.Data.Object.ToString());
-                var customerId = sub.CustomerId;
+                var customerId = sub?.CustomerId;
                 var ent = _entitlementService.GetByStripeCustomerId(customerId);
-                if (ent != null)
+                if (ent != null && sub != null)
                 {
                     ent.StripeSubscriptionId = sub.Id;
                     ent.Status = sub.Status;
-                    ent.AccessExpiration = sub.CurrentPeriodEnd;
+                    // Handle version compatibility: try CurrentPeriodEnd first, fallback to CurrentPeriodEndUnix
+                    var periodEndProp = sub.GetType().GetProperty("CurrentPeriodEnd");
+                    if (periodEndProp != null)
+                    {
+                        var periodEndValue = periodEndProp.GetValue(sub);
+                        if (periodEndValue is DateTime dt)
+                        {
+                            ent.AccessExpiration = dt;
+                        }
+                    }
+                    else
+                    {
+                        var periodEndUnixProp = sub.GetType().GetProperty("CurrentPeriodEndUnix");
+                        if (periodEndUnixProp != null && periodEndUnixProp.GetValue(sub) is long unixTime)
+                        {
+                            ent.AccessExpiration = UnixTimeStampToDateTime(unixTime);
+                        }
+                    }
                     _entitlementService.AddOrUpdate(ent);
                 }
                 break;
@@ -116,5 +133,12 @@ public class StripeWebhookController : ControllerBase
             }
         }
         return Ok();
+    }
+
+    private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+    {
+        var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dateTime = dateTime.AddSeconds(unixTimeStamp).ToUniversalTime();
+        return dateTime;
     }
 }
