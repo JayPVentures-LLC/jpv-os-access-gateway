@@ -59,7 +59,15 @@ Visit http://localhost:8080 to access the application.
 
 1. Install the Fly CLI: `brew install flyctl` or see [Fly.io docs](https://fly.io/docs/hands-on/install-flyctl/)
 
-2. Create a `fly.toml` in the repository root:
+2. **Option A**: Use the included `fly.toml` (builds from Dockerfile):
+
+```bash
+fly auth login
+fly launch --no-deploy
+fly deploy
+```
+
+**Option B**: Deploy using the pre-built GHCR image. Create a `fly.toml`:
 
 ```toml
 app = "jpvos"
@@ -83,7 +91,7 @@ primary_region = "iad"
   path = "/health"
 ```
 
-3. Deploy:
+Then deploy:
 
 ```bash
 fly auth login
