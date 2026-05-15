@@ -2887,3 +2887,38 @@ nav a:hover {
     }
 }
 
+
+/* FINAL PARTNER ICON REPAIR */
+.partner-icon-shell,
+.partner-icon-wrap {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255,255,255,.04) !important;
+    border: 1px solid rgba(255,255,255,.08) !important;
+    overflow: hidden !important;
+}
+
+.partner-logo,
+.partner-icon {
+    display: block !important;
+    width: 30px !important;
+    height: 30px !important;
+    max-width: 34px !important;
+    max-height: 34px !important;
+    object-fit: contain !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    filter: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+.partner-card img[src=""],
+.partner-card img:not([src]) {
+    display: none !important;
+}
