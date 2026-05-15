@@ -1,24 +1,24 @@
 @inherits LayoutComponentBase
 
-<div class="site-shell">
-    <header class="site-header">
-        <a class="brand-lockup" href="/">
-            <span class="brand-glyph"></span>
-            <span>JPV-OS</span>
+<div class="jpv-app-shell">
+    <header class="jpv-nav">
+        <a class="jpv-nav-brand" href="/">
+            <span class="jpv-nav-mark">JPV-OS</span>
+            <span class="jpv-nav-subtitle">Access Gateway</span>
         </a>
 
-        <nav class="site-nav">
-            <NavLink href="/" Match="NavLinkMatch.All">Overview</NavLink>
-            <NavLink href="/jpv-os">JPV-OS</NavLink>
-            <NavLink href="/init">init</NavLink>
-            <NavLink href="/architecture">Architecture</NavLink>
-            <NavLink href="/partners">Partners</NavLink>
-            <NavLink href="/contact">Contact</NavLink>
+        <nav class="jpv-nav-links" aria-label="Primary navigation">
+            <a href="/" class="jpv-nav-link">JPV-OS</a>
+            <a href="/jaypventures-llc" class="jpv-nav-link">JayPVentures LLC</a>
+            <a href="/jaypventures" class="jpv-nav-link">jaypventures</a>
+            <a href="/jaypvlabs" class="jpv-nav-link">jaypVLabs</a>
+            <a href="/jpv-institute" class="jpv-nav-link">JPV Institute</a>
+            <a href="/partners" class="jpv-nav-link">Partners</a>
+            <a href="/access" class="jpv-nav-link jpv-nav-access">Access</a>
         </nav>
-
-        <a class="nav-cta" href="/contact">Access</a>
     </header>
 
-    @Body
+    <main class="jpv-main">
+        @Body
+    </main>
 </div>
-
