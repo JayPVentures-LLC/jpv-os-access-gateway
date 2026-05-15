@@ -74,9 +74,23 @@
 </div>
 
 @code {
+    [Inject] private HttpClient Http { get; set; } = default!;
     private async Task StartCheckout(string packageKey, string interval)
     {
-        // Call backend endpoint to create Stripe Checkout Session
-        // Example: await Http.PostAsJsonAsync("/api/checkout/create", new { packageKey, interval });
+        var response = await Http.PostAsJsonAsync("/api/checkout/create", new { packageKey, interval });
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<CheckoutResult>();
+            if (!string.IsNullOrEmpty(result?.url))
+            {
+                NavigationManager.NavigateTo(result.url, forceLoad: true);
+            }
+        }
+        else
+        {
+            // Optionally show error
+        }
     }
+
+    private class CheckoutResult { public string? url { get; set; } }
 }
