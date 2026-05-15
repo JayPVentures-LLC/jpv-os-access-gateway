@@ -579,6 +579,127 @@ h1 {
     text-decoration: none;
 }
 
+
+.reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+        opacity .8s ease,
+        transform .8s cubic-bezier(.22,1,.36,1);
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+header nav a {
+    position: relative;
+    overflow: hidden;
+}
+
+header nav a::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 10px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(
+        90deg,
+        rgba(99,229,255,.9),
+        rgba(255,79,216,.9)
+    );
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .25s ease;
+}
+
+header nav a:hover::after,
+header nav a.active::after {
+    transform: scaleX(1);
+}
+
+.actions a {
+    position: relative;
+    overflow: hidden;
+}
+
+.actions a::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            120deg,
+            transparent,
+            rgba(255,255,255,.16),
+            transparent
+        );
+    transform: translateX(-120%);
+    transition: transform .7s ease;
+}
+
+.actions a:hover::before {
+    transform: translateX(120%);
+}
+
+.card {
+    backdrop-filter: blur(18px);
+}
+
+.card:hover {
+    transform:
+        translateY(-8px)
+        scale(1.015);
+}
+
+.hero h1 {
+    text-wrap: balance;
+    line-height: .92;
+}
+
+.hero p {
+    text-wrap: pretty;
+}
+
+.section-panel {
+    scroll-margin-top: 120px;
+}
+
+@media (max-width: 768px) {
+
+    .hero h1 {
+        font-size: clamp(3rem, 13vw, 5rem);
+        line-height: .94;
+    }
+
+    .hero p {
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .actions a {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .status-rail {
+        width: 100%;
+        text-align: center;
+    }
+
+    .card {
+        min-height: auto;
+    }
+}
+
 footer {
     margin-top: 28px;
 
@@ -777,7 +898,38 @@ footer {
 
 </main>
 
+
+<script>
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, {
+    threshold: 0.14
+});
+
+document.querySelectorAll('.card, .section-panel')
+    .forEach(el => {
+        el.classList.add('reveal');
+        observer.observe(el);
+    });
+
+const navLinks = document.querySelectorAll('header nav a');
+
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        navLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+    });
+});
+
+</script>
+
 </body>
 </html>
+
 
 
