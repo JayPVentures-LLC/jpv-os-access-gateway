@@ -1,0 +1,11 @@
+<div class="init-shell">
+    <SiteHeader />
+    <main class="init-main">
+        @ChildContent
+    </main>
+    <SiteFooter />
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

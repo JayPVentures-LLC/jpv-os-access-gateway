@@ -1,0 +1,48 @@
+<section class="partner-category-system">
+    <div>
+        <p class="section-kicker">@Label</p>
+        <h3>@Title</h3>
+        <p>@Description</p>
+    </div>
+    <div class="partner-logo-grid">
+        @foreach (var partner in Partners)
+        {
+            <article class="partner-logo-card">
+                @if (!string.IsNullOrWhiteSpace(partner.Icon))
+                {
+                    <img src="@partner.Icon" alt="@partner.Name" />
+                }
+                else
+                {
+                    <span>@partner.Initials</span>
+                }
+                <strong>@partner.Name</strong>
+                <small>@partner.Role</small>
+            </article>
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Description { get; set; } = "";
+    [Parameter] public PartnerItem[] Partners { get; set; } = [];
+
+    public sealed record PartnerItem(string Name, string Role, string Icon = "")
+    {
+        public string Initials
+        {
+            get
+            {
+                var parts = Name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                return parts.Length switch
+                {
+                    0 => "",
+                    1 => parts[0][..1].ToUpperInvariant(),
+                    _ => $"{parts[0][0]}{parts[1][0]}".ToUpperInvariant()
+                };
+            }
+        }
+    }
+}

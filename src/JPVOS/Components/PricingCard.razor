@@ -1,0 +1,27 @@
+<article class="pricing-card">
+    <p class="card-eyebrow">@Eyebrow</p>
+    <h3>@Name</h3>
+    <div class="price-line">
+        <strong>@Price</strong>
+        <span>@Term</span>
+    </div>
+    <p>@Description</p>
+    <div class="feature-list">
+        @foreach (var feature in Features)
+        {
+            <span>@feature</span>
+        }
+    </div>
+    <a class="button primary" href="@Href">@Cta</a>
+</article>
+
+@code {
+    [Parameter] public string Eyebrow { get; set; } = "";
+    [Parameter] public string Name { get; set; } = "";
+    [Parameter] public string Price { get; set; } = "";
+    [Parameter] public string Term { get; set; } = "";
+    [Parameter] public string Description { get; set; } = "";
+    [Parameter] public string[] Features { get; set; } = [];
+    [Parameter] public string Href { get; set; } = "/checkout-not-configured";
+    [Parameter] public string Cta { get; set; } = "Get init";
+}

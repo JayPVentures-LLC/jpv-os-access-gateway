@@ -1,0 +1,39 @@
+<section class="hero-section">
+    <div class="hero-copy">
+        <div class="hero-logo">
+            <img src="@Logo" alt="@LogoAlt" />
+        </div>
+        <p class="section-kicker">@Kicker</p>
+        <h1>@Headline</h1>
+        <p class="hero-subheadline">@Subheadline</p>
+        <p class="hero-body">@Body</p>
+
+        <div class="hero-actions">
+            <a class="button primary" href="@PrimaryHref">@PrimaryCta</a>
+            <a class="button secondary" href="@SecondaryHref">@SecondaryCta</a>
+        </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+        <div class="interface-ring"></div>
+        <div class="interface-panel">
+            <span>Access</span>
+            <span>Ventures</span>
+            <span>Partners</span>
+            <span>Pricing</span>
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter] public string Logo { get; set; } = "/assets/init/init-hero.png";
+    [Parameter] public string LogoAlt { get; set; } = "init logo";
+    [Parameter] public string Kicker { get; set; } = "";
+    [Parameter] public string Headline { get; set; } = "";
+    [Parameter] public string Subheadline { get; set; } = "";
+    [Parameter] public string Body { get; set; } = "";
+    [Parameter] public string PrimaryCta { get; set; } = "Get init";
+    [Parameter] public string PrimaryHref { get; set; } = "/pricing";
+    [Parameter] public string SecondaryCta { get; set; } = "Explore Ecosystem";
+    [Parameter] public string SecondaryHref { get; set; } = "/ecosystem";
+}

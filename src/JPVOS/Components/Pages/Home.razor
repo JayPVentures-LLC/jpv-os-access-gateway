@@ -1,62 +1,92 @@
 @page "/"
-@page "/jpv-os"
+@page "/init"
 
-<section class="jpv-home jpv-section">
-    <div class="jpv-home-layout">
-        <div class="jpv-home-copy">
-            <div class="jpv-kicker">Infrastructure Operating System</div>
-            <h1 class="jpv-title">JPV-OS</h1>
-            <p class="jpv-lede">
-                JPV-OS aligns identity, infrastructure, governance, access, intelligence,
-                creator execution, research validation, and deployment readiness into one
-                coordinated operating architecture.
-            </p>
+<div class="page-stack">
+    <HeroSection
+        Logo="@AssetPaths.Init.Hero"
+        Kicker="Application Interface"
+        Headline="Welcome to the venture."
+        Subheadline="init is the application interface for the JPV-OS ecosystem."
+        Body="We built init to route access, launch ventures, coordinate infrastructure, and connect the full ecosystem through one operational surface."
+        PrimaryCta="Get init"
+        PrimaryHref="/pricing"
+        SecondaryCta="Explore Ecosystem"
+        SecondaryHref="/ecosystem" />
 
-            <div class="jpv-home-actions">
-                <a class="home-button primary" href="/access">Route Access</a>
-                <a class="home-button" href="/partners">View Operating Stack</a>
-                <a class="home-button" href="/ventures">View Ventures</a>
-            </div>
-        </div>
-
-        <div class="jpv-os-brand-media">
-            <img src="@AssetPaths.JpvOs.Brand" alt="JPV-OS brand system" />
-        </div>
-    </div>
-
-    <section class="jpv-home-map">
-        <div class="partner-section-label">Operating Layers</div>
-
-        <div class="system-layers">
-            <a href="/jaypventures-llc" class="system-layer">
-                <strong>JayPVentures LLC</strong>
-                <span>Enterprise Infrastructure</span>
-            </a>
-
-            <a href="/jaypventures" class="system-layer">
-                <strong>jaypventures</strong>
-                <span>Creator Ecosystem</span>
-            </a>
-
-            <a href="/jaypvlabs" class="system-layer">
-                <strong>jaypVLabs</strong>
-                <span>Validation Environment</span>
-            </a>
-
-            <a href="/jpv-institute" class="system-layer">
-                <strong>JPV Institute</strong>
-                <span>Research & Doctrine</span>
-            </a>
-
-            <a href="/partners" class="system-layer">
-                <strong>Partners</strong>
-                <span>Operating Stack</span>
-            </a>
-
-            <a href="/ventures" class="system-layer">
-                <strong>Ventures</strong>
-                <span>Packages & Pricing</span>
-            </a>
+    <section class="content-section">
+        <SectionHeader Kicker="Ecosystem Overview"
+                       Title="One operational surface for the venture ecosystem."
+                       Description="We use init to connect JPV-OS, jaypventures, JayPVentures LLC, access environments, pricing, and technology integrations without flattening their roles." />
+        <div class="grid-3">
+            <RouteTile Href="/ecosystem" Eyebrow="Architecture" Title="Ecosystem" Description="See how the application surface connects ventures, infrastructure, partners, access, and pricing." />
+            <RouteTile Href="/access" Eyebrow="Routing" Title="Access" Description="Move into member, partner, enterprise, developer, support, and admin environments." />
+            <RouteTile Href="/pricing" Eyebrow="Commercial" Title="Pricing" Description="Choose the package path that fits the next move in the ecosystem." />
         </div>
     </section>
-</section>
+
+    <section class="content-section">
+        <SectionHeader Kicker="Venture Pathways"
+                       Title="Launch, package, and grow through defined pathways."
+                       Description="init gives each venture path a clear place to land: creator systems, enterprise opportunities, products, launches, and ecosystem growth." />
+        <div class="grid-4">
+            <GlassCard Eyebrow="Launches" Title="Venture launches" Description="Plan public launch paths, campaigns, offers, and audience movement from one application surface." />
+            <GlassCard Eyebrow="Products" Title="Digital products" Description="Package content, tools, memberships, and venture offers into clear commercial pathways." />
+            <GlassCard Eyebrow="Creator systems" Title="Creator access" Description="Route creators into community, launch support, memberships, and product development." />
+            <GlassCard Eyebrow="Enterprise" Title="Infrastructure opportunities" Description="Connect operational architecture, identity, security, deployment, and implementation work." />
+        </div>
+    </section>
+
+    <section class="content-section">
+        <SectionHeader Kicker="Partner Ecosystem Preview"
+                       Title="Technology integrations that support the environment."
+                       Description="Partners are presented by ecosystem role: infrastructure, development, payments, hardware, research, productivity, and media production." />
+        <PartnerGrid>
+            <PartnerCategory Label="Infrastructure" Title="Cloud and identity" Description="The infrastructure layer for identity, cloud, edge, enterprise systems, and connectivity."
+                Partners="@(new[]
+                {
+                    new PartnerCategory.PartnerItem("Microsoft", "Platform", "/assets/partners/microsoft.svg"),
+                    new PartnerCategory.PartnerItem("Azure", "Cloud", "/assets/partners/azure.svg"),
+                    new PartnerCategory.PartnerItem("Cloudflare", "Edge", "/assets/partners/cloudflare.svg")
+                })" />
+            <PartnerCategory Label="Development" Title="Engineering and AI" Description="Development workflow, code systems, runtime tooling, automation, and AI assistance."
+                Partners="@(new[]
+                {
+                    new PartnerCategory.PartnerItem("GitHub", "Source", "/assets/partners/github.svg"),
+                    new PartnerCategory.PartnerItem("OpenAI", "AI", "/assets/partners/openai.svg"),
+                    new PartnerCategory.PartnerItem("Node.js", "Runtime", "/assets/partners/nodejs.svg")
+                })" />
+        </PartnerGrid>
+        <div class="hero-actions">
+            <a class="button secondary" href="/partners">View Partners</a>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <SectionHeader Kicker="Access Environments"
+                       Title="Route into the right environment."
+                       Description="We designed init to make ecosystem entry clear for members, partners, enterprise teams, admins, developers, and support requests." />
+        <div class="access-grid">
+            <AccessCard Environment="Member" Title="Member Access" Description="Community and member routing for updates, resources, and ecosystem entry." Href="/access" />
+            <AccessCard Environment="Partner" Title="Partner Portal" Description="Partner intake and technology ecosystem routing for collaboration review." Href="/partners" />
+            <AccessCard Environment="Enterprise" Title="Enterprise Console" Description="Infrastructure, governance, identity, security, deployment, and operations pathways." Href="/jaypventures-llc" />
+        </div>
+    </section>
+
+    <section class="content-section">
+        <SectionHeader Kicker="Pricing Preview"
+                       Title="Checkout-ready package paths."
+                       Description="Pricing keeps access, creator launch, partner, enterprise, and custom implementation offers clear." />
+        <div class="pricing-grid">
+            <PricingCard Eyebrow="Member" Name="Member Access" Price="$25" Term="monthly" Description="Entry path for community access and ecosystem updates." Features="@(new[] { "Member routing", "Resource path", "Updates" })" />
+            <PricingCard Eyebrow="Creator" Name="Creator Launch" Price="$297" Term="one-time" Description="Launch direction for creator offers, content, and audience pathways." Features="@(new[] { "Launch profile", "Offer outline", "Access setup" })" />
+            <PricingCard Eyebrow="Enterprise" Name="Enterprise Infrastructure" Price="$750" Term="review" Description="Infrastructure review for architecture, identity, security, and operational readiness." Features="@(new[] { "Architecture", "Identity", "Deployment" })" />
+        </div>
+    </section>
+
+    <CTASection Title="Get init."
+                Description="Start with the application interface we built to connect access, ventures, infrastructure, partners, and pricing."
+                PrimaryCta="Get init"
+                PrimaryHref="/pricing"
+                SecondaryCta="Explore Ecosystem"
+                SecondaryHref="/ecosystem" />
+</div>

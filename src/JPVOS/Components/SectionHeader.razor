@@ -1,0 +1,11 @@
+<div class="section-header">
+    <p class="section-kicker">@Kicker</p>
+    <h2>@Title</h2>
+    <p>@Description</p>
+</div>
+
+@code {
+    [Parameter] public string Kicker { get; set; } = "";
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Description { get; set; } = "";
+}

@@ -1,26 +1,5 @@
 @inherits LayoutComponentBase
 
-<div class="jpv-app-shell">
-    <header class="jpv-nav">
-        <a class="jpv-nav-brand" href="/">
-            <span class="jpv-nav-mark">JPV-OS</span>
-            <span class="jpv-nav-subtitle">Access Gateway</span>
-        </a>
-
-        <nav class="jpv-nav-links" aria-label="Primary navigation">
-            <a href="/" class="jpv-nav-link">JPV-OS</a>
-            <a href="/jaypventures-llc" class="jpv-nav-link">JayPVentures LLC</a>
-            <a href="/jaypventures" class="jpv-nav-link">jaypventures</a>
-            <a href="/jaypvlabs" class="jpv-nav-link">jaypVLabs</a>
-            <a href="/jpv-institute" class="jpv-nav-link">JPV Institute</a>
-            <a href="/partners" class="jpv-nav-link">Partners</a>
-            <a href="/ventures" class="jpv-nav-link">Ventures</a>
-            <a href="/access" class="jpv-nav-link jpv-nav-access">Access</a>
-        </nav>
-    </header>
-
-    <main class="jpv-main">
-        @Body
-    </main>
-</div>
-
+<AppShell>
+    @Body
+</AppShell>

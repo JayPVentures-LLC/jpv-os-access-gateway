@@ -1,0 +1,19 @@
+<section class="cta-section">
+    <p class="section-kicker">@Kicker</p>
+    <h2>@Title</h2>
+    <p>@Description</p>
+    <div class="hero-actions">
+        <a class="button primary" href="@PrimaryHref">@PrimaryCta</a>
+        <a class="button secondary" href="@SecondaryHref">@SecondaryCta</a>
+    </div>
+</section>
+
+@code {
+    [Parameter] public string Kicker { get; set; } = "init";
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Description { get; set; } = "";
+    [Parameter] public string PrimaryCta { get; set; } = "Get init";
+    [Parameter] public string PrimaryHref { get; set; } = "/pricing";
+    [Parameter] public string SecondaryCta { get; set; } = "Explore Ecosystem";
+    [Parameter] public string SecondaryHref { get; set; } = "/ecosystem";
+}

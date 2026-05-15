@@ -1,0 +1,12 @@
+<a class="route-tile" href="@Href">
+    <span>@Eyebrow</span>
+    <strong>@Title</strong>
+    <p>@Description</p>
+</a>
+
+@code {
+    [Parameter] public string Href { get; set; } = "/";
+    [Parameter] public string Eyebrow { get; set; } = "";
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Description { get; set; } = "";
+}

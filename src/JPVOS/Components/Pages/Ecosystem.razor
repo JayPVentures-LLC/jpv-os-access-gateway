@@ -1,19 +1,29 @@
-@* legacy route moved to /partners *@<main class="brand-page">
-    <section class="brand-hero">
-        <div class="brand-copy">
-            <p class="brand-kicker">JPV Ecosystem</p>
-            <h1>Separate brands. Clear roles. One standard.</h1>
-            <p>A routed overview of each ecosystem layer without mixing brand imagery.</p>
-        </div>
+@page "/ecosystem"
 
-        <div class="brand-hero-art">
-            <div class="missing-brand-art">Missing JPV Ecosystem image</div>
+<div class="page-stack">
+    <section class="content-section">
+        <SectionHeader Kicker="Ecosystem"
+                       Title="How init connects the JPV-OS environment."
+                       Description="init is the application layer where JPV-OS, jaypventures, JayPVentures LLC, partners, access, and pricing connect into one routeable ecosystem." />
+        <div class="grid-3">
+            <RouteTile Href="/" Eyebrow="Application" Title="init" Description="The commercial launch surface and access interface for the broader ecosystem." />
+            <RouteTile Href="/ventures" Eyebrow="Growth" Title="Ventures" Description="Launches, products, creator systems, enterprise pathways, and ecosystem expansion." />
+            <RouteTile Href="/partners" Eyebrow="Integrations" Title="Partners" Description="Technology ecosystem integrations grouped by infrastructure, platform, operations, development, and research role." />
+            <RouteTile Href="/jaypventures" Eyebrow="Creator" Title="jaypventures" Description="Community, memberships, creator access, digital products, and public launch systems." />
+            <RouteTile Href="/jaypventures-llc" Eyebrow="Enterprise" Title="JayPVentures LLC" Description="Architecture, governance, identity, security, deployment, and operations." />
+            <RouteTile Href="/pricing" Eyebrow="Commercial" Title="Pricing" Description="Package paths for member access, creator launches, partners, enterprise infrastructure, and custom implementation." />
         </div>
     </section>
 
-    <section class="brand-gallery">
-        <article></article>
-        <article></article>
+    <section class="content-section">
+        <SectionHeader Kicker="Operating Model"
+                       Title="First, we route. Then we build."
+                       Description="We use init to keep the ecosystem understandable: people enter through access, choose a venture or package path, and move into the environment that fits the work." />
+        <div class="grid-4">
+            <GlassCard Eyebrow="Identity" Title="Access layer" Description="Member, partner, enterprise, admin, developer, and support routes keep entry organized." />
+            <GlassCard Eyebrow="Launch" Title="Venture layer" Description="Launches, digital products, creator systems, and enterprise opportunities become visible and packageable." />
+            <GlassCard Eyebrow="Infrastructure" Title="Operating layer" Description="Architecture, governance, security, identity, deployment, and operations support the work behind the surface." />
+            <GlassCard Eyebrow="Commercial" Title="Pricing layer" Description="Checkout-ready cards make offers legible without inventing fake activity or dashboard metrics." />
+        </div>
     </section>
-</main>
-
+</div>
