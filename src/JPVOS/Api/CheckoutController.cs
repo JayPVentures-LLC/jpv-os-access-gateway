@@ -29,15 +29,24 @@ public class CheckoutController : ControllerBase
             return BadRequest($"Checkout is not configured yet. Missing server environment variable: {string.Join(", ", missing)}");
         }
 
-        var packageKey = req.PackageKey?.Trim().ToLowerInvariant();
-        string? priceId = packageKey switch
+        var packageKey = req.PackageKey?.Trim();
+        string? priceId = null;
+        if (string.Equals(packageKey, "community", StringComparison.OrdinalIgnoreCase))
         {
-            "community" => _config["STRIPE_PRICE_ID_COMMUNITY"],
-            "vip" => _config["STRIPE_PRICE_ID_VIP"],
-            "enterprise_infrastructure_annual" => _config["STRIPE_PRICE_ENTERPRISE_ANNUAL"],
-            "custom_implementation_one_time" => _config["STRIPE_PRICE_CUSTOM_IMPLEMENTATION"],
-            _ => null
-        };
+            priceId = _config["STRIPE_PRICE_ID_COMMUNITY"];
+        }
+        else if (string.Equals(packageKey, "vip", StringComparison.OrdinalIgnoreCase))
+        {
+            priceId = _config["STRIPE_PRICE_ID_VIP"];
+        }
+        else if (string.Equals(packageKey, "enterprise_infrastructure_annual", StringComparison.OrdinalIgnoreCase))
+        {
+            priceId = _config["STRIPE_PRICE_ENTERPRISE_ANNUAL"];
+        }
+        else if (string.Equals(packageKey, "custom_implementation_one_time", StringComparison.OrdinalIgnoreCase))
+        {
+            priceId = _config["STRIPE_PRICE_CUSTOM_IMPLEMENTATION"];
+        }
         if (string.IsNullOrEmpty(priceId))
         {
             return BadRequest("Invalid or unavailable package key.");
