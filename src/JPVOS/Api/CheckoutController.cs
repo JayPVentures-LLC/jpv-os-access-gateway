@@ -5,7 +5,7 @@ using Stripe.Checkout;
 namespace JPVOS.Api;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/checkout")]
 public class CheckoutController : ControllerBase
 {
     private readonly IConfiguration _config;
@@ -31,15 +31,27 @@ public class CheckoutController : ControllerBase
             return BadRequest($"Checkout is not configured yet. Missing server environment variable: {string.Join(", ", missing)}");
         }
 
-        string priceId = req.PackageKey switch
+        var packageKey = req.PackageKey?.Trim();
+        string? priceId = null;
+        if (string.Equals(packageKey, "community", StringComparison.OrdinalIgnoreCase))
         {
-            "community" => _config["STRIPE_PRICE_ID_COMMUNITY"],
-            "vip" => _config["STRIPE_PRICE_ID_VIP"],
-            _ => null
-        };
+            priceId = _config["STRIPE_PRICE_ID_COMMUNITY"];
+        }
+        else if (string.Equals(packageKey, "vip", StringComparison.OrdinalIgnoreCase))
+        {
+            priceId = _config["STRIPE_PRICE_ID_VIP"];
+        }
+        else if (string.Equals(packageKey, "enterprise_infrastructure_annual", StringComparison.OrdinalIgnoreCase))
+        {
+            priceId = _config["STRIPE_PRICE_ENTERPRISE_ANNUAL"];
+        }
+        else if (string.Equals(packageKey, "custom_implementation_one_time", StringComparison.OrdinalIgnoreCase))
+        {
+            priceId = _config["STRIPE_PRICE_CUSTOM_IMPLEMENTATION"];
+        }
         if (string.IsNullOrEmpty(priceId))
         {
-            return BadRequest("Invalid or unavailable package key. Only Community and VIP are enabled for checkout.");
+            return BadRequest("Invalid or unavailable package key.");
         }
 
         var domain = Request.Scheme + "://" + Request.Host.Value;
@@ -70,7 +82,7 @@ public class CheckoutController : ControllerBase
 
 public class CheckoutRequest
 {
-    public required string PackageKey { get; set; }
+    public string PackageKey { get; set; } = string.Empty;
     public string? SuccessUrl { get; set; }
     public string? CancelUrl { get; set; }
 }

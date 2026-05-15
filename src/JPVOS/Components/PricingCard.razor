@@ -1,10 +1,9 @@
-
 <article class="pricing-card">
     <p class="card-eyebrow">@Eyebrow</p>
     <h3>@Name</h3>
     <div class="price-line">
-        <strong>@(BillingInterval == "annual" ? AnnualPrice : MonthlyPrice)</strong>
-        <span>@(BillingInterval == "annual" ? "annual" : "monthly")</span>
+        <strong>@Price</strong>
+        <span>@Term</span>
     </div>
     <p>@Description</p>
     <div class="feature-list">
@@ -19,12 +18,10 @@
 @code {
     [Parameter] public string Eyebrow { get; set; } = "";
     [Parameter] public string Name { get; set; } = "";
+    [Parameter] public string Price { get; set; } = "";
+    [Parameter] public string Term { get; set; } = "";
     [Parameter] public string Description { get; set; } = "";
     [Parameter] public string[] Features { get; set; } = [];
-    [Parameter] public int MonthlyPrice { get; set; }
-    [Parameter] public int AnnualPrice { get; set; }
-    [Parameter] public string BillingInterval { get; set; } = "monthly";
-    [Parameter] public string PackageKey { get; set; } = "";
     [Parameter] public bool IsDisabled { get; set; } = false;
     [Parameter] public Func<Task>? OnCheckout { get; set; }
     [Parameter] public string Cta { get; set; } = "Get init";

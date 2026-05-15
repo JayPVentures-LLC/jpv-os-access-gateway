@@ -131,16 +131,9 @@ public class StripeWebhookController : ControllerBase
         prop = sub.GetType().GetProperty("CurrentPeriodEndUnix");
         if (prop != null && prop.GetValue(sub) is long unix)
         {
-            return UnixTimeStampToDateTime(unix);
+            return DateTimeOffset.FromUnixTimeSeconds(unix).UtcDateTime;
         }
 
         return null;
-    }
-
-    private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
-    {
-        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        dateTime = dateTime.AddSeconds(unixTimeStamp).ToUniversalTime();
-        return dateTime;
     }
 }
