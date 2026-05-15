@@ -669,8 +669,7 @@ p {
     .grid-3,
     .grid-4,
     .pricing-grid,
-    .access-grid,
-    .legacy-interface-panel {
+    .access-grid {
         grid-template-columns: 1fr;
     }
 
