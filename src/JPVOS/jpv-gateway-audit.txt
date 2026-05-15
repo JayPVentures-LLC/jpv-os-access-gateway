@@ -1,0 +1,64 @@
+JPV-OS ACCESS GATEWAY AUDIT
+Generated: 05/14/2026 22:03:32
+
+=== RAZOR ROUTES ===
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\Architecture.razor:1 @page "/architecture"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\AssetPreview.razor:1 @page "/asset-preview"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\Contact.razor:1 @page "/contact"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\Ecosystem.razor:1 @page "/ecosystem"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\Error.razor:1 @page "/Error"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\Init.razor:1 @page "/init"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\Jaypventures.razor:1 @page "/jaypventures"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\JayPVenturesLLC.razor:1 @page "/jaypventures-llc"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\JaypVLabs.razor:1 @page "/jaypvlabs"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\JPVInstitute.razor:1 @page "/jpv-institute"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\JPVOSPage.razor:1 @page "/jpv-os"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\AccessRouting.razor:1 @page "/access-routing"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\Index.razor:3 @page "/"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\Init.razor:1 @page "/init"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\JayPVentures.razor:3 @page "/jaypventures"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\JayPVenturesLLC.razor:3 @page "/jaypventures-llc"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\JayPVLabs.razor:3 @page "/jaypvlabs"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\JPVInstitute.razor:3 @page "/jpv-institute"
+
+=== BRAND IMAGE FILES ===
+
+
+=== CSS REFERENCES ===
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\App.razor:1 <link rel="stylesheet" href="app.css?v=jpv-final" />
+
+=== HARDCODED IMAGE PATHS ===
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\Home.razor:11 <img src="/assets/jpv-os/3ab9453f-2e4e-46a5-a118-b24134dd5f65.png" alt="JPV-OS visual" />
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\Init.razor:12 <img src="/assets/brand/jpv-os/3ab9453f-2e4e-46a5-a118-b24134dd5f65.png" alt="init visual" />
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\Jaypventures.razor:12 <div class="missing-brand-art">Missing jaypventures image<br /><small>Expected folder: /assets/brand/jaypventures</small></div>
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\JayPVenturesLLC.razor:12 <div class="missing-brand-art">Missing JayPVentures LLC image<br /><small>Expected folder: /assets/brand/jaypventures-llc</small></div>
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\JaypVLabs.razor:12 <div class="missing-brand-art">Missing jaypVLabs image<br /><small>Expected folder: /assets/brand/jaypvlabs</small></div>
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Components\Pages\JPVOSPage.razor:12 <img src="/assets/jpv-os/3ab9453f-2e4e-46a5-a118-b24134dd5f65.png" alt="JPV-OS visual" />
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\Index.razor:21 <BrandCard href="/jaypventures-llc" label="ENTERPRISE" title="JayPVentures LLC" body="Enterprise infrastructure, strategic alignment, operational architecture, and governance integrity." image="/brand/jaypventures-llc/hero.jpg" />
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\Index.razor:22 <BrandCard href="/jpv-institute" label="RESEARCH" title="JPV Institute" body="Research doctrine, ethics, education, standards, and systems literacy." image="/brand/jpv-institute/hero.jpg" />
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\Index.razor:23 <BrandCard href="/jaypvlabs" label="VALIDATION" title="jaypVLabs" body="Prototype review, AI behavior testing, implementation validation, and readiness before scale." image="/brand/jaypvlabs/hero.jpg" />
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\Index.razor:24 <BrandCard href="/jaypventures" label="CREATOR ECOSYSTEM" title="jaypventures" body="Venture launches, creator systems, public engagement, and market-facing experiences." image="/brand/jaypventures/hero.jpg" />
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\JayPVentures.razor:7 Image="/brand/jaypventures/hero.jpg"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\JayPVenturesLLC.razor:7 Image="/brand/jaypventures-llc/hero.jpg"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\JayPVLabs.razor:7 Image="/brand/jaypvlabs/hero.jpg"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Pages\JPVInstitute.razor:7 Image="/brand/jpv-institute/hero.jpg"
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:9 public const string Hero = Root + "/init/init-hero.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:14 public const string Hero = Root + "/jpv-os/jpv-os-hero.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:15 public const string Structure = Root + "/jpv-os/jpv-structureimage.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:20 public const string Hero = Root + "/jaypventures/jaypventures-hero.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:21 public const string CharacterStyles = Root + "/jaypventures/jaypventures-characterstyles1.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:22 public const string Creative01 = Root + "/jaypventures/jaypventures-creative1.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:23 public const string Creative02 = Root + "/jaypventures/jaypventures-creative2.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:24 public const string Creative03 = Root + "/jaypventures/jaypventures-creative3.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:25 public const string Livestream01 = Root + "/jaypventures/jaypventures-livestream1.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:26 public const string LivestreamAgenda = Root + "/jaypventures/jaypventures-livestreamagenda.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:27 public const string StickerPack01 = Root + "/jaypventures/jaypventures-stickerpack1.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:28 public const string StickerPack02 = Root + "/jaypventures/jaypventures-stickerpack2.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:29 public const string StickerPack03 = Root + "/jaypventures/jaypventures-stickerpack3.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:34 public const string Hero = Root + "/jaypventures-llc/jaypventures-llc-hero.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:35 public const string Image01 = Root + "/jaypventures-llc/jaypventures-llc-image-01.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:36 public const string Image02 = Root + "/jaypventures-llc/jaypventures-llc-image-02.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:37 public const string Image03 = Root + "/jaypventures-llc/jaypventures-llc-image-03.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:42 public const string Hero = Root + "/jaypVLabs/jaypvlabs-hero.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:43 public const string InstituteHero = Root + "/jaypVLabs/jpv-institute-hero.png";
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\Services\AssetPaths.cs:48 public const string EcosystemBoard = Root + "/reference/allbrands-logos.png";

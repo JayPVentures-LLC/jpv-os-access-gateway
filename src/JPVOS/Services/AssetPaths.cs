@@ -2,50 +2,48 @@ namespace JPVOS.Services;
 
 public static class AssetPaths
 {
-    public const string Root = "/assets";
-
-    public static class Init
-    {
-        public const string Hero = Root + "/init/init-hero.png";
-    }
-
     public static class JpvOs
     {
-        public const string Hero = Root + "/jpv-os/jpv-os-hero.png";
-        public const string Structure = Root + "/jpv-os/jpv-structureimage.png";
-    }
-
-    public static class JayPVentures
-    {
-        public const string Hero = Root + "/jaypventures/jaypventures-hero.png";
-        public const string CharacterStyles = Root + "/jaypventures/jaypventures-characterstyles1.png";
-        public const string Creative01 = Root + "/jaypventures/jaypventures-creative1.png";
-        public const string Creative02 = Root + "/jaypventures/jaypventures-creative2.png";
-        public const string Creative03 = Root + "/jaypventures/jaypventures-creative3.png";
-        public const string Livestream01 = Root + "/jaypventures/jaypventures-livestream1.png";
-        public const string LivestreamAgenda = Root + "/jaypventures/jaypventures-livestreamagenda.png";
-        public const string StickerPack01 = Root + "/jaypventures/jaypventures-stickerpack1.png";
-        public const string StickerPack02 = Root + "/jaypventures/jaypventures-stickerpack2.png";
-        public const string StickerPack03 = Root + "/jaypventures/jaypventures-stickerpack3.png";
+        public const string Hero = "/assets/jpv-os/jpv-os-hero.png";
+        public const string Core = "/assets/jpv-os/jpv-os-core.png";
+        public const string Topology = "/assets/jpv-os/jpv-os-topology.png";
     }
 
     public static class JayPVenturesLlc
     {
-        public const string Hero = Root + "/jaypventures-llc/jaypventures-llc-hero.png";
-        public const string Image01 = Root + "/jaypventures-llc/jaypventures-llc-image-01.png";
-        public const string Image02 = Root + "/jaypventures-llc/jaypventures-llc-image-02.png";
-        public const string Image03 = Root + "/jaypventures-llc/jaypventures-llc-image-03.png";
+        public const string Hero = "/assets/jaypventures-llc/jaypventures-llc-hero.png";
+        public const string Image01 = "/assets/jaypventures-llc/jaypventures-llc-image-01.png";
+        public const string Image02 = "/assets/jaypventures-llc/jaypventures-llc-image-02.png";
+        public const string Image03 = "/assets/jaypventures-llc/jaypventures-llc-image-03.png";
     }
 
-    public static class JayPVLabs
+    public static class Jaypventures
     {
-        public const string Hero = Root + "/jaypVLabs/jaypvlabs-hero.png";
-        public const string InstituteHero = Root + "/jaypVLabs/jpv-institute-hero.png";
+        public const string Hero = "/assets/jaypventures/jaypventures-hero.png";
+        public const string Image01 = "/assets/jaypventures/jaypventures-image-01.png";
     }
 
-    public static class References
-{
-    public const string EcosystemBoard = Root + "/reference/allbrands-logos.png";
-}
-}
+    public static class JaypVLabs
+    {
+        public const string Hero = "/assets/jaypvlabs/jaypvlabs-hero.png";
+        public const string Image01 = "/assets/jaypvlabs/jaypvlabs-image-01.png";
+    }
 
+    public static class JpvInstitute
+    {
+        public const string Hero = "/assets/jpv-institute/jpv-institute-hero.png";
+        public const string Image01 = "/assets/jpv-institute/jpv-institute-image-01.png";
+    }
+
+    public static class Textures
+    {
+        public const string Noise = "/assets/textures/noise.png";
+        public const string Grid = "/assets/textures/grid.png";
+        public const string Glass = "/assets/textures/glass.png";
+    }
+
+    public static class OpenGraph
+    {
+        public const string Default = "/assets/opengraph/jpv-os-og.png";
+    }
+}

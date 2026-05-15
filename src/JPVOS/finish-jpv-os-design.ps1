@@ -1,0 +1,203 @@
+Write-Host ""
+Write-Host "JPV-OS Final Enterprise Polish" -ForegroundColor Cyan
+Write-Host ""
+
+$Root = Get-Location
+
+$CssPath = Join-Path $Root "wwwroot\css\app.css"
+$JsPath = Join-Path $Root "wwwroot\js\jpv-os-motion.js"
+$HomePath = Join-Path $Root "Components\Pages\Home.razor"
+
+New-Item -ItemType Directory -Force -Path (Join-Path $Root "wwwroot\js") | Out-Null
+
+$Css = @"
+:root{
+ --jpv-black:#05070B;
+ --jpv-cyan:#00D4FF;
+ --jpv-purple:#7B30FF;
+ --jpv-magenta:#FF2D8A;
+ --jpv-text:#F5F7FA;
+}
+
+body{
+ margin:0;
+ background:
+ radial-gradient(circle at top left, rgba(0,212,255,.12), transparent 30%),
+ radial-gradient(circle at top right, rgba(255,45,138,.12), transparent 30%),
+ linear-gradient(135deg,#05070B,#0A1020,#140014);
+ color:var(--jpv-text);
+ font-family:Inter,Segoe UI,sans-serif;
+ overflow-x:hidden;
+}
+
+.jpv-shell{
+ width:min(1800px,calc(100vw - 48px));
+ margin:0 auto;
+}
+
+.jpv-section{
+ margin:32px 0;
+ padding:64px;
+ border-radius:28px;
+ background:rgba(14,18,30,.82);
+ border:1px solid rgba(255,255,255,.08);
+ backdrop-filter:blur(20px);
+}
+
+.jpv-title{
+ font-size:clamp(64px,8vw,140px);
+ line-height:.9;
+ font-weight:900;
+ letter-spacing:-.06em;
+ margin:0;
+}
+
+.jpv-lede{
+ font-size:clamp(18px,1.5vw,26px);
+ line-height:1.7;
+ color:#B8C2D9;
+ max-width:900px;
+ margin-top:32px;
+}
+
+.jpv-grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:48px;
+ align-items:center;
+}
+
+.jpv-card{
+ background:rgba(255,255,255,.03);
+ border:1px solid rgba(255,255,255,.08);
+ border-radius:24px;
+ overflow:hidden;
+ transition:all .4s ease;
+}
+
+.jpv-card:hover{
+ transform:translateY(-6px);
+ border-color:rgba(0,212,255,.4);
+ box-shadow:0 0 40px rgba(0,212,255,.12);
+}
+
+.jpv-card img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ min-height:620px;
+ display:block;
+}
+
+.jpv-content{
+ padding:42px;
+}
+
+.jpv-kicker{
+ color:var(--jpv-cyan);
+ text-transform:uppercase;
+ letter-spacing:.4em;
+ font-size:13px;
+ font-weight:900;
+ margin-bottom:20px;
+}
+
+@media(max-width:1100px){
+ .jpv-grid{
+  grid-template-columns:1fr;
+ }
+
+ .jpv-section{
+  padding:28px;
+ }
+
+ .jpv-title{
+  font-size:clamp(48px,14vw,84px);
+ }
+}
+"@
+
+Set-Content $CssPath $Css -Encoding UTF8
+
+$Js = @"
+(() => {
+ const cards = document.querySelectorAll('.jpv-card');
+
+ cards.forEach(card => {
+   card.addEventListener('mousemove', e => {
+     const rect = card.getBoundingClientRect();
+     const x = e.clientX - rect.left;
+     const y = e.clientY - rect.top;
+
+     card.style.transform =
+      'rotateX(' + (-(y - rect.height/2)/40) + 'deg) rotateY(' + ((x - rect.width/2)/40) + 'deg) translateY(-6px)';
+   });
+
+   card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+   });
+ });
+})();
+"@
+
+Set-Content $JsPath $Js -Encoding UTF8
+
+$HomePage = @"
+@page "/"
+
+<div class="jpv-shell">
+
+<section class="jpv-section">
+
+<div class="jpv-grid">
+
+<div class="jpv-card">
+<img src="/assets/jpv-os/jpv-os-hero.png" alt="JPV-OS Hero" />
+</div>
+
+<div class="jpv-content">
+
+<div class="jpv-kicker">
+Infrastructure Operating System
+</div>
+
+<h1 class="jpv-title">
+JPV-OS
+</h1>
+
+<p class="jpv-lede">
+Enterprise infrastructure, governance orchestration,
+creator systems, deployment readiness,
+identity routing, operational intelligence,
+and ecosystem architecture.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+"@
+
+Set-Content $HomePath $HomePage -Encoding UTF8
+
+Write-Host ""
+Write-Host "Running build..." -ForegroundColor Cyan
+
+dotnet build
+
+Write-Host ""
+Write-Host "Auto-saving..." -ForegroundColor Cyan
+
+git add .
+
+git commit -m "feat: finalize JPV-OS cinematic enterprise polish"
+
+Write-Host ""
+Write-Host "COMPLETE." -ForegroundColor Green
+Write-Host ""
+Write-Host "Run:"
+Write-Host "dotnet run --no-launch-profile --urls http://localhost:5111"
+Write-Host ""

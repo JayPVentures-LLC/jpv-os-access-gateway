@@ -1,0 +1,45 @@
+<section class="brand-page">
+    <div class="brand-page-image">
+        <img src="@Image" alt="@Title" loading="lazy" />
+    </div>
+
+    <div class="brand-page-content">
+        <div class="eyebrow">@Label</div>
+        <h1>@Title</h1>
+        <p class="hero-copy">@Body</p>
+
+        <div class="detail-grid">
+            @foreach (var point in PointItems)
+            {
+                <div class="detail-card">
+                    <span>@point.Number</span>
+                    <strong>@point.Title</strong>
+                    <p>@point.Text</p>
+                </div>
+            }
+        </div>
+
+        <div class="hero-actions">
+            <NavLink class="primary-btn" href="/init">Access Init</NavLink>
+            <NavLink class="ghost-btn" href="/access-routing">Route Request</NavLink>
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Image { get; set; } = "";
+    [Parameter] public string Body { get; set; } = "";
+    [Parameter] public string Points { get; set; } = "";
+
+    private IEnumerable<(string Number, string Title, string Text)> PointItems =>
+        Points.Split('|', StringSplitOptions.RemoveEmptyEntries)
+              .Select((raw, index) =>
+              {
+                  var parts = raw.Split("::", StringSplitOptions.None);
+                  var title = parts.ElementAtOrDefault(0) ?? "";
+                  var text = parts.ElementAtOrDefault(1) ?? "";
+                  return (((index + 1).ToString("00")), title, text);
+              });
+}

@@ -1,0 +1,66 @@
+@page "/partners"
+
+<PageTitle>JPV-OS Partners</PageTitle>
+
+<section class="hero-shell compact">
+    <div class="eyebrow">PARTNER LAYER</div>
+    <h1>Built with an ecosystem<br />of trusted platforms.</h1>
+    <p class="hero-copy">
+        JPV-OS is assembled through a disciplined operating stack across identity, cloud, development,
+        payments, access, communications, creative tooling, research, deployment, and operational infrastructure.
+    </p>
+
+    <div class="hero-actions">
+        <NavLink class="primary-btn" href="/init">Access Init</NavLink>
+        <NavLink class="ghost-btn" href="/access-routing">Route Request</NavLink>
+    </div>
+</section>
+
+<section class="partner-grid">
+    @foreach (var partner in PartnerItems)
+    {
+        <article class="partner-card">
+            <img class="partner-logo" src="@partner.Icon" alt="@partner.Name logo" loading="lazy" />
+            <span>@partner.Layer</span>
+            <h2>@partner.Name</h2>
+            <p>@partner.Role</p>
+        </article>
+    }
+</section>
+
+@code {
+    private readonly Partner[] PartnerItems =
+    [
+        new("Microsoft", "Enterprise platform", "Productivity, identity-adjacent operations, workstation environment, and organizational infrastructure.", "/assets/partners/microsoft.svg"),
+        new("Microsoft Entra ID", "Identity security", "Authentication, MFA, conditional access, and identity governance.", "/assets/partners/entra-id.svg"),
+        new("Azure", "Cloud infrastructure", "Application hosting, infrastructure services, and deployment pathways.", "/assets/partners/azure.svg"),
+        new("GitHub", "Development governance", "Repositories, pull requests, CI/CD, security workflows, and versioned execution.", "/assets/partners/github.svg"),
+        new("Cloudflare", "Edge delivery", "Pages, Workers, DNS, edge delivery, routing, and public web infrastructure.", "/assets/partners/cloudflare.svg"),
+        new("OpenAI", "Intelligence systems", "AI-assisted design, reasoning, automation, and intelligence-layer development.", "/assets/partners/openai.svg"),
+        new("Stripe", "Payments", "Subscriptions, payments, monetization paths, and entitlement-adjacent workflows.", "/assets/partners/stripe.svg"),
+        new("Discord", "Community access", "Community routing, member environments, and creator-facing engagement channels.", "/assets/partners/discord.svg"),
+        new("Wix", "Web presence", "Brand surfaces, site publishing, and public-facing web experiences.", "/assets/partners/wix.svg"),
+        new("Google Workspace", "Operations", "Email, calendar, documents, collaboration, and operational coordination.", "/assets/partners/google-workspace.svg"),
+        new("Apple / iCloud", "Creative + device layer", "Creator identity, device workflows, files, and production ecosystem support.", "/assets/partners/apple-icloud.svg"),
+        new("HP", "Hardware", "Local workstation environment and production hardware foundation.", "/assets/partners/hp.svg"),
+        new("Intel", "Compute platform", "Processor, graphics, and local compute foundation with vendor-boundary discipline.", "/assets/partners/intel.svg"),
+        new("IBM", "Enterprise reference", "Enterprise systems thinking, infrastructure precedent, and operational maturity reference.", "/assets/partners/ibm.svg"),
+        new("HashiCorp", "Infrastructure patterns", "Infrastructure automation, secrets, provisioning, and systems workflow reference.", "/assets/partners/hashicorp.svg"),
+        new("Verizon", "Network layer", "Connectivity, communications access, and network reliability support.", "/assets/partners/verizon.svg"),
+        new("VS Code", "Development environment", "Editor, extensions, scripts, and local development execution.", "/assets/partners/vscode.svg"),
+        new("PowerShell", "Automation", "Local automation, audit scripts, repo repair, deployment support, and operational tooling.", "/assets/partners/powershell.svg"),
+        new("Node.js", "Runtime", "JavaScript tooling, frontend builds, Workers workflows, and automation packages.", "/assets/partners/nodejs.svg"),
+        new("University of Phoenix", "Education", "Academic foundation, research development, and institutional learning context.", "/assets/partners/university-phoenix.svg"),
+        new("Coursera", "Learning platform", "Continuing education, technical upskilling, and systems knowledge development.", "/assets/partners/coursera.svg"),
+        new("Epic Games / Unreal Editor", "Creative systems", "Real-time visual production, immersive design, and creative environment tooling.", "/assets/partners/unreal-editor.svg"),
+        new("Linktree", "Public routing", "External link routing, creator access paths, and public profile navigation.", "/assets/partners/linktree.svg")
+    ];
+
+    private sealed record Partner(string Name, string Layer, string Role, string Icon);
+}
+
+
+
+
+
+

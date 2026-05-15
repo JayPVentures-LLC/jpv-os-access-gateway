@@ -1,0 +1,16 @@
+<NavLink class="glass-card" href="@Href">
+    <img src="@Image" alt="@Title" loading="lazy" />
+    <div class="glass-content">
+        <span>@Label</span>
+        <h2>@Title</h2>
+        <p>@Body</p>
+    </div>
+</NavLink>
+
+@code {
+    [Parameter] public string Href { get; set; } = "";
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Body { get; set; } = "";
+    [Parameter] public string Image { get; set; } = "";
+}
