@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="**/_design-backup-*/**/*.cs" />
+    <Content Remove="**/_design-backup-*/**/*" />
+    <EmbeddedResource Remove="**/_design-backup-*/**/*" />
+    <None Remove="**/_design-backup-*/**/*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="PEOPLE-PROTECTION-NON-NEGOTIABLE.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>

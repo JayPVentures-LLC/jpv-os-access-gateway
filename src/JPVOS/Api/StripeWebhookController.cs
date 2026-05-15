@@ -93,8 +93,7 @@ public class StripeWebhookController : ControllerBase
                 {
                     ent.StripeSubscriptionId = sub.Id;
                     ent.Status = sub.Status;
-                    // Convert Unix timestamp to DateTime if available, otherwise add 1 month to current time
-                    ent.AccessExpiration = ConvertStripeTimestamp(sub);
+                    ent.AccessExpiration = GetCurrentPeriodEnd(sub);
                     _entitlementService.AddOrUpdate(ent);
                 }
                 break;
@@ -119,42 +118,22 @@ public class StripeWebhookController : ControllerBase
         return Ok();
     }
 
-    private static readonly int DEFAULT_SUBSCRIPTION_DURATION_MONTHS = 1;
-
-    private static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+    private DateTime? GetCurrentPeriodEnd(Subscription sub)
     {
-        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        dateTime = dateTime.AddSeconds(unixTimeStamp).ToUniversalTime();
-        return dateTime;
-    }
-
-    private static DateTime ConvertStripeTimestamp(Stripe.Subscription subscription)
-    {
-        // Try to get the current period end time from the subscription object
-        // using reflection to handle different API versions
-        try
+        // Handle version compatibility for Stripe.net API
+        // CurrentPeriodEnd property may have different names/types across versions
+        var prop = sub.GetType().GetProperty("CurrentPeriodEnd");
+        if (prop != null && prop.GetValue(sub) is DateTime dt)
         {
-            var property = subscription.GetType().GetProperty("CurrentPeriodEnd");
-            if (property?.GetValue(subscription) is DateTime dt)
-            {
-                return dt;
-            }
-            
-            property = subscription.GetType().GetProperty("CurrentPeriodEndUnix");
-            if (property?.GetValue(subscription) is long unixTime)
-            {
-                return UnixTimeStampToDateTime(unixTime);
-            }
-        }
-        catch (Exception ex)
-        {
-            // Reflection-based property access may fail due to API version differences
-            // In such cases, we fall back to the default duration below
-            System.Diagnostics.Debug.WriteLine($"Failed to extract timestamp from Stripe subscription: {ex.Message}");
+            return dt;
         }
 
-        // Fallback: add default subscription duration to current time
-        // This is used when the Stripe API version doesn't provide timestamp information
-        return DateTime.UtcNow.AddMonths(DEFAULT_SUBSCRIPTION_DURATION_MONTHS);
+        prop = sub.GetType().GetProperty("CurrentPeriodEndUnix");
+        if (prop != null && prop.GetValue(sub) is long unix)
+        {
+            return DateTimeOffset.FromUnixTimeSeconds(unix).UtcDateTime;
+        }
+
+        return null;
     }
 }
