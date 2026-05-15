@@ -1,0 +1,39 @@
+# Build artifacts
+bin/
+obj/
+publish/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Logs
+*.log
+dotnet_run.log
+
+# Git
+.git
+.gitignore
+
+# Documentation
+docs/
+*.md
+# PEOPLE-PROTECTION-NON-NEGOTIABLE.md is NOT excluded - it is required
+# by the application and copied to output via JPVOS.csproj CopyToPublishDirectory
+!PEOPLE-PROTECTION-NON-NEGOTIABLE.md
+
+# Scripts (not needed in container)
+*.ps1
+*.sh
+
+# Build output files (not source)
+build-check.txt
+build-error.txt
+build-final-check.txt
+restore-check.txt
+jpv-gateway-audit.txt
+
+# Development settings
+appsettings.Development.json

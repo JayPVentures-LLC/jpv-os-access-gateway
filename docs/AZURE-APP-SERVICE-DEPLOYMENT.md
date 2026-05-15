@@ -38,6 +38,18 @@ Deploy JPVOS as an ASP.NET Core Blazor web app.
 - **CI Build** (`ci.yml`) - Runs on every PR and push to main
 - **Release Package** (`release-package.yml`) - Creates release artifacts
 - **Deploy to Azure** (`azure-deploy.yml`) - Manual deployment to Azure App Service
+- **Container Build** (`container-build.yml`) - Builds and pushes Docker image to GHCR
+
+## Alternative Deployment
+
+While Azure App Service provisioning is blocked by Conditional Access requirements, container-based deployment is available. See [CONTAINER-DEPLOYMENT.md](./CONTAINER-DEPLOYMENT.md) for instructions on deploying to:
+
+- Render
+- Railway
+- Fly.io
+- DigitalOcean App Platform
+- Google Cloud Run
+- AWS App Runner
 
 ## Release Gate
 
