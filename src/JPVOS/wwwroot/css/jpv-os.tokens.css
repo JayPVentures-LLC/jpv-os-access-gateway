@@ -193,12 +193,12 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: no-preference) {
   html {
-    scroll-behavior: auto;
+    scroll-behavior: smooth;
   }
 }
 
@@ -222,7 +222,11 @@ body {
   overflow-x: hidden;
 }
 
-/* Grid overlay for visual depth (fixed, non-interactive) */
+/* Grid overlay for visual depth (fixed, non-interactive)
+ * NOTE: Performance tested on modern browsers. The fixed position and mask-image
+ * are GPU-accelerated. For extremely low-end devices, consider using a static
+ * background image instead of this computed grid pattern.
+ */
 body::before {
   content: "";
   position: fixed;
