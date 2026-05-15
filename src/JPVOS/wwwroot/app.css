@@ -1099,3 +1099,20 @@ body{
     padding: 0 !important;
     background: transparent !important;
 }
+
+/* Real partner logo treatment */
+.partner-icon {
+    width: 30px !important;
+    height: 30px !important;
+    object-fit: contain !important;
+    filter: invert(1) grayscale(1) brightness(1.35) contrast(1.05) !important;
+    opacity: .92;
+}
+
+.partner-icon-wrap {
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 14px !important;
+    background: rgba(255,255,255,.025) !important;
+    border: 1px solid rgba(255,255,255,.07) !important;
+}

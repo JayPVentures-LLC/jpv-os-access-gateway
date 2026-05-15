@@ -1,17 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="CR icon">
-  <defs>
-    <linearGradient id="g" x1="12" y1="8" x2="84" y2="88" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#00D4FF" stop-opacity=".95"/>
-      <stop offset=".52" stop-color="#7B30FF" stop-opacity=".75"/>
-      <stop offset="1" stop-color="#FF2D8A" stop-opacity=".86"/>
-    </linearGradient>
-    <radialGradient id="r" cx="50%" cy="26%" r="70%">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".18"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect x="8" y="8" width="80" height="80" rx="20" fill="#080D18" stroke="url(#g)" stroke-width="2"/>
-  <rect x="14" y="14" width="68" height="68" rx="16" fill="url(#r)"/>
-  <path d="M48 20 L74 72 H22 Z" fill="none" stroke="url(#g)" stroke-width="3" stroke-linejoin="round" opacity=".95"/>
-  <text x="48" y="55" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="900" fill="#F5F7FA" letter-spacing=".5">CR</text>
-</svg>
+<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Coursera</title><path d="M11.374 23.977c-4.183-.21-8.006-2.626-9.959-6.347-2.097-3.858-1.871-8.864.732-12.454C4.748 1.338 9.497-.698 14.281.23c4.583.857 8.351 4.494 9.358 8.911 1.122 4.344-.423 9.173-3.925 12.04-2.289 1.953-5.295 2.956-8.34 2.797zm7.705-8.05a588.737 588.737 0 0 0-3.171-1.887c-.903 1.483-2.885 2.248-4.57 1.665-2.024-.639-3.394-2.987-2.488-5.134.801-2.009 2.79-2.707 4.357-2.464a4.19 4.19 0 0 1 2.623 1.669c1.077-.631 2.128-1.218 3.173-1.855-2.03-3.118-6.151-4.294-9.656-2.754-3.13 1.423-4.89 4.68-4.388 7.919.54 3.598 3.73 6.486 7.716 6.404a7.664 7.664 0 0 0 6.404-3.563z"/></svg>

@@ -1,17 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="HP icon">
-  <defs>
-    <linearGradient id="g" x1="12" y1="8" x2="84" y2="88" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#00D4FF" stop-opacity=".95"/>
-      <stop offset=".52" stop-color="#7B30FF" stop-opacity=".75"/>
-      <stop offset="1" stop-color="#FF2D8A" stop-opacity=".86"/>
-    </linearGradient>
-    <radialGradient id="r" cx="50%" cy="26%" r="70%">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".18"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect x="8" y="8" width="80" height="80" rx="20" fill="#080D18" stroke="url(#g)" stroke-width="2"/>
-  <rect x="14" y="14" width="68" height="68" rx="16" fill="url(#r)"/>
-  <path d="M48 20 L74 72 H22 Z" fill="none" stroke="url(#g)" stroke-width="3" stroke-linejoin="round" opacity=".95"/>
-  <text x="48" y="55" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="900" fill="#F5F7FA" letter-spacing=".5">HP</text>
-</svg>
+<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>HP</title><path d="M12.0069 24h-.3572l2.459-6.7453h3.3796c.5907 0 1.2364-.4533 1.4424-1.0166l2.6652-7.3085c.4396-1.1952-.2473-2.1706-1.525-2.1706h-4.6983l-3.929 10.798-2.2255 6.127C3.929 22.434 0 17.6806 0 12.007 0 6.498 3.7092 1.8546 8.7647.4396L6.4705 6.759 2.6514 17.2547h2.5415L8.4488 8.339h1.9095l-3.2558 8.9158H9.644l3.0223-8.3251c.4396-1.1952-.2473-2.1706-1.525-2.1706h-2.143l2.459-6.7453C11.636 0 11.8145 0 11.9931 0 18.6285 0 24 5.3715 24 12.007c.0137 6.6216-5.3578 11.993-11.9931 11.993zM19.2742 8.325h-1.9096l-2.6789 7.336h1.9096l2.6789-7.336z"/></svg>
