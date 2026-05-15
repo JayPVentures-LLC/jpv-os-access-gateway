@@ -94,22 +94,27 @@ public class StripeWebhookController : ControllerBase
                     ent.StripeSubscriptionId = sub.Id;
                     ent.Status = sub.Status;
                     // Handle version compatibility: try CurrentPeriodEnd first, fallback to CurrentPeriodEndUnix
-                    var periodEndProp = sub.GetType().GetProperty("CurrentPeriodEnd");
-                    if (periodEndProp != null)
+                    try
                     {
-                        var periodEndValue = periodEndProp.GetValue(sub);
-                        if (periodEndValue is DateTime dt)
+                        // Try direct property access for newer versions
+                        var periodEndProp = typeof(Stripe.Subscription).GetProperty("CurrentPeriodEnd");
+                        if (periodEndProp != null && periodEndProp.GetValue(sub) is DateTime dt)
                         {
                             ent.AccessExpiration = dt;
                         }
-                    }
-                    else
-                    {
-                        var periodEndUnixProp = sub.GetType().GetProperty("CurrentPeriodEndUnix");
-                        if (periodEndUnixProp != null && periodEndUnixProp.GetValue(sub) is long unixTime)
+                        else
                         {
-                            ent.AccessExpiration = UnixTimeStampToDateTime(unixTime);
+                            // Fall back to Unix timestamp for older versions
+                            var periodEndUnixProp = typeof(Stripe.Subscription).GetProperty("CurrentPeriodEndUnix");
+                            if (periodEndUnixProp != null && periodEndUnixProp.GetValue(sub) is long unixTime)
+                            {
+                                ent.AccessExpiration = UnixTimeStampToDateTime(unixTime);
+                            }
                         }
+                    }
+                    catch
+                    {
+                        // If property access fails, skip setting expiration
                     }
                     _entitlementService.AddOrUpdate(ent);
                 }
