@@ -1,6 +1,5 @@
 @page "/pricing"
 @page "/packages"
-
 @code {
     private bool annual = false;
 
@@ -35,12 +34,11 @@
 
     private string GetPackageKey(Package pkg)
     {
-        // Only wire real Stripe prices for Community and VIP
         return pkg.Key switch
         {
             "member_access" => "community",
             "creator_launch" => "vip",
-            _ => pkg.Key // fallback for inquiry
+            _ => pkg.Key
         };
     }
 }
@@ -70,8 +68,7 @@
                         Description="@pkg.Description"
                         Features="@pkg.Features"
                         Cta="Get init"
-                        OnCheckout="() => StartCheckout(GetPackageKey(pkg), GetTerm(pkg))"
-                    />
+                        OnCheckout="() => StartCheckout(GetPackageKey(pkg), GetTerm(pkg))" />
                 }
                 else if (pkg.Key == "partner_package")
                 {
@@ -83,9 +80,7 @@
                         Description="@pkg.Description"
                         Features="@pkg.Features"
                         Cta="Request partner access"
-                        OnCheckout="null"
-                        IsDisabled="true"
-                    />
+                        IsDisabled="true" />
                 }
                 else if (pkg.Key == "enterprise_infrastructure")
                 {
@@ -97,9 +92,7 @@
                         Description="@pkg.Description"
                         Features="@pkg.Features"
                         Cta="Request enterprise package"
-                        OnCheckout="null"
-                        IsDisabled="true"
-                    />
+                        IsDisabled="true" />
                 }
                 else if (pkg.Key == "custom_implementation")
                 {
@@ -111,9 +104,7 @@
                         Description="@pkg.Description"
                         Features="@pkg.Features"
                         Cta="Contact for quote"
-                        OnCheckout="null"
-                        IsDisabled="true"
-                    />
+                        IsDisabled="true" />
                 }
             }
         </div>
@@ -129,6 +120,8 @@
 
 @code {
     [Inject] private HttpClient Http { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
     private async Task StartCheckout(string packageKey, string interval)
     {
         var response = await Http.PostAsJsonAsync("/api/checkout/create", new { packageKey, interval });
@@ -139,10 +132,6 @@
             {
                 NavigationManager.NavigateTo(result.url, forceLoad: true);
             }
-        }
-        else
-        {
-            // Optionally show error
         }
     }
 

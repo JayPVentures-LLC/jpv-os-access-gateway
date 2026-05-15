@@ -1,0 +1,38 @@
+@page "/login"
+@page "/access/login"
+
+<div class="page-stack">
+    <PageHero Kicker="Login"
+              Title="Identity handoff and access routing."
+              Description="Use the login surface to route identity into the right operational environment while preserving governance and infrastructure authority standards."
+              Image="@AssetPaths.JpvOs.Topology"
+              ImageAlt="identity routing topology" />
+
+    <section class="content-section">
+        <div class="access-grid">
+            <RouteTile Eyebrow="Member"
+                       Title="Member login"
+                       Description="Authentication pathway for updates, resources, and guided ecosystem routing."
+                       Href="/access" />
+            <RouteTile Eyebrow="Partner"
+                       Title="Partner login"
+                       Description="Identity handoff for partner governance workflows and collaboration routing."
+                       Href="/partners" />
+            <RouteTile Eyebrow="Enterprise"
+                       Title="Enterprise login"
+                       Description="Secure route for architecture governance and infrastructure authority workflows."
+                       Href="/jaypventures-llc" />
+            <RouteTile Eyebrow="Operations"
+                       Title="Operator login"
+                       Description="Protected entry for operational integrity reviews and release coordination."
+                       Href="/admin" />
+        </div>
+    </section>
+
+    <CTASection Title="Need immediate routing?"
+                Description="Start from access routing to identify your environment and continue through the right operational path."
+                PrimaryCta="Open access"
+                PrimaryHref="/access"
+                SecondaryCta="View pricing"
+                SecondaryHref="/pricing" />
+</div>

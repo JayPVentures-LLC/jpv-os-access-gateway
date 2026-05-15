@@ -1,0 +1,34 @@
+@page "/admin"
+
+<div class="page-stack">
+    <PageHero Kicker="Admin"
+              Title="Operational authority placeholder."
+              Description="This placeholder reserves the protected administration surface for governance workflows, incident routing, and infrastructure authority operations."
+              Image="@AssetPaths.JpvOs.Brand"
+              ImageAlt="JPV-OS administration placeholder" />
+
+    <section class="content-section">
+        <SectionHeader Kicker="Status"
+                       Title="Administration surface is staged."
+                       Description="Core UI scaffolding is available now. Authentication integration, role policy, and operational tooling will be connected in the next delivery phase." />
+
+        <div class="access-grid">
+            <RouteTile Eyebrow="Governance"
+                       Title="Policy routing"
+                       Description="Reserved lane for policy approvals and operational integrity decisions."
+                       Href="/access" />
+            <RouteTile Eyebrow="Security"
+                       Title="Incident coordination"
+                       Description="Reserved lane for security triage, remediation routing, and audit continuity."
+                       Href="/access" />
+            <RouteTile Eyebrow="Delivery"
+                       Title="Release governance"
+                       Description="Reserved lane for release authorization, deployment checks, and infrastructure governance."
+                       Href="/access" />
+            <RouteTile Eyebrow="Support"
+                       Title="Operator support"
+                       Description="Reserved lane for operator requests, escalation routing, and operational follow-up."
+                       Href="/contact" />
+        </div>
+    </section>
+</div>

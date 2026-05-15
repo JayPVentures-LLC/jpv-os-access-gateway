@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="**/_design-backup-*/**/*.cs" />
+    <Content Remove="**/_design-backup-*/**/*" />
+    <EmbeddedResource Remove="**/_design-backup-*/**/*" />
+    <None Remove="**/_design-backup-*/**/*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="PEOPLE-PROTECTION-NON-NEGOTIABLE.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
@@ -16,5 +23,6 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.38" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.0" />
+    <PackageReference Include="Stripe.net" Version="47.18.0" />
   </ItemGroup>
 </Project>
