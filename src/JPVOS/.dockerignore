@@ -1,0 +1,31 @@
+# Build artifacts
+bin/
+obj/
+publish/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Logs
+*.log
+dotnet_run.log
+
+# Git
+.git
+.gitignore
+
+# Documentation
+docs/
+*.md
+!PEOPLE-PROTECTION-NON-NEGOTIABLE.md
+
+# Scripts (not needed in container)
+*.ps1
+*.sh
+*.txt
+
+# Development settings
+appsettings.Development.json

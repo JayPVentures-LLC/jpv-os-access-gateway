@@ -1,0 +1,17 @@
+# Render Blueprint for JPVOS
+# See https://render.com/docs/blueprint-spec for documentation
+
+services:
+  - type: web
+    name: jpvos
+    env: docker
+    dockerfilePath: ./src/JPVOS/Dockerfile
+    dockerContext: ./src/JPVOS
+    region: oregon
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
