@@ -25,7 +25,13 @@ docs/
 # Scripts (not needed in container)
 *.ps1
 *.sh
-*.txt
+
+# Build output files (not source)
+build-check.txt
+build-error.txt
+build-final-check.txt
+restore-check.txt
+jpv-gateway-audit.txt
 
 # Development settings
 appsettings.Development.json
