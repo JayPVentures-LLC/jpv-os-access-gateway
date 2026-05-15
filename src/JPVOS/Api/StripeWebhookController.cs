@@ -6,12 +6,17 @@ using System.Text.Json;
 
 [ApiController]
 [Route("api/stripe/webhook")]
+
 public class StripeWebhookController : ControllerBase
 {
     private readonly IConfiguration _config;
-    public StripeWebhookController(IConfiguration config)
+    private readonly EntitlementService _entitlementService;
+    private readonly DiscordService _discordService;
+    public StripeWebhookController(IConfiguration config, EntitlementService entitlementService, DiscordService discordService)
     {
         _config = config;
+        _entitlementService = entitlementService;
+        _discordService = discordService;
     }
 
     [HttpPost]
@@ -34,20 +39,81 @@ public class StripeWebhookController : ControllerBase
         switch (stripeEvent.Type)
         {
             case "checkout.session.completed":
-                // TODO: Create pending/active entitlement
+            {
+                var session = stripeEvent.Data.Object as Stripe.Checkout.Session ?? JsonSerializer.Deserialize<Stripe.Checkout.Session>(stripeEvent.Data.Object.ToString());
+                var customerId = session.CustomerId;
+                var subscriptionId = session.SubscriptionId;
+                var priceId = session.LineItems?.FirstOrDefault()?.Price?.Id ?? session.Metadata?["price_id"] ?? "";
+                var interval = session.Metadata?["interval"] ?? "";
+                var packageKey = session.Metadata?["package_key"] ?? "";
+                var ent = new JPVOS.Models.Entitlement
+                {
+                    StripeCustomerId = customerId,
+                    StripeSubscriptionId = subscriptionId,
+                    PackageKey = packageKey,
+                    BillingInterval = interval,
+                    Status = "active",
+                    AccessExpiration = null
+                };
+                _entitlementService.AddOrUpdate(ent);
+                // Discord role assignment deferred until Discord user is linked
                 break;
+            }
             case "invoice.paid":
-                // TODO: Confirm or extend active entitlement
+            {
+                var invoice = stripeEvent.Data.Object as Stripe.Invoice ?? JsonSerializer.Deserialize<Stripe.Invoice>(stripeEvent.Data.Object.ToString());
+                var customerId = invoice.CustomerId;
+                var ent = _entitlementService.GetByStripeCustomerId(customerId);
+                if (ent != null)
+                {
+                    ent.Status = "active";
+                    ent.AccessExpiration = null;
+                    _entitlementService.AddOrUpdate(ent);
+                }
                 break;
+            }
             case "invoice.payment_failed":
-                // TODO: Mark account past_due and warn user
+            {
+                var invoice = stripeEvent.Data.Object as Stripe.Invoice ?? JsonSerializer.Deserialize<Stripe.Invoice>(stripeEvent.Data.Object.ToString());
+                var customerId = invoice.CustomerId;
+                var ent = _entitlementService.GetByStripeCustomerId(customerId);
+                if (ent != null)
+                {
+                    ent.Status = "past_due";
+                    _entitlementService.AddOrUpdate(ent);
+                }
                 break;
+            }
             case "customer.subscription.updated":
-                // TODO: Sync plan changes, upgrades, downgrades, cancellations
+            {
+                var sub = stripeEvent.Data.Object as Stripe.Subscription ?? JsonSerializer.Deserialize<Stripe.Subscription>(stripeEvent.Data.Object.ToString());
+                var customerId = sub.CustomerId;
+                var ent = _entitlementService.GetByStripeCustomerId(customerId);
+                if (ent != null)
+                {
+                    ent.StripeSubscriptionId = sub.Id;
+                    ent.Status = sub.Status;
+                    ent.AccessExpiration = sub.CurrentPeriodEnd;
+                    _entitlementService.AddOrUpdate(ent);
+                }
                 break;
+            }
             case "customer.subscription.deleted":
-                // TODO: Revoke paid entitlement and remove Discord paid role
+            {
+                var sub = stripeEvent.Data.Object as Stripe.Subscription ?? JsonSerializer.Deserialize<Stripe.Subscription>(stripeEvent.Data.Object.ToString());
+                var customerId = sub.CustomerId;
+                var ent = _entitlementService.GetByStripeCustomerId(customerId);
+                if (ent != null)
+                {
+                    // Remove Discord role if linked
+                    if (!string.IsNullOrEmpty(ent.DiscordUserId) && !string.IsNullOrEmpty(ent.DiscordRole))
+                    {
+                        _ = _discordService.RemoveRoleAsync(ent.DiscordUserId, ent.DiscordRole);
+                    }
+                    _entitlementService.RemoveByStripeCustomerId(customerId);
+                }
                 break;
+            }
         }
         return Ok();
     }
