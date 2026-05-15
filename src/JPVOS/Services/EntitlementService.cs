@@ -10,7 +10,7 @@ public interface IEntitlementService
     void RemoveByStripeCustomerId(string customerId);
 }
 
-public class EntitlementService : IEntitlementService
+public class InMemoryEntitlementService : IEntitlementService
 {
     // DEVELOPMENT-ONLY: This is not safe for production. Use a persistent store for real deployments.
     private readonly List<Entitlement> _entitlements = new();
