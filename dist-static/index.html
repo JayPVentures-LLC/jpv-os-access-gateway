@@ -360,31 +360,6 @@ a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4
   object-fit:cover;
 }
 
-.stage-card{
-  position:relative;
-  border:1px solid rgba(255,255,255,.13);
-  border-radius:36px;
-  overflow:hidden;
-  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.028));
-  box-shadow:0 38px 130px rgba(0,0,0,.52),0 0 90px rgba(0,212,255,.10);
-}
-
-.stage-card::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(135deg,rgba(0,212,255,.16),transparent 28%,rgba(255,45,138,.10));
-  pointer-events:none;
-  z-index:2;
-}
-
-.stage-card img{
-  width:100%;
-  display:block;
-  aspect-ratio:1.12/1;
-  object-fit:cover;
-}
-
 .status-pill{
   width:fit-content;
   margin-top:20px;
@@ -775,10 +750,6 @@ a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4
   .bezel-dot{
     width:8px;
     height:8px;
-  }
-
-  .stage-card{
-    border-radius:26px;
   }
 
   .layer img{
