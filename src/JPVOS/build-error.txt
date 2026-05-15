@@ -1,0 +1,11 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\_design-backup-20260514-222951\Services__AssetPaths.cs(3,21): error CS0101: The namespace 'JPVOS.Services' already contains a definition for 'AssetPaths' [C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\JPVOS.csproj]
+
+Build FAILED.
+
+C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\_design-backup-20260514-222951\Services__AssetPaths.cs(3,21): error CS0101: The namespace 'JPVOS.Services' already contains a definition for 'AssetPaths' [C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\JPVOS.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:01.47
