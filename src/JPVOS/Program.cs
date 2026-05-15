@@ -20,7 +20,7 @@ else
 {
     var dbPath = Path.Combine(AppContext.BaseDirectory, "entitlements.db");
     builder.Services.AddSingleton<IEntitlementRepository>(new SqliteEntitlementRepository(dbPath));
-    // TODO: Implement a production IEntitlementService that uses IEntitlementRepository
+    builder.Services.AddSingleton<IEntitlementService, PersistentEntitlementService>();
 }
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<DiscordService>();
