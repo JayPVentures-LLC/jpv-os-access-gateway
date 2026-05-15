@@ -70,7 +70,7 @@ public class CheckoutController : ControllerBase
 
 public class CheckoutRequest
 {
-    public string PackageKey { get; set; }
-    public string SuccessUrl { get; set; }
-    public string CancelUrl { get; set; }
+    public required string PackageKey { get; set; }
+    public string? SuccessUrl { get; set; }
+    public string? CancelUrl { get; set; }
 }

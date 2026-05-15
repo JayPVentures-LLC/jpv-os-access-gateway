@@ -120,7 +120,8 @@ public class StripeWebhookController : ControllerBase
 
     private DateTime? GetCurrentPeriodEnd(Subscription sub)
     {
-        // Handle version compatibility for Stripe API
+        // Handle version compatibility for Stripe.net API
+        // CurrentPeriodEnd property may have different names/types across versions
         var prop = sub.GetType().GetProperty("CurrentPeriodEnd");
         if (prop != null && prop.GetValue(sub) is DateTime dt)
         {
