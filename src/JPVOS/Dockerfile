@@ -16,8 +16,9 @@ RUN dotnet publish JPVOS.csproj -c Release -o /app/publish --no-restore
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Use non-root user for security (built-in .NET 8 user)
-USER $APP_UID
+# Use non-root user for security
+# The aspnet:8.0 image includes user 'app' with UID 1654
+USER 1654
 
 # Copy published app
 COPY --from=build /app/publish .
@@ -26,11 +27,12 @@ COPY --from=build /app/publish .
 EXPOSE 8080
 
 # Configure ASP.NET Core to listen on all interfaces
-# The app will use PORT env var if set by platform, otherwise defaults to 8080
+# Default to port 8080, but allow override via PORT env var at runtime
 ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_HTTP_PORTS=8080
 
 # Note: Container platforms (Render, Railway, Fly.io) provide their own health checks.
 # The /health endpoint is available for platform health probes.
+# Platforms that set PORT env var should also set ASPNETCORE_HTTP_PORTS=$PORT
 
-# Use shell form to allow PORT variable expansion at runtime
-CMD ["sh", "-c", "dotnet JPVOS.dll --urls http://+:${PORT:-8080}"]
+ENTRYPOINT ["dotnet", "JPVOS.dll"]

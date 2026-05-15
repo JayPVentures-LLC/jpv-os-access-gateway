@@ -69,17 +69,29 @@ Visit http://localhost:8080 to access the application.
 
 1. Install the Fly CLI: `brew install flyctl` or see [Fly.io docs](https://fly.io/docs/hands-on/install-flyctl/)
 
-2. **Option A**: Use the included `fly.toml` (builds from Dockerfile):
+2. Use the included `fly.toml` (uses pre-built GHCR image):
 
 ```bash
 fly auth login
 fly launch --no-deploy
+# For production, edit fly.toml to use a specific commit SHA tag
 fly deploy
 ```
 
 > **Note**: The included `fly.toml` sets `min_machines_running = 0` for cost savings. For production, edit `fly.toml` and set `min_machines_running = 1` to avoid cold starts.
 
-**Option B**: Deploy using the pre-built GHCR image. Create a `fly.toml`:
+**Alternative - Build from Dockerfile:**
+
+To build from source instead of using the pre-built image, run from the `src/JPVOS` directory:
+
+```bash
+cd src/JPVOS
+fly auth login
+fly launch --dockerfile Dockerfile --no-deploy
+fly deploy
+```
+
+**Example fly.toml for production:**
 
 ```toml
 app = "jpv-os"

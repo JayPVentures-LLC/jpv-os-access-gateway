@@ -6,14 +6,11 @@
 app = "jpv-os"
 primary_region = "iad"
 
+# Use pre-built image from GitHub Container Registry
+# Replace <commit-sha> with actual commit SHA for production deployments
+# Or use 'latest' for development/testing
 [build]
-  dockerfile = "src/JPVOS/Dockerfile"
-  # Build context must be src/JPVOS where the Dockerfile expects files
-  [build.args]
-
-[build.settings]
-  # Fly builds from repo root, so we need to specify the context
-  context = "src/JPVOS"
+  image = "ghcr.io/jaypventures-llc/jpv-os:latest"
 
 [env]
   ASPNETCORE_ENVIRONMENT = "Production"
