@@ -5,6 +5,7 @@ public static class AssetPaths
     public static class JpvOs
     {
         public const string Hero = "/assets/jpv-os/jpv-os-hero.png";
+        public const string Brand = "/assets/jpv-os/jpv-os-brand.svg";
         public const string Core = "/assets/jpv-os/jpv-os-core.png";
         public const string Topology = "/assets/jpv-os/jpv-os-topology.png";
     }
