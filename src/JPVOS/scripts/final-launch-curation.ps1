@@ -192,6 +192,7 @@ $report += "- Review Access/Login wording for init and JPV-OS alignment."
 $report += "- Review Partners page for infrastructure authority language."
 $report += "- Review Ecosystem page for operational-layer language."
 $report += "- Confirm approved production imagery is under wwwroot/assets/approved."
+$report += "- Complete final visual approval checklist: docs/FINAL-VISUAL-APPROVAL.md"
 $report += ""
 $report += "## Final Decision"
 $report += ""
@@ -199,7 +200,7 @@ if ($fail) {
     $report += "Launch curation failed. Correct the findings above, then rerun scripts/final-launch-curation.ps1."
 }
 else {
-    $report += "Launch curation passed. Proceed to final visual review and deployment."
+    $report += "Launch curation passed. Proceed to final visual review using docs/FINAL-VISUAL-APPROVAL.md before deployment."
 }
 
 $report | Set-Content $ReportPath -Encoding UTF8
