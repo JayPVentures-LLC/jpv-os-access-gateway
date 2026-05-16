@@ -216,6 +216,8 @@ body{
 
 /* Mobile Navigation */
 .mobile-nav {
+    display: none;
+}
 
 .partner-badge {
 @media (max-width: 700px) {
@@ -226,19 +228,30 @@ body{
         display: flex;
         flex-direction: row;
         justify-content: space-around;
-        background: rgba(14,18,30,0.98);
-        border-top: 1.5px solid rgba(0,212,255,0.12);
+        background: rgba(4, 6, 11, .95);
+        backdrop-filter: blur(16px);
+        border-top: 1px solid var(--jpv-line);
         position: fixed;
         left: 0; right: 0; bottom: 0;
         z-index: 1000;
-        padding: 12px 0;
+        padding: 10px 0;
     }
     .mobile-nav a {
-        color: var(--jpv-cyan);
-        font-weight: 600;
+        color: rgba(244, 247, 251, .72);
+        font-weight: 700;
         text-decoration: none;
-        font-size: 1.1rem;
-        padding: 0 10px;
+        font-size: 11px;
+        padding: 8px 10px;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        transition: color .18s ease;
+    }
+    .mobile-nav a:hover {
+        color: rgba(244, 247, 251, .95);
+    }
+    .mobile-nav .nav-cta {
+        color: var(--jpv-cyan);
+        font-weight: 900;
     }
 }
     font-size: 8.5px !important;
