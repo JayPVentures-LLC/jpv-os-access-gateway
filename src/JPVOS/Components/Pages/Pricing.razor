@@ -1,47 +1,5 @@
 @page "/pricing"
 @page "/packages"
-@code {
-    private bool annual = false;
-
-    private record Package(
-        string Key,
-        string Eyebrow,
-        string Name,
-        string Description,
-        string[] Features,
-        int Monthly,
-        int Annual,
-        string Access,
-        string DiscordRole
-    );
-
-    private Package[] Packages = new[]
-    {
-        new Package("member_access", "Member", "Member Access", "Discord member role, updates, resource access", new[]{"Discord role","Updates","Resource access"}, 20, 200, "/access", "community"),
-        new Package("creator_launch", "Creator", "Creator Launch", "Creator role, launch resources, venture support", new[]{"Creator role","Launch resources","Venture support"}, 99, 990, "/access", "vip"),
-        new Package("partner_package", "Partner", "Partner Package", "Partner role, partner portal access", new[]{"Partner role","Partner portal"}, 199, 1990, "/partners", "partner"),
-        new Package("enterprise_infrastructure", "Enterprise", "Enterprise Infrastructure", "Enterprise role, implementation intake, private access", new[]{"Enterprise role","Implementation intake","Private access"}, 999, 9990, "/access", "enterprise"),
-        new Package("custom_implementation", "Custom", "Custom Implementation", "Manual quote, scoped delivery", new[]{"Manual quote","Scoped delivery"}, 4999, 0, "/contact", "custom")
-    };
-
-    private string GetPrice(Package pkg) => pkg.Key == "custom_implementation"
-        ? annual ? "Custom" : "$4,999+"
-        : annual ? $"${pkg.Annual}" : $"${pkg.Monthly}";
-
-    private string GetTerm(Package pkg) => pkg.Key == "custom_implementation"
-        ? annual ? "custom" : "one-time"
-        : annual ? "annual" : "monthly";
-
-    private string GetPackageKey(Package pkg)
-    {
-        return pkg.Key switch
-        {
-            "member_access" => "community",
-            "creator_launch" => "vip",
-            _ => pkg.Key
-        };
-    }
-}
 
 <div class="page-stack">
     <PageHero Kicker="Pricing"
@@ -121,6 +79,47 @@
 @code {
     [Inject] private HttpClient Http { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
+    private bool annual = false;
+
+    private record Package(
+        string Key,
+        string Eyebrow,
+        string Name,
+        string Description,
+        string[] Features,
+        int Monthly,
+        int Annual,
+        string Access,
+        string DiscordRole
+    );
+
+    private Package[] Packages = new[]
+    {
+        new Package("member_access", "Member", "Member Access", "Discord member role, updates, resource access", new[]{"Discord role","Updates","Resource access"}, 20, 200, "/access", "community"),
+        new Package("creator_launch", "Creator", "Creator Launch", "Creator role, launch resources, venture support", new[]{"Creator role","Launch resources","Venture support"}, 99, 990, "/access", "vip"),
+        new Package("partner_package", "Partner", "Partner Package", "Partner role, partner portal access", new[]{"Partner role","Partner portal"}, 199, 1990, "/partners", "partner"),
+        new Package("enterprise_infrastructure", "Enterprise", "Enterprise Infrastructure", "Enterprise role, implementation intake, private access", new[]{"Enterprise role","Implementation intake","Private access"}, 999, 9990, "/access", "enterprise"),
+        new Package("custom_implementation", "Custom", "Custom Implementation", "Manual quote, scoped delivery", new[]{"Manual quote","Scoped delivery"}, 4999, 0, "/contact", "custom")
+    };
+
+    private string GetPrice(Package pkg) => pkg.Key == "custom_implementation"
+        ? annual ? "Custom" : "$4,999+"
+        : annual ? $"${pkg.Annual}" : $"${pkg.Monthly}";
+
+    private string GetTerm(Package pkg) => pkg.Key == "custom_implementation"
+        ? annual ? "custom" : "one-time"
+        : annual ? "annual" : "monthly";
+
+    private string GetPackageKey(Package pkg)
+    {
+        return pkg.Key switch
+        {
+            "member_access" => "community",
+            "creator_launch" => "vip",
+            _ => pkg.Key
+        };
+    }
 
     private async Task StartCheckout(string packageKey, string interval)
     {
