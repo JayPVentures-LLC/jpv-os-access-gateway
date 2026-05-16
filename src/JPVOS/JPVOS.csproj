@@ -4,6 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Exclude backup and dead code folders from project -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);wwwroot/bootstrap_backup/**;wwwroot/assets/reference/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
