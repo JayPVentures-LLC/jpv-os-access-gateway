@@ -1,5 +1,6 @@
 @page "/pricing"
 @page "/packages"
+@using JPVOS.Services
 
 <div class="page-stack">
     <PageHero Kicker="Pricing"
@@ -16,54 +17,16 @@
         <div class="pricing-grid">
             @foreach (var pkg in Packages)
             {
-                if (pkg.Key == "member_access" || pkg.Key == "creator_launch")
-                {
-                    <PricingCard
-                        Eyebrow="@pkg.Eyebrow"
-                        Name="@pkg.Name"
-                        Price="@GetPrice(pkg)"
-                        Term="@GetTerm(pkg)"
-                        Description="@pkg.Description"
-                        Features="@pkg.Features"
-                        Cta="Get init"
-                        OnCheckout="() => StartCheckout(GetPackageKey(pkg), GetTerm(pkg))" />
-                }
-                else if (pkg.Key == "partner_package")
-                {
-                    <PricingCard
-                        Eyebrow="@pkg.Eyebrow"
-                        Name="@pkg.Name"
-                        Price="@GetPrice(pkg)"
-                        Term="@GetTerm(pkg)"
-                        Description="@pkg.Description"
-                        Features="@pkg.Features"
-                        Cta="Request partner access"
-                        IsDisabled="true" />
-                }
-                else if (pkg.Key == "enterprise_infrastructure")
-                {
-                    <PricingCard
-                        Eyebrow="@pkg.Eyebrow"
-                        Name="@pkg.Name"
-                        Price="@GetPrice(pkg)"
-                        Term="@GetTerm(pkg)"
-                        Description="@pkg.Description"
-                        Features="@pkg.Features"
-                        Cta="Request enterprise package"
-                        IsDisabled="true" />
-                }
-                else if (pkg.Key == "custom_implementation")
-                {
-                    <PricingCard
-                        Eyebrow="@pkg.Eyebrow"
-                        Name="@pkg.Name"
-                        Price="@GetPrice(pkg)"
-                        Term="@GetTerm(pkg)"
-                        Description="@pkg.Description"
-                        Features="@pkg.Features"
-                        Cta="Contact for quote"
-                        IsDisabled="true" />
-                }
+                <PricingCard
+                    Eyebrow="@pkg.Eyebrow"
+                    Name="@pkg.Name"
+                    Price="@GetPrice(pkg)"
+                    Term="@GetTerm(pkg)"
+                    Description="@pkg.Description"
+                    Features="@pkg.Features"
+                    Cta="@GetCta(pkg)"
+                    CheckoutUrl="@GetCheckoutUrl(pkg)"
+                    IsDisabled="@IsDisabled(pkg)" />
             }
         </div>
     </section>
@@ -77,8 +40,7 @@
 </div>
 
 @code {
-    [Inject] private HttpClient Http { get; set; } = default!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private WixCheckoutConfig WixConfig { get; set; } = default!;
 
     private bool annual = false;
 
@@ -121,18 +83,31 @@
         };
     }
 
-    private async Task StartCheckout(string packageKey, string interval)
+    private string GetCheckoutUrl(Package pkg)
     {
-        var response = await Http.PostAsJsonAsync("/api/checkout/create", new { packageKey, interval });
-        if (response.IsSuccessStatusCode)
-        {
-            var result = await response.Content.ReadFromJsonAsync<CheckoutResult>();
-            if (!string.IsNullOrEmpty(result?.url))
-            {
-                NavigationManager.NavigateTo(result.url, forceLoad: true);
-            }
-        }
+        var packageKey = GetPackageKey(pkg);
+        var interval = GetTerm(pkg);
+        return WixConfig.GetCheckoutUrl(packageKey, interval);
     }
 
-    private class CheckoutResult { public string? url { get; set; } }
+    private string GetCta(Package pkg)
+    {
+        return pkg.Key switch
+        {
+            "member_access" => "Get init",
+            "creator_launch" => "Get init",
+            "partner_package" => "Request partner access",
+            "enterprise_infrastructure" => "Request enterprise package",
+            "custom_implementation" => "Contact for quote",
+            _ => "Get init"
+        };
+    }
+
+    private bool IsDisabled(Package pkg)
+    {
+        // Disable contact-based packages
+        return pkg.Key == "partner_package" 
+            || pkg.Key == "enterprise_infrastructure" 
+            || pkg.Key == "custom_implementation";
+    }
 }
