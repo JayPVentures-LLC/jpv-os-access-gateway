@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Stripe.Checkout;
+using JPVOS.Models;
 
 namespace JPVOS.Api;
 

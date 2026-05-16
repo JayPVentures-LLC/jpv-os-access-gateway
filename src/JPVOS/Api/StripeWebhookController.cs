@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Stripe;
 using System.Text;
 using System.Text.Json;
@@ -12,11 +13,18 @@ public class StripeWebhookController : ControllerBase
     private readonly IConfiguration _config;
     private readonly IEntitlementService _entitlementService;
     private readonly DiscordService _discordService;
-    public StripeWebhookController(IConfiguration config, IEntitlementService entitlementService, DiscordService discordService)
+    private readonly ILogger<StripeWebhookController> _logger;
+    
+    public StripeWebhookController(
+        IConfiguration config, 
+        IEntitlementService entitlementService, 
+        DiscordService discordService,
+        ILogger<StripeWebhookController> logger)
     {
         _config = config;
         _entitlementService = entitlementService;
         _discordService = discordService;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -87,8 +95,12 @@ public class StripeWebhookController : ControllerBase
             case "customer.subscription.updated":
             {
                 var sub = stripeEvent.Data.Object as Stripe.Subscription ?? JsonSerializer.Deserialize<Stripe.Subscription>(stripeEvent.Data.Object.ToString());
-                var customerId = sub.CustomerId;
-                var ent = _entitlementService.GetByStripeCustomerId(customerId);
+                if (sub == null || string.IsNullOrWhiteSpace(sub.CustomerId))
+                {
+                    break;
+                }
+
+                var ent = _entitlementService.GetByStripeCustomerId(sub.CustomerId);
                 if (ent != null)
                 {
                     ent.StripeSubscriptionId = sub.Id;
