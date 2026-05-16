@@ -10,13 +10,19 @@
 
         <div class="hero-actions">
             <a class="button primary" href="@PrimaryHref">@PrimaryCta</a>
-            <a class="button secondary" href="@SecondaryHref">@SecondaryCta</a>
+            @if (!string.IsNullOrEmpty(SecondaryHref) && !string.IsNullOrEmpty(SecondaryCta))
+            {
+                <a class="button secondary" href="@SecondaryHref">@SecondaryCta</a>
+            }
         </div>
     </div>
 
-    <figure class="hero-visual image-panel">
-        <img src="@Visual" alt="@VisualAlt" />
-    </figure>
+    @if (!string.IsNullOrEmpty(Visual))
+    {
+        <figure class="hero-visual image-panel">
+            <img src="@Visual" alt="@VisualAlt" />
+        </figure>
+    }
 </section>
 
 @code {

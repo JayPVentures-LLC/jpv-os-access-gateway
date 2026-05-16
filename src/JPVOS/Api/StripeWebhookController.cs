@@ -105,29 +105,7 @@ public class StripeWebhookController : ControllerBase
                 {
                     ent.StripeSubscriptionId = sub.Id;
                     ent.Status = sub.Status;
-                    // Handle version compatibility: try CurrentPeriodEnd first, fallback to CurrentPeriodEndUnix
-                    try
-                    {
-                        // Try direct property access for newer versions
-                        var periodEndProp = typeof(Stripe.Subscription).GetProperty("CurrentPeriodEnd");
-                        if (periodEndProp != null && periodEndProp.GetValue(sub) is DateTime dt)
-                        {
-                            ent.AccessExpiration = dt;
-                        }
-                        else
-                        {
-                            // Fall back to Unix timestamp for older versions
-                            var periodEndUnixProp = typeof(Stripe.Subscription).GetProperty("CurrentPeriodEndUnix");
-                            if (periodEndUnixProp != null && periodEndUnixProp.GetValue(sub) is long unixTime)
-                            {
-                                ent.AccessExpiration = UnixTimeStampToDateTime(unixTime);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogWarning(ex, "Failed to extract subscription period end date for subscription {SubscriptionId}", sub.Id);
-                    }
+                    ent.AccessExpiration = GetCurrentPeriodEnd(sub);
                     _entitlementService.AddOrUpdate(ent);
                 }
                 break;
@@ -152,10 +130,22 @@ public class StripeWebhookController : ControllerBase
         return Ok();
     }
 
-    private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+    private DateTime? GetCurrentPeriodEnd(Subscription sub)
     {
-        var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        dateTime = dateTime.AddSeconds(unixTimeStamp).ToUniversalTime();
-        return dateTime;
+        // Handle version compatibility for Stripe.net API
+        // CurrentPeriodEnd property may have different names/types across versions
+        var prop = sub.GetType().GetProperty("CurrentPeriodEnd");
+        if (prop != null && prop.GetValue(sub) is DateTime dt)
+        {
+            return dt;
+        }
+
+        prop = sub.GetType().GetProperty("CurrentPeriodEndUnix");
+        if (prop != null && prop.GetValue(sub) is long unix)
+        {
+            return DateTimeOffset.FromUnixTimeSeconds(unix).UtcDateTime;
+        }
+
+        return null;
     }
 }

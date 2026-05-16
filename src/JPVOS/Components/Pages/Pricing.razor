@@ -1,7 +1,48 @@
 @page "/pricing"
 @page "/packages"
+@using JPVOS.Services
+
+<div class="page-stack">
+    <PageHero Kicker="Pricing"
+              Title="Packages built around outcomes."
+              Description="Choose the access path that fits what you are trying to activate: member entry, creator launch, partner routing, enterprise infrastructure, or a custom implementation."
+              Image="@AssetPaths.Init.Hero"
+              ImageAlt="init package and access interface visual" />
+
+    <section class="content-section">
+        <div class="pricing-toggle">
+            <button class="toggle-btn @(annual ? "" : "active")" @onclick="() => annual = false">Monthly</button>
+            <button class="toggle-btn @(annual ? "active" : "")" @onclick="() => annual = true">Annual <span class="toggle-save">(2 months free)</span></button>
+        </div>
+
+        <div class="pricing-grid">
+            @foreach (var pkg in Packages)
+            {
+                <PricingCard
+                    Eyebrow="@pkg.Eyebrow"
+                    Name="@pkg.Name"
+                    Price="@GetPrice(pkg)"
+                    Term="@GetTerm(pkg)"
+                    Description="@pkg.Description"
+                    Features="@pkg.Features"
+                    Cta="@GetCta(pkg)"
+                    CheckoutUrl="@GetCheckoutUrl(pkg)"
+                    IsDisabled="@IsDisabled(pkg)" />
+            }
+        </div>
+    </section>
+
+    <CTASection Title="Start with the path that matches your next move."
+                Description="init keeps access, packages, and operational routing connected so users are not dropped into disconnected links or unclear handoffs."
+                PrimaryCta="Enter access gateway"
+                PrimaryHref="/access"
+                SecondaryCta="Contact for fit"
+                SecondaryHref="/contact" />
+</div>
 
 @code {
+    [Inject] private WixCheckoutConfig WixConfig { get; set; } = default!;
+
     private bool annual = false;
 
     private record Package(
@@ -18,11 +59,61 @@
 
     private Package[] Packages = new[]
     {
-        new Package("member_access", "Member", "Member Access", "Discord member role, updates, resource access", new[]{"Discord role","Updates","Resource access"}, 20, 200, "/access", "community"),
-        new Package("creator_launch", "Creator", "Creator Launch", "Creator role, launch resources, venture support", new[]{"Creator role","Launch resources","Venture support"}, 99, 990, "/access", "vip"),
-        new Package("partner_package", "Partner", "Partner Package", "Partner role, partner portal access", new[]{"Partner role","Partner portal"}, 199, 1990, "/partners", "partner"),
-        new Package("enterprise_infrastructure", "Enterprise", "Enterprise Infrastructure", "Enterprise role, implementation intake, private access", new[]{"Enterprise role","Implementation intake","Private access"}, 999, 9990, "/access", "enterprise"),
-        new Package("custom_implementation", "Custom", "Custom Implementation", "Manual quote, scoped delivery", new[]{"Manual quote","Scoped delivery"}, 4999, 0, "/contact", "custom")
+        new Package(
+            "member_access",
+            "Member",
+            "Member Access",
+            "Structured access to updates, resources, and ecosystem routing without scattered links or disconnected channels.",
+            new[] { "Updates", "Resource access", "Member routing", "Community entry" },
+            20,
+            200,
+            "/access",
+            "community"
+        ),
+        new Package(
+            "creator_launch",
+            "Creator",
+            "Creator Launch",
+            "Launch creator-facing projects with access routing, resource packaging, venture support, and community activation.",
+            new[] { "Creator role", "Launch resources", "Venture support", "Community access" },
+            99,
+            990,
+            "/access",
+            "vip"
+        ),
+        new Package(
+            "partner_package",
+            "Partner",
+            "Partner Package",
+            "Coordinate partnership visibility, implementation review, and operational delivery through the JayPVentures LLC infrastructure pathway.",
+            new[] { "Partner role", "Partner portal", "Implementation review", "Operational alignment" },
+            199,
+            1990,
+            "/partners",
+            "partner"
+        ),
+        new Package(
+            "enterprise_infrastructure",
+            "Enterprise",
+            "Enterprise Infrastructure",
+            "Private infrastructure alignment for larger implementation needs, enterprise access paths, and structured operational review.",
+            new[] { "Enterprise role", "Private access", "Implementation intake", "Infrastructure review" },
+            999,
+            9990,
+            "/access",
+            "enterprise"
+        ),
+        new Package(
+            "custom_implementation",
+            "Custom",
+            "Custom Implementation",
+            "Scoped buildout for tailored workflows, access systems, integrations, deployment support, and operational launch requirements.",
+            new[] { "Manual quote", "Scoped delivery", "Workflow design", "Deployment support" },
+            4999,
+            0,
+            "/contact",
+            "custom"
+        )
     };
 
     private string GetPrice(Package pkg) => pkg.Key == "custom_implementation"
@@ -35,120 +126,38 @@
 
     private string GetPackageKey(Package pkg)
     {
-        // Only wire real Stripe prices for Community and VIP
         return pkg.Key switch
         {
             "member_access" => "community",
             "creator_launch" => "vip",
-            _ => pkg.Key // fallback for inquiry
+            _ => pkg.Key
         };
     }
 
-    private Task NoOpCallback() => Task.CompletedTask;
-}
-
-<div class="page-stack">
-    <PageHero Kicker="Pricing"
-              Title="Packages and checkout-ready cards."
-              Description="init keeps the commercial paths visible: member access, creator launch, partner package, enterprise infrastructure, and custom implementation."
-              Image="@AssetPaths.Init.Hero"
-              ImageAlt="init package and access interface visual" />
-
-    <section class="content-section">
-        <div class="pricing-toggle">
-            <button class="toggle-btn @(annual ? "" : "active")" @onclick="() => annual = false">Monthly</button>
-            <button class="toggle-btn @(annual ? "active" : "")" @onclick="() => annual = true">Annual <span class="toggle-save">(2 months free)</span></button>
-        </div>
-        <div class="pricing-grid">
-            @foreach (var pkg in Packages)
-            {
-                if (pkg.Key == "member_access" || pkg.Key == "creator_launch")
-                {
-                    <PricingCard
-                        Eyebrow="@pkg.Eyebrow"
-                        Name="@pkg.Name"
-                        Price="@GetPrice(pkg)"
-                        Term="@GetTerm(pkg)"
-                        Description="@pkg.Description"
-                        Features="@pkg.Features"
-                        Cta="Get init"
-                        OnCheckout="() => StartCheckout(GetPackageKey(pkg), GetTerm(pkg))"
-                    />
-                }
-                else if (pkg.Key == "partner_package")
-                {
-                    <PricingCard
-                        Eyebrow="@pkg.Eyebrow"
-                        Name="@pkg.Name"
-                        Price="@GetPrice(pkg)"
-                        Term="@GetTerm(pkg)"
-                        Description="@pkg.Description"
-                        Features="@pkg.Features"
-                        Cta="Request partner access"
-                        OnCheckout="NoOpCallback"
-                        IsDisabled="true"
-                    />
-                }
-                else if (pkg.Key == "enterprise_infrastructure")
-                {
-                    <PricingCard
-                        Eyebrow="@pkg.Eyebrow"
-                        Name="@pkg.Name"
-                        Price="@GetPrice(pkg)"
-                        Term="@GetTerm(pkg)"
-                        Description="@pkg.Description"
-                        Features="@pkg.Features"
-                        Cta="Request enterprise package"
-                        OnCheckout="NoOpCallback"
-                        IsDisabled="true"
-                    />
-                }
-                else if (pkg.Key == "custom_implementation")
-                {
-                    <PricingCard
-                        Eyebrow="@pkg.Eyebrow"
-                        Name="@pkg.Name"
-                        Price="@GetPrice(pkg)"
-                        Term="@GetTerm(pkg)"
-                        Description="@pkg.Description"
-                        Features="@pkg.Features"
-                        Cta="Contact for quote"
-                        OnCheckout="NoOpCallback"
-                        IsDisabled="true"
-                    />
-                }
-            }
-        </div>
-    </section>
-
-    <CTASection Title="Get init."
-                Description="Choose the package path that fits the next move, then route into the right access environment."
-                PrimaryCta="Get init"
-                PrimaryHref="/pricing"
-                SecondaryCta="Route Access"
-                SecondaryHref="/access" />
-</div>
-
-@code {
-    [Inject] private HttpClient Http { get; set; } = default!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
-    
-    private async Task StartCheckout(string packageKey, string interval)
+    private string GetCheckoutUrl(Package pkg)
     {
-        var response = await Http.PostAsJsonAsync("/api/checkout/create", new { packageKey, interval });
-        if (response.IsSuccessStatusCode)
-        {
-            var result = await response.Content.ReadFromJsonAsync<CheckoutResult>();
-            if (!string.IsNullOrEmpty(result?.url))
-            {
-                NavigationManager.NavigateTo(result.url, forceLoad: true);
-            }
-        }
-        else
-        {
-            // Optionally show error
-        }
+        var packageKey = GetPackageKey(pkg);
+        var interval = GetTerm(pkg);
+        return WixConfig.GetCheckoutUrl(packageKey, interval);
     }
 
-    private class CheckoutResult { public string? url { get; set; } }
+    private string GetCta(Package pkg)
+    {
+        return pkg.Key switch
+        {
+            "member_access" => "Get init",
+            "creator_launch" => "Get init",
+            "partner_package" => "Request partner access",
+            "enterprise_infrastructure" => "Request enterprise package",
+            "custom_implementation" => "Contact for quote",
+            _ => "Get init"
+        };
+    }
+
+    private bool IsDisabled(Package pkg)
+    {
+        return pkg.Key == "partner_package"
+            || pkg.Key == "enterprise_infrastructure"
+            || pkg.Key == "custom_implementation";
+    }
 }

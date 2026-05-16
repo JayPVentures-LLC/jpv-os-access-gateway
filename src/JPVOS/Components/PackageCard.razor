@@ -1,4 +1,4 @@
-<div class="package-card">
+<article class="package-card">
     <div class="package-eyebrow">@Eyebrow</div>
     <h3>@Name</h3>
     <p>@Detail</p>
@@ -10,18 +10,18 @@
 
     @if (!string.IsNullOrWhiteSpace(Features))
     {
-        <div class="package-features">
+        <div class="package-features" role="list">
             @foreach (var feature in Features.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             {
-                <span>@feature</span>
+                <span role="listitem">@feature</span>
             }
         </div>
     }
 
-    <a class="package-checkout" href="@CheckoutUrl" target="_blank" rel="noopener">
+    <a class="package-checkout" href="@CheckoutUrl" target="_blank" rel="noopener noreferrer">
         Start Checkout
     </a>
-</div>
+</article>
 
 @code {
     [Parameter] public string Eyebrow { get; set; } = "";

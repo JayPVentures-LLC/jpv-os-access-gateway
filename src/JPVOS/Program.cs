@@ -24,6 +24,7 @@ else
 }
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<DiscordService>();
+builder.Services.AddSingleton<WixCheckoutConfig>();
 
 
 
