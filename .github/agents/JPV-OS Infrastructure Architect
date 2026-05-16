@@ -4,7 +4,7 @@
 # To make this agent available, merge this file into the default repository branch.
 # For format details, see: https://gh.io/customagents/config
 
-name: 
+name: JPV-OS Infrastructure Architect
 description: Enterprise-grade GitHub Copilot custom agent for JPV-OS ecosystem architecture, governance enforcement, deployment orchestration, infrastructure modernization, UX system alignment, and production-ready engineering execution.
 ---
 
