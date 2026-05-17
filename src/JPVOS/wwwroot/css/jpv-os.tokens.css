@@ -1508,3 +1508,200 @@ p {
         grid-template-columns: 1fr;
     }
 }
+
+/* FINAL STRUCTURAL POLISH — header, skip link, footer */
+
+/* Accessible skip link: hidden until keyboard focus */
+.skip-link {
+    position: fixed;
+    left: 16px;
+    top: -80px;
+    z-index: 99999;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #05070b;
+    color: #f5f7fa;
+    border: 1px solid rgba(0, 212, 255, .5);
+    box-shadow: 0 0 28px rgba(0, 212, 255, .24);
+    transform: translateY(-120%);
+    transition: transform .18s ease, top .18s ease;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+    top: 16px;
+    transform: translateY(0);
+}
+
+/* Header: single restrained enterprise nav */
+.site-header {
+    width: min(1440px, calc(100vw - 48px));
+    margin: 0 auto;
+    min-height: 88px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 2rem;
+    border-bottom: 1px solid rgba(245, 247, 250, .08);
+}
+
+.brand-mark {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.brand-mark img {
+    width: 76px;
+    height: 42px;
+    object-fit: contain;
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.55rem;
+}
+
+.site-nav a {
+    color: rgba(245, 247, 250, .72);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    background: transparent !important;
+    border: 0 !important;
+    padding: .4rem 0 !important;
+    min-height: auto !important;
+    transition: color .18s ease;
+}
+
+.site-nav a:hover {
+    color: #f5f7fa;
+}
+
+.site-nav .nav-cta {
+    padding: .82rem 1.18rem !important;
+    border-radius: 13px !important;
+    color: #fff !important;
+    border: 1px solid rgba(0, 212, 255, .34) !important;
+    background: linear-gradient(135deg, rgba(0, 212, 255, .86), rgba(123, 48, 255, .68), rgba(255, 45, 138, .72)) !important;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .28);
+}
+
+/* Hide accidental duplicate/plain nav renderers if any old shell still emits them */
+.site-header nav:not(.site-nav),
+.site-header > div:last-child:not(.brand-mark):not(.site-nav),
+.site-header .secondary-nav,
+.site-header .plain-nav,
+.site-header .nav-links-secondary {
+    display: none !important;
+}
+
+/* Footer: balanced enterprise footer */
+.site-footer {
+    width: min(1320px, calc(100vw - 48px));
+    margin: clamp(3rem, 6vw, 6rem) auto 0;
+    padding: clamp(2rem, 4vw, 3rem);
+    border: 1px solid rgba(245, 247, 250, .1);
+    border-radius: 32px 32px 0 0;
+    background:
+        radial-gradient(circle at 14% 12%, rgba(0, 212, 255, .08), transparent 32%),
+        radial-gradient(circle at 82% 20%, rgba(123, 48, 255, .12), transparent 38%),
+        rgba(4, 6, 11, .76);
+    backdrop-filter: blur(18px);
+}
+
+.footer-top {
+    display: grid;
+    grid-template-columns: minmax(230px, .95fr) repeat(3, minmax(150px, 1fr));
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+}
+
+.footer-brand {
+    max-width: 320px;
+    margin: 0;
+}
+
+.footer-brand img {
+    width: 96px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.footer-brand p {
+    max-width: 300px;
+    margin: 0;
+    font-size: .92rem;
+    line-height: 1.65;
+    color: rgba(245, 247, 250, .72);
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: .68rem;
+}
+
+.footer-column h3 {
+    margin: 0 0 .65rem;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: rgba(0, 212, 255, .8);
+}
+
+.footer-column a {
+    width: fit-content;
+    color: rgba(245, 247, 250, .72);
+    font-size: .9rem;
+    font-weight: 650;
+    line-height: 1.35;
+    text-decoration: none;
+}
+
+.footer-column a:hover {
+    color: #00d4ff;
+}
+
+.footer-contact {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(245, 247, 250, .1);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    color: rgba(174, 187, 210, .68);
+    font-size: .76rem;
+    line-height: 1.45;
+}
+
+.footer-contact a {
+    color: rgba(0, 212, 255, .86);
+    text-decoration: none;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+@media (max-width: 980px) {
+    .site-header {
+        width: min(100% - 28px, 1440px);
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem 0;
+    }
+
+    .site-nav {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .footer-top,
+    .footer-contact {
+        grid-template-columns: 1fr;
+    }
+}
