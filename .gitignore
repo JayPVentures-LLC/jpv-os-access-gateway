@@ -7,3 +7,4 @@ release-artifacts/
 dist-publish/
 *.bak
 *.bak-*
+dist-static/
