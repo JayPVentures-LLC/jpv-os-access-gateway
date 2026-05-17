@@ -247,19 +247,17 @@ function Find-ViableRegion {
         Write-Info "Checking quota in $region..."
         
         try {
-            # Check if region supports Linux App Service plans
-            $skuInfo = az appservice plan create `
-                --name "test-sku-check-$([datetime]::Now.Ticks)" `
-                --resource-group "test-rg-$([datetime]::Now.Ticks)" `
-                --location $region `
-                --sku $SkuName `
-                --is-linux `
-                --dry-run `
-                -o json 2>&1
+            # Check regional VM quota for capacity
+            $usage = az compute vm list-usage --location $region --query "[?name.value=='Total Regional vCPUs'].limit" -o tsv
             
-            # If dry-run succeeds, region is viable
-            Write-Success "Region $region has available quota"
-            return $region
+            if ([int]$usage -gt 0) {
+                Write-Success "Region $region has available quota (Total vCPUs: $usage)"
+                return $region
+            }
+            else {
+                $quotaErrors += "  - $region: Total VM quota is 0"
+                Write-Warning "Region $region not viable: Total VM quota is 0"
+            }
         }
         catch {
             $errorMsg = "$_"
@@ -372,22 +370,10 @@ function Get-PublishProfile {
     try {
         $profilePath = "azure-publish-profile-$WebAppName.xml"
         
-        # Get publish profile
+        # Get publish profile in XML format
         az webapp deployment list-publishing-profiles `
             --name $WebAppName `
-            --resource-group $ResourceGroupName `
-            --query "[0]" `
-            --output json | ConvertFrom-Json | ConvertTo-Json -Depth 10 | Out-File -FilePath $profilePath -Encoding UTF8
-        
-        # Actually, we need the XML format
-        az webapp deployment list-publishing-profiles `
-            --name $WebAppName `
-            --resource-group $ResourceGroupName `
-            --query "[0]" `
-            --output xml > $profilePath 2>&1 || `
-        az webapp deployment list-publishing-profiles `
-            --name $WebAppName `
-            --resource-group $ResourceGroupName > $profilePath
+            --resource-group $ResourceGroupName > $profilePath 2>&1
         
         if (Test-Path $profilePath) {
             Write-Success "Publish profile generated: $profilePath"

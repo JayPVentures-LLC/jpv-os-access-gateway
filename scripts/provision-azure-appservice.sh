@@ -174,19 +174,19 @@ find_viable_region() {
         region=$(echo "$region" | xargs) # trim whitespace
         write_info "Checking quota in $region..."
         
-        if az appservice plan create \
-            --name "test-sku-check-$(date +%s)" \
-            --resource-group "test-rg-$(date +%s)" \
-            --location "$region" \
-            --sku "$sku" \
-            --is-linux \
-            --dry-run &>/dev/null; then
-            
-            write_success "Region $region has available quota"
+        # Check regional VM quota for capacity
+        local quota=$(az compute vm list-usage --location "$region" --query "[?name.value=='Total Regional vCPUs'].limit" -o tsv 2>/dev/null || echo "0")
+        
+        if [ -z "$quota" ]; then
+            quota="0"
+        fi
+        
+        if [ "$quota" -gt 0 ]; then
+            write_success "Region $region has available quota (Total vCPUs: $quota)"
             echo "$region"
             return 0
         else
-            write_warning "Region $region not viable"
+            write_warning "Region $region not viable: Total VM quota is 0"
         fi
     done
     
