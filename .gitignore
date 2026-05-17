@@ -4,3 +4,6 @@
 # Local release artifacts
 release-artifacts/
 
+dist-publish/
+*.bak
+*.bak-*
