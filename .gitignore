@@ -8,3 +8,15 @@ dist-publish/
 *.bak
 *.bak-*
 dist-static/
+
+dist-publish/
+dist-static/
+
+*.bak
+*.bak-*
+
+.env
+.env.*
+
+appsettings.Production.json
+
