@@ -1395,3 +1395,1402 @@ p {
         width: min(100% - 28px, 1120px);
     }
 }
+
+/* Enterprise footer refinement */
+.site-footer {
+    width: min(1440px, calc(100vw - 48px));
+    margin: clamp(3rem, 6vw, 6rem) auto 0;
+    padding: clamp(2rem, 4vw, 3rem);
+    display: grid;
+    grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: start;
+    border: 1px solid rgba(245, 247, 250, 0.1);
+    border-radius: 32px 32px 0 0;
+    background:
+        radial-gradient(circle at 15% 10%, rgba(0, 212, 255, 0.08), transparent 34%),
+        radial-gradient(circle at 88% 18%, rgba(123, 48, 255, 0.12), transparent 38%),
+        rgba(4, 6, 11, 0.72);
+    backdrop-filter: blur(18px);
+}
+
+.footer-brand {
+    max-width: 360px;
+    margin: 0;
+}
+
+.footer-brand img {
+    width: 96px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.footer-brand p {
+    max-width: 320px;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: rgba(245, 247, 250, 0.7);
+}
+
+.footer-columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(140px, 1fr));
+    gap: clamp(1.5rem, 3vw, 3rem);
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.footer-column {
+    gap: 0.65rem;
+}
+
+.footer-column h3 {
+    margin: 0 0 0.55rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: rgba(0, 212, 255, 0.78);
+}
+
+.footer-column a {
+    width: fit-content;
+    font-size: 0.88rem;
+    line-height: 1.35;
+    color: rgba(245, 247, 250, 0.72);
+}
+
+.footer-contact {
+    grid-column: 2;
+    margin-top: 2rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(245, 247, 250, 0.1);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.footer-contact p {
+    font-size: 0.76rem;
+    line-height: 1.45;
+    color: rgba(174, 187, 210, 0.68);
+}
+
+.footer-contact strong {
+    display: block;
+    margin-bottom: 0.22rem;
+    color: rgba(245, 247, 250, 0.72);
+}
+
+.footer-contact a {
+    color: rgba(0, 212, 255, 0.86);
+    word-break: break-word;
+}
+
+@media (max-width: 980px) {
+    .site-footer {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-contact {
+        grid-column: 1;
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 680px) {
+    .site-footer {
+        width: min(100% - 28px, 1440px);
+        padding: 1.4rem;
+        border-radius: 24px 24px 0 0;
+    }
+
+    .footer-columns {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* FINAL STRUCTURAL POLISH — header, skip link, footer */
+
+/* Accessible skip link: hidden until keyboard focus */
+.skip-link {
+    position: fixed;
+    left: 16px;
+    top: -80px;
+    z-index: 99999;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #05070b;
+    color: #f5f7fa;
+    border: 1px solid rgba(0, 212, 255, .5);
+    box-shadow: 0 0 28px rgba(0, 212, 255, .24);
+    transform: translateY(-120%);
+    transition: transform .18s ease, top .18s ease;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+    top: 16px;
+    transform: translateY(0);
+}
+
+/* Header: single restrained enterprise nav */
+.site-header {
+    width: min(1440px, calc(100vw - 48px));
+    margin: 0 auto;
+    min-height: 88px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 2rem;
+    border-bottom: 1px solid rgba(245, 247, 250, .08);
+}
+
+.brand-mark {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.brand-mark img {
+    width: 76px;
+    height: 42px;
+    object-fit: contain;
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.55rem;
+}
+
+.site-nav a {
+    color: rgba(245, 247, 250, .72);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    background: transparent !important;
+    border: 0 !important;
+    padding: .4rem 0 !important;
+    min-height: auto !important;
+    transition: color .18s ease;
+}
+
+.site-nav a:hover {
+    color: #f5f7fa;
+}
+
+.site-nav .nav-cta {
+    padding: .82rem 1.18rem !important;
+    border-radius: 13px !important;
+    color: #fff !important;
+    border: 1px solid rgba(0, 212, 255, .34) !important;
+    background: linear-gradient(135deg, rgba(0, 212, 255, .86), rgba(123, 48, 255, .68), rgba(255, 45, 138, .72)) !important;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .28);
+}
+
+/* Hide accidental duplicate/plain nav renderers if any old shell still emits them */
+.site-header nav:not(.site-nav),
+.site-header > div:last-child:not(.brand-mark):not(.site-nav),
+.site-header .secondary-nav,
+.site-header .plain-nav,
+.site-header .nav-links-secondary {
+    display: none !important;
+}
+
+/* Footer: balanced enterprise footer */
+.site-footer {
+    width: min(1320px, calc(100vw - 48px));
+    margin: clamp(3rem, 6vw, 6rem) auto 0;
+    padding: clamp(2rem, 4vw, 3rem);
+    border: 1px solid rgba(245, 247, 250, .1);
+    border-radius: 32px 32px 0 0;
+    background:
+        radial-gradient(circle at 14% 12%, rgba(0, 212, 255, .08), transparent 32%),
+        radial-gradient(circle at 82% 20%, rgba(123, 48, 255, .12), transparent 38%),
+        rgba(4, 6, 11, .76);
+    backdrop-filter: blur(18px);
+}
+
+.footer-top {
+    display: grid;
+    grid-template-columns: minmax(230px, .95fr) repeat(3, minmax(150px, 1fr));
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+}
+
+.footer-brand {
+    max-width: 320px;
+    margin: 0;
+}
+
+.footer-brand img {
+    width: 96px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.footer-brand p {
+    max-width: 300px;
+    margin: 0;
+    font-size: .92rem;
+    line-height: 1.65;
+    color: rgba(245, 247, 250, .72);
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: .68rem;
+}
+
+.footer-column h3 {
+    margin: 0 0 .65rem;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: rgba(0, 212, 255, .8);
+}
+
+.footer-column a {
+    width: fit-content;
+    color: rgba(245, 247, 250, .72);
+    font-size: .9rem;
+    font-weight: 650;
+    line-height: 1.35;
+    text-decoration: none;
+}
+
+.footer-column a:hover {
+    color: #00d4ff;
+}
+
+.footer-contact {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(245, 247, 250, .1);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    color: rgba(174, 187, 210, .68);
+    font-size: .76rem;
+    line-height: 1.45;
+}
+
+.footer-contact a {
+    color: rgba(0, 212, 255, .86);
+    text-decoration: none;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+@media (max-width: 980px) {
+    .site-header {
+        width: min(100% - 28px, 1440px);
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem 0;
+    }
+
+    .site-nav {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .footer-top,
+    .footer-contact {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ======================================================
+   JPV ACCESS GATEWAY — FINAL LAUNCH SECTIONS
+====================================================== */
+
+.jpv-section {
+    position: relative;
+    padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 4vw, 4rem);
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.jpv-section-grid {
+    display: grid;
+    grid-template-columns: minmax(0,0.9fr) minmax(0,1.1fr);
+    gap: clamp(2rem,5vw,5rem);
+    align-items: center;
+}
+
+.glass-panel {
+    border: 1px solid rgba(120,190,255,0.18);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(10,18,36,0.74),
+            rgba(10,10,22,0.48)
+        );
+
+    box-shadow:
+        0 24px 90px rgba(0,0,0,0.35),
+        inset 0 0 40px rgba(0,212,255,0.035);
+
+    backdrop-filter: blur(18px);
+    border-radius: 28px;
+}
+
+.section-kicker {
+    display: inline-flex;
+    margin-bottom: 1rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(115,215,255,0.86);
+}
+
+.section-title,
+.founder-copy h2,
+.final-cta h2 {
+    margin: 0 0 1rem;
+    font-size: clamp(2rem,4vw,4.25rem);
+    line-height: 0.95;
+    letter-spacing: -0.055em;
+    color: rgba(245,248,255,0.96);
+}
+
+.founder-copy p,
+.process-card p,
+.price-card p,
+.faq-grid p,
+.final-cta p {
+    color: rgba(218,228,245,0.72);
+    line-height: 1.75;
+}
+
+.founder-visual {
+    min-height: 520px;
+    padding: 1.4rem;
+    overflow: hidden;
+}
+
+.founder-orb {
+    position: absolute;
+    inset: 12%;
+    border-radius: 999px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0,212,255,0.22),
+            rgba(123,48,255,0.08),
+            transparent 68%
+        );
+
+    filter: blur(18px);
+}
+
+.founder-frame {
+    position: relative;
+    height: 400px;
+    display: grid;
+    place-items: center;
+    border-radius: 24px;
+
+    border: 1px solid rgba(255,255,255,0.1);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,212,255,0.12),
+            rgba(255,45,138,0.08)
+        ),
+
+        radial-gradient(
+            circle at 50% 25%,
+            rgba(255,255,255,0.12),
+            transparent 45%
+        );
+}
+
+.founder-placeholder {
+    font-size: clamp(4rem,10vw,8rem);
+    font-weight: 800;
+    letter-spacing: -0.08em;
+
+    color: rgba(245,248,255,0.84);
+
+    text-shadow:
+        0 0 42px rgba(0,212,255,0.35);
+}
+
+.founder-meta {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    color: rgba(218,228,245,0.7);
+}
+
+.founder-meta strong {
+    color: rgba(245,248,255,0.92);
+}
+
+.capability-grid,
+.process-grid,
+.pricing-grid,
+.faq-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.capability-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    margin-top: 2rem;
+}
+
+.capability-grid span {
+    padding: 0.95rem 1rem;
+    border-radius: 18px;
+
+    border: 1px solid rgba(120,190,255,0.14);
+
+    background: rgba(255,255,255,0.035);
+
+    color: rgba(245,248,255,0.86);
+}
+
+.process-grid {
+    grid-template-columns: repeat(4,minmax(0,1fr));
+    margin-top: 2rem;
+}
+
+.process-card,
+.price-card,
+.faq-grid details {
+    padding: 1.4rem;
+}
+
+.process-card span {
+    color: rgba(0,212,255,0.9);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.process-card h3,
+.price-card h3 {
+    margin: 0.85rem 0 0.45rem;
+    color: rgba(245,248,255,0.94);
+}
+
+.pricing-grid {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    margin-top: 2rem;
+}
+
+.price-card strong {
+    display: block;
+    margin: 0.45rem 0 0.8rem;
+    font-size: 2rem;
+    color: rgba(0,212,255,0.95);
+}
+
+.faq-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    margin-top: 2rem;
+}
+
+.faq-grid summary {
+    cursor: pointer;
+    color: rgba(245,248,255,0.95);
+    font-weight: 700;
+}
+
+.final-cta {
+    text-align: center;
+    overflow: hidden;
+}
+
+.final-cta::before {
+    content: "";
+    position: absolute;
+    inset: -40%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0,212,255,0.18),
+            transparent 55%
+        );
+
+    pointer-events: none;
+}
+
+.cta-actions {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.jpv-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 48px;
+    padding: 0 1.25rem;
+
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.jpv-button.primary {
+    color: #06111d;
+
+    background:
+        linear-gradient(
+            135deg,
+            #00d4ff,
+            #d7dcff
+        );
+}
+
+.jpv-button.secondary {
+    color: rgba(245,248,255,0.92);
+
+    border: 1px solid rgba(245,248,255,0.18);
+
+    background:
+        rgba(255,255,255,0.04);
+}
+
+@media (max-width: 980px) {
+
+    .jpv-section-grid,
+    .process-grid,
+    .pricing-grid,
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .founder-visual {
+        min-height: 420px;
+    }
+}
+
+@media (max-width: 640px) {
+
+    .capability-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .jpv-section {
+        padding-inline: 1rem;
+    }
+}
+
+
+
+/* =========================================================
+   JPV-OS — CINEMATIC POLISH PASS
+========================================================= */
+
+:root {
+    --jpv-glow-blue: rgba(0,212,255,0.35);
+    --jpv-glow-purple: rgba(123,48,255,0.25);
+    --jpv-border-soft: rgba(255,255,255,0.08);
+    --jpv-text-soft: rgba(220,228,245,0.74);
+    --jpv-text-bright: rgba(245,248,255,0.96);
+}
+
+/* =========================================================
+   GLOBAL SECTION RHYTHM
+========================================================= */
+
+.jpv-section {
+    position: relative;
+    overflow: hidden;
+
+    max-width: 1180px;
+    margin: 0 auto;
+
+    padding-top: clamp(5rem, 9vw, 8rem);
+    padding-bottom: clamp(5rem, 9vw, 8rem);
+}
+
+/* Ambient background continuity */
+
+.jpv-section::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(0,212,255,0.04),
+            transparent 40%
+        ),
+
+        radial-gradient(
+            circle at bottom right,
+            rgba(123,48,255,0.05),
+            transparent 45%
+        );
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   TITLE SYSTEM
+========================================================= */
+
+.section-title,
+.founder-copy h2,
+.final-cta h2 {
+
+    font-size: clamp(2.6rem, 5vw, 5rem);
+
+    line-height: 0.92;
+
+    letter-spacing: -0.07em;
+
+    margin-bottom: 1.5rem;
+
+    color: var(--jpv-text-bright);
+
+    text-shadow:
+        0 0 32px rgba(0,212,255,0.08);
+}
+
+.section-kicker {
+
+    display: inline-flex;
+
+    margin-bottom: 1.25rem;
+
+    letter-spacing: 0.22em;
+
+    font-size: 0.74rem;
+
+    color: rgba(0,212,255,0.92);
+
+    font-weight: 700;
+}
+
+.founder-copy p,
+.process-card p,
+.price-card p,
+.faq-grid p,
+.final-cta p {
+
+    max-width: 72ch;
+
+    color: var(--jpv-text-soft);
+
+    line-height: 1.85;
+
+    font-size: 1rem;
+}
+
+/* =========================================================
+   GLASS PANELS
+========================================================= */
+
+.glass-panel {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(14,18,36,0.84),
+            rgba(8,10,24,0.72)
+        );
+
+    box-shadow:
+        0 20px 80px rgba(0,0,0,0.42),
+        0 0 0 1px rgba(255,255,255,0.03),
+        inset 0 0 80px rgba(0,212,255,0.025);
+
+    backdrop-filter: blur(22px);
+
+    transition:
+        transform 240ms ease,
+        box-shadow 240ms ease,
+        border-color 240ms ease;
+}
+
+.glass-panel::before {
+
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.08),
+            transparent 35%
+        );
+
+    opacity: 0.7;
+
+    pointer-events: none;
+}
+
+.glass-panel:hover {
+
+    transform:
+        translateY(-4px);
+
+    border-color:
+        rgba(0,212,255,0.22);
+
+    box-shadow:
+        0 30px 90px rgba(0,0,0,0.52),
+        0 0 40px rgba(0,212,255,0.08),
+        inset 0 0 80px rgba(0,212,255,0.04);
+}
+
+/* =========================================================
+   PROCESS / PRICING / FAQ
+========================================================= */
+
+.process-grid,
+.pricing-grid,
+.faq-grid {
+
+    gap: 1.5rem;
+
+    margin-top: 2.5rem;
+}
+
+.process-card,
+.price-card,
+.faq-grid details {
+
+    border-radius: 28px;
+
+    min-height: 100%;
+}
+
+.process-card h3,
+.price-card h3 {
+
+    font-size: 1.3rem;
+
+    margin-bottom: 0.8rem;
+
+    color: var(--jpv-text-bright);
+}
+
+.process-card span {
+
+    display: inline-flex;
+
+    width: 42px;
+    height: 42px;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 999px;
+
+    background:
+        rgba(0,212,255,0.12);
+
+    color:
+        rgba(0,212,255,0.96);
+
+    font-weight: 800;
+}
+
+/* =========================================================
+   PRICING EMPHASIS
+========================================================= */
+
+.price-card strong {
+
+    display: block;
+
+    margin-bottom: 1rem;
+
+    font-size: clamp(2rem, 4vw, 3rem);
+
+    line-height: 1;
+
+    color: rgba(0,212,255,0.95);
+
+    text-shadow:
+        0 0 28px rgba(0,212,255,0.18);
+}
+
+/* =========================================================
+   FAQ REBUILD
+========================================================= */
+
+.faq-grid details {
+
+    padding: 1.4rem 1.5rem;
+
+    cursor: pointer;
+}
+
+.faq-grid summary {
+
+    list-style: none;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    font-size: 1.02rem;
+
+    color: var(--jpv-text-bright);
+}
+
+.faq-grid summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-grid summary::after {
+
+    content: "+";
+
+    font-size: 1.2rem;
+
+    color: rgba(0,212,255,0.85);
+}
+
+.faq-grid details[open] summary::after {
+    content: "—";
+}
+
+/* =========================================================
+   FOUNDER VISUAL
+========================================================= */
+
+.founder-frame {
+
+    position: relative;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(255,255,255,0.12),
+            transparent 35%
+        ),
+
+        linear-gradient(
+            135deg,
+            rgba(0,212,255,0.10),
+            rgba(123,48,255,0.08)
+        );
+}
+
+.founder-frame::before {
+
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            transparent,
+            rgba(255,255,255,0.06),
+            transparent
+        );
+
+    transform: translateX(-100%);
+    animation: founderSweep 7s linear infinite;
+}
+
+@keyframes founderSweep {
+
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(120%);
+    }
+}
+
+/* =========================================================
+   BUTTON SYSTEM
+========================================================= */
+
+.jpv-button {
+
+    position: relative;
+
+    overflow: hidden;
+
+    min-height: 54px;
+
+    padding: 0 1.5rem;
+
+    border-radius: 999px;
+
+    font-size: 0.96rem;
+
+    transition:
+        transform 220ms ease,
+        box-shadow 220ms ease,
+        opacity 220ms ease;
+}
+
+.jpv-button:hover {
+
+    transform:
+        translateY(-2px);
+
+    opacity: 0.98;
+}
+
+.jpv-button.primary {
+
+    background:
+        linear-gradient(
+            135deg,
+            #00d4ff,
+            #7b30ff
+        );
+
+    box-shadow:
+        0 12px 40px rgba(0,212,255,0.24);
+}
+
+.jpv-button.primary::before {
+
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent,
+            rgba(255,255,255,0.28),
+            transparent
+        );
+
+    transform: translateX(-120%);
+    transition: transform 600ms ease;
+}
+
+.jpv-button.primary:hover::before {
+    transform: translateX(120%);
+}
+
+.jpv-button.secondary {
+
+    background:
+        rgba(255,255,255,0.04);
+
+    border:
+        1px solid rgba(255,255,255,0.10);
+}
+
+/* =========================================================
+   FINAL CTA
+========================================================= */
+
+.final-cta {
+
+    position: relative;
+
+    padding:
+        clamp(4rem,8vw,7rem)
+        clamp(2rem,5vw,5rem);
+
+    text-align: center;
+
+    border-radius: 40px;
+}
+
+.final-cta::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: -25%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0,212,255,0.16),
+            transparent 60%
+        );
+
+    filter: blur(40px);
+
+    pointer-events: none;
+}
+
+.final-cta h2 {
+
+    position: relative;
+
+    z-index: 2;
+}
+
+.final-cta p {
+
+    position: relative;
+
+    z-index: 2;
+
+    margin-inline: auto;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 980px) {
+
+    .section-title,
+    .founder-copy h2,
+    .final-cta h2 {
+
+        line-height: 1;
+    }
+
+    .pricing-grid,
+    .process-grid,
+    .faq-grid {
+
+        gap: 1rem;
+    }
+}
+
+
+
+/* JPV HERO FINAL — SAFE PATCH */
+.hero-identity-stack {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    margin-top: 2rem;
+}
+
+.hero-status-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.hero-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 42px;
+    padding: 0.7rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.04);
+    color: rgba(245,248,255,0.88);
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    backdrop-filter: blur(12px);
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #00d4ff;
+    box-shadow: 0 0 16px rgba(0,212,255,0.8);
+    animation: statusPulse 2.5s ease-in-out infinite;
+}
+
+.hero-rotating-system {
+    position: relative;
+    min-height: 32px;
+    overflow: hidden;
+}
+
+.rotating-label {
+    position: absolute;
+    opacity: 0;
+    transform: translateY(12px);
+    color: rgba(220,228,245,0.82);
+    letter-spacing: 0.08em;
+    font-size: 0.92rem;
+    text-transform: uppercase;
+    animation: rotateLabels 16s infinite;
+}
+
+.rotating-label:nth-child(1) { animation-delay: 0s; }
+.rotating-label:nth-child(2) { animation-delay: 4s; }
+.rotating-label:nth-child(3) { animation-delay: 8s; }
+.rotating-label:nth-child(4) { animation-delay: 12s; }
+
+@keyframes statusPulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes rotateLabels {
+    0% { opacity: 0; transform: translateY(12px); }
+    6% { opacity: 1; transform: translateY(0); }
+    22% { opacity: 1; transform: translateY(0); }
+    28%, 100% { opacity: 0; transform: translateY(-12px); }
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);
+    background-size: 120px 120px;
+    opacity: 0.08;
+    animation: particleDrift 36s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes particleDrift {
+    from { transform: translateY(0); }
+    to { transform: translateY(-120px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::before,
+    .status-dot,
+    .rotating-label {
+        animation: none !important;
+    }
+}
+
+
+/* =========================================================
+   JPV-OS FINAL HARDWIRE PASS
+   Founder image, footer correction, CTA polish
+========================================================= */
+
+/* Founder image replacement */
+.founder-frame {
+    isolation: isolate;
+}
+
+.founder-image {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 22px;
+    filter:
+        saturate(0.92)
+        contrast(1.04)
+        brightness(0.88);
+}
+
+.founder-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border-radius: 22px;
+    background:
+        radial-gradient(circle at 50% 20%, rgba(255,255,255,0.08), transparent 34%),
+        linear-gradient(180deg, transparent 48%, rgba(4,8,18,0.36)),
+        linear-gradient(135deg, rgba(0,212,255,0.10), rgba(123,48,255,0.08));
+    pointer-events: none;
+}
+
+.founder-visual {
+    max-width: 560px;
+}
+
+/* CTA containment */
+.final-cta {
+    max-width: 1180px;
+    margin-top: clamp(3rem, 6vw, 6rem);
+    margin-bottom: clamp(4rem, 7vw, 7rem);
+}
+
+.final-cta .cta-actions {
+    align-items: center;
+}
+
+/* Footer correction */
+.site-footer,
+footer {
+    position: relative;
+    z-index: 5;
+    max-width: 1180px;
+    margin: 0 auto clamp(2rem, 4vw, 4rem);
+    padding: clamp(2rem, 4vw, 3.5rem);
+    border-radius: 36px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background:
+        linear-gradient(135deg, rgba(5,12,24,0.92), rgba(14,8,32,0.86));
+    box-shadow:
+        0 24px 90px rgba(0,0,0,0.38),
+        inset 0 0 70px rgba(0,212,255,0.025);
+    overflow: hidden;
+}
+
+.site-footer::before,
+footer::before {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    background:
+        radial-gradient(circle at left, rgba(0,212,255,0.08), transparent 38%),
+        radial-gradient(circle at right, rgba(123,48,255,0.10), transparent 42%);
+    pointer-events: none;
+}
+
+.site-footer *,
+footer * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Fix footer columns if existing classes are unavailable */
+.site-footer,
+footer {
+    color: rgba(220,228,245,0.74);
+}
+
+.site-footer a,
+footer a {
+    color: rgba(220,228,245,0.78);
+    text-decoration: none;
+}
+
+.site-footer a:hover,
+footer a:hover {
+    color: rgba(0,212,255,0.95);
+}
+
+.site-footer h2,
+.site-footer h3,
+.site-footer strong,
+footer h2,
+footer h3,
+footer strong {
+    color: rgba(245,248,255,0.95);
+}
+
+.site-footer img,
+footer img {
+    max-width: 112px;
+    height: auto;
+    display: block;
+    margin-bottom: 1.2rem;
+}
+
+/* Generic footer grid rescue */
+.site-footer > div,
+footer > div {
+    min-width: 0;
+}
+
+.site-footer nav,
+footer nav {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.site-footer ul,
+footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.7rem;
+}
+
+.site-footer p,
+footer p {
+    max-width: 32ch;
+    line-height: 1.7;
+}
+
+/* If footer is a direct multi-column layout, enforce spacing */
+.site-footer {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.2fr) repeat(3, minmax(160px, 0.8fr));
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+}
+
+/* Avoid email collision */
+.site-footer .footer-contact,
+footer .footer-contact {
+    display: grid;
+    gap: 1rem;
+}
+
+.site-footer .footer-contact p,
+footer .footer-contact p {
+    max-width: none;
+}
+
+/* Lower-section consistency */
+.process-grid,
+.pricing-grid,
+.faq-grid,
+.capability-grid {
+    position: relative;
+    z-index: 2;
+}
+
+.price-card,
+.process-card,
+.faq-grid details,
+.capability-grid span {
+    background:
+        linear-gradient(135deg, rgba(14,20,42,0.86), rgba(10,10,24,0.72));
+}
+
+/* Mobile footer */
+@media (max-width: 900px) {
+    .site-footer {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .site-footer {
+        grid-template-columns: 1fr;
+        border-radius: 28px;
+    }
+
+    .site-footer,
+    footer {
+        margin-inline: 1rem;
+    }
+}

@@ -51,7 +51,7 @@ C:\Users\jaypv\JPV-OS-Workspace\01-Active-Apps\jpv-os-access-gateway\src\JPVOS\J
     4 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:01.22
+Time Elapsed 00:00:01.10
 
 Verification PASS
 
