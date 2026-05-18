@@ -131,7 +131,7 @@ public class DiscordOAuthController : ControllerBase
       _entitlementService.AddOrUpdate(ent);
       return Redirect("/access");
     }
-    catch (Exception ex)
+    catch (Exception)
     {
       // Fail closed: do not leak details, but log if needed
       return StatusCode(500, "Discord OAuth processing failed.");
