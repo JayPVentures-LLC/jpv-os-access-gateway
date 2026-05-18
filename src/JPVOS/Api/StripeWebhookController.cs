@@ -65,7 +65,15 @@ public class StripeWebhookController : ControllerBase
               session = JsonSerializer.Deserialize<Stripe.Checkout.Session>(stripeEvent.Data.Object.ToString() ?? "{}");
             }
           }
-          catch (Exception ex)
+          catch (JsonException ex)
+          {
+            _logger.LogWarning(ex, "Failed to deserialize Stripe Checkout.Session");
+          }
+          catch (InvalidCastException ex)
+          {
+            _logger.LogWarning(ex, "Failed to deserialize Stripe Checkout.Session");
+          }
+          catch (FormatException ex)
           {
             _logger.LogWarning(ex, "Failed to deserialize Stripe Checkout.Session");
           }
