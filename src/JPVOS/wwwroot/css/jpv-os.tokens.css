@@ -2794,3 +2794,80 @@ footer .footer-contact p {
         margin-inline: 1rem;
     }
 }
+
+/* =========================================================
+   LIVE CANVA PARITY PATCH
+========================================================= */
+
+body {
+    background:
+        radial-gradient(circle at top, rgba(0,212,255,.22), transparent 34%),
+        radial-gradient(circle at 82% 18%, rgba(255,45,138,.14), transparent 28%),
+        linear-gradient(180deg, #03040a 0%, #07111f 46%, #03040a 100%) !important;
+}
+
+.init-product-hero h1 {
+    font-size: clamp(4.6rem, 10vw, 9rem) !important;
+    line-height: .84 !important;
+    letter-spacing: -.09em !important;
+    background:
+        linear-gradient(90deg,#fff,#dce9ff 52%,#8ee9ff);
+    -webkit-background-clip:text;
+    color:transparent !important;
+}
+
+.init-product-hero {
+    min-height: calc(100vh - 78px);
+    background:
+        radial-gradient(circle at 70% 42%, rgba(0,212,255,.18), transparent 32%),
+        linear-gradient(135deg, rgba(4,8,18,.92), rgba(8,10,28,.76)) !important;
+}
+
+.price-card,
+.glass-panel,
+.route-tile,
+.product-value-card {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.08),
+            rgba(255,255,255,.03)
+        ) !important;
+
+    border: 1px solid rgba(255,255,255,.10) !important;
+
+    backdrop-filter: blur(24px);
+
+    border-radius: 30px !important;
+
+    box-shadow:
+        0 30px 90px rgba(0,0,0,.30),
+        inset 0 0 50px rgba(0,212,255,.03) !important;
+}
+
+.site-header {
+    backdrop-filter: blur(28px);
+    background: rgba(3,4,10,.72) !important;
+}
+
+.jpv-button-primary,
+.nav-cta {
+    background:
+        linear-gradient(
+            135deg,
+            #63e5ff,
+            #168cff,
+            #ff4fd8
+        ) !important;
+
+    color:#02040a !important;
+
+    border-radius:999px !important;
+}
+
+.site-footer {
+    background:
+        radial-gradient(circle at top, rgba(0,212,255,.12), transparent 34%),
+        rgba(4,6,11,.82) !important;
+}
+
