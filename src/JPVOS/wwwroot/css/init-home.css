@@ -192,4 +192,13 @@
   transform: translateY(-2px) scale(1.03);
 }
 
+/* Full-bleed main container for the homepage — no max-width or centering constraint */
+.init-main-full {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+}
+
 /* Add more homepage section styles below, all scoped under .init-home */
