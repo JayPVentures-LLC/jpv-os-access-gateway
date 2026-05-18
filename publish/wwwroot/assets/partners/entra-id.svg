@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Microsoft Entra ID logo">
+  <circle cx="32" cy="32" r="21" fill="none" stroke="#00A4EF" stroke-width="5"/>
+  <circle cx="32" cy="32" r="9" fill="#F5F7FA"/>
+  <path d="M32 6v11M32 47v11M6 32h11M47 32h11" stroke="#7B30FF" stroke-width="5" stroke-linecap="round"/>
+</svg>
