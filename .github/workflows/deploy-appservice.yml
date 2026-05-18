@@ -31,3 +31,25 @@ jobs:
           app-name: jpv-os-access-gateway
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./publish
+
+      - name: Post-deploy health and homepage check
+        run: |
+          set -e
+          echo "Checking /api/health..."
+          resp=$(curl -sSf https://jpv-os-access-gateway.azurewebsites.net/api/health)
+          echo "$resp" | grep '"status":"healthy"'
+          echo "Health endpoint OK."
+
+          echo "Checking homepage for stylesheet..."
+          homepage=$(curl -sSf https://jpv-os-access-gateway.azurewebsites.net/)
+          echo "$homepage" | grep 'init-home.css'
+          echo "Homepage stylesheet present."
+
+          echo "Checking homepage for hero text..."
+          echo "$homepage" | grep 'Welcome to the Venture'
+          echo "Homepage hero text present."
+
+          echo "Checking homepage for CTA..."
+          echo "$homepage" | grep 'Enter the Ecosystem'
+          echo "Homepage CTA present."
+        shell: bash

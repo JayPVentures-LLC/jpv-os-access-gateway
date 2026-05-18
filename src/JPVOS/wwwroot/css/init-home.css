@@ -1,0 +1,195 @@
+/*
+ * init-home.css
+ * Dedicated homepage stylesheet for init / JPV-OS Access Gateway
+ * All styles scoped under .init-home
+ */
+
+.init-home {
+  font-family: 'Inter', 'Space Grotesk', Arial, sans-serif;
+  background: linear-gradient(120deg, #0e1016 0%, #1a1d25 100%);
+  min-height: 100vh;
+  color: #f5f6fa;
+  overflow-x: hidden;
+}
+
+.init-home .hero {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  min-height: 100vh;
+  position: relative;
+  background: radial-gradient(ellipse at 60% 40%, #23263a 60%, transparent 100%),
+    linear-gradient(120deg, rgba(40, 44, 60, 0.7) 0%, rgba(20, 22, 30, 0.8) 100%);
+  overflow: hidden;
+}
+
+.init-home .hero-left {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6vw 5vw 6vw 8vw;
+  z-index: 2;
+}
+
+.init-home .hero-eyebrow {
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  color: #7e8aad;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  text-transform: uppercase;
+}
+
+.init-home .hero-title {
+  font-size: 3.2rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.1rem;
+  color: #fff;
+  text-shadow: 0 4px 32px rgba(0, 0, 0, 0.18);
+}
+
+.init-home .hero-subtitle {
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: #c7cbe6;
+  margin-bottom: 2.2rem;
+  max-width: 36rem;
+}
+
+.init-home .hero-ctas {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 2.8rem;
+}
+
+.init-home .cta-primary {
+  background: linear-gradient(90deg, #4e7fff 0%, #7f9fff 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 0.95rem 2.2rem;
+  border-radius: 2.2rem;
+  box-shadow: 0 2px 16px 0 rgba(78, 127, 255, 0.18);
+  border: none;
+  transition: box-shadow 0.18s, transform 0.18s;
+  cursor: pointer;
+  outline: none;
+}
+
+.init-home .cta-primary:hover,
+.init-home .cta-primary:focus {
+  box-shadow: 0 4px 32px 0 rgba(78, 127, 255, 0.28);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.init-home .cta-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #b7c2e0;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0.95rem 2.2rem;
+  border-radius: 2.2rem;
+  border: 1px solid #3a425c;
+  transition: background 0.18s, color 0.18s, border 0.18s;
+  cursor: pointer;
+  outline: none;
+}
+
+.init-home .cta-secondary:hover,
+.init-home .cta-secondary:focus {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  border: 1px solid #4e7fff;
+}
+
+.init-home .hero-right {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  min-height: 60vh;
+}
+
+.init-home .ecosystem-visual {
+  width: 90%;
+  max-width: 540px;
+  min-height: 420px;
+  background: rgba(30, 34, 48, 0.82);
+  border-radius: 2.5rem;
+  box-shadow: 0 8px 64px 0 rgba(78, 127, 255, 0.10), 0 1.5px 8px 0 rgba(0, 0, 0, 0.10);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: ecosystem-float 8s ease-in-out infinite alternate;
+}
+
+@keyframes ecosystem-float {
+  0% {
+    transform: translateY(0px) scale(1);
+  }
+
+  100% {
+    transform: translateY(-18px) scale(1.03);
+  }
+}
+
+.init-home .atmospheric-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 60% 40%, #23263a 60%, transparent 100%),
+    linear-gradient(120deg, rgba(40, 44, 60, 0.7) 0%, rgba(20, 22, 30, 0.8) 100%);
+  opacity: 0.92;
+}
+
+.init-home .glass-panel {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 24px 0 rgba(78, 127, 255, 0.10);
+  backdrop-filter: blur(18px);
+  border: 1.5px solid rgba(78, 127, 255, 0.10);
+  padding: 2.2rem 2.8rem;
+  margin-bottom: 2.2rem;
+}
+
+.init-home .metrics {
+  display: flex;
+  gap: 2.2rem;
+  margin-bottom: 2.8rem;
+}
+
+.init-home .metric-card {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 1.2rem;
+  padding: 1.2rem 2.2rem;
+  box-shadow: 0 1.5px 8px 0 rgba(0, 0, 0, 0.10);
+  font-size: 1.1rem;
+  color: #b7c2e0;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 120px;
+  transition: box-shadow 0.18s, transform 0.18s;
+}
+
+.init-home .metric-card strong {
+  font-size: 2.1rem;
+  color: #fff;
+  font-weight: 800;
+  margin-top: 0.3rem;
+}
+
+.init-home .metric-card:hover {
+  box-shadow: 0 4px 32px 0 rgba(78, 127, 255, 0.18);
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* Add more homepage section styles below, all scoped under .init-home */
