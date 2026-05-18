@@ -80,7 +80,6 @@ public class StripeWebhookController : ControllerBase
           }
           var customerId = session.CustomerId;
           var subscriptionId = session.SubscriptionId;
-          var priceId = session.LineItems?.FirstOrDefault()?.Price?.Id ?? session.Metadata?["price_id"] ?? "";
           var interval = session.Metadata?["interval"] ?? "";
           var packageKey = session.Metadata?["package_key"] ?? "";
           var ent = new JPVOS.Models.Entitlement
