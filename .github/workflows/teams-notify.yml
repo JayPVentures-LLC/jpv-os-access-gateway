@@ -1,0 +1,26 @@
+name: Teams Notification
+
+description: Send Teams notification on deploy-appservice workflow result
+
+on:
+  workflow_run:
+    workflows: ["deploy-appservice"]
+    types:
+      - completed
+
+jobs:
+  notify-teams:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Teams notification
+        uses: skitionek/notify-microsoft-teams@v1.2.6
+        with:
+          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK_URL }}
+          status: ${{ github.event.workflow_run.conclusion }}
+          message: |
+            **JPV-OS Access Gateway Deploy**
+            Workflow: ${{ github.workflow }}
+            Status: ${{ github.event.workflow_run.conclusion }}
+            Commit: ${{ github.event.workflow_run.head_commit.message }}
+            Actor: ${{ github.event.workflow_run.actor.login }}
+            Run: ${{ github.event.workflow_run.html_url }}
