@@ -20,3 +20,5 @@ dist-static/
 
 appsettings.Production.json
 
+
+azure-publish-profile-*.xml
