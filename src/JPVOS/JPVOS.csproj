@@ -15,6 +15,13 @@
     <None Remove="**/_design-backup-*/**/*" />
   </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="wwwroot\css\init-home.css">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+
   <ItemGroup>
     <Content Include="PEOPLE-PROTECTION-NON-NEGOTIABLE.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
