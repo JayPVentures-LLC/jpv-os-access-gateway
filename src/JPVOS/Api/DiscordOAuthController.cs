@@ -53,7 +53,7 @@ public class DiscordOAuthController : ControllerBase
     try
     {
       // Exchange code for token
-      var tokenReq = new HttpRequestMessage(HttpMethod.Post, "https://discord.com/api/oauth2/token")
+      using var tokenReq = new HttpRequestMessage(HttpMethod.Post, "https://discord.com/api/oauth2/token")
       {
         Content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
