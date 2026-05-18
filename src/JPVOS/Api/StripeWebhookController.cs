@@ -191,7 +191,11 @@ public class StripeWebhookController : ControllerBase
               sub = JsonSerializer.Deserialize<Stripe.Subscription>(stripeEvent.Data.Object.ToString() ?? "{}");
             }
           }
-          catch (Exception ex)
+          catch (JsonException ex)
+          {
+            _logger.LogWarning(ex, "Failed to deserialize Stripe.Subscription");
+          }
+          catch (NotSupportedException ex)
           {
             _logger.LogWarning(ex, "Failed to deserialize Stripe.Subscription");
           }
