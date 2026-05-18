@@ -4,9 +4,23 @@
 function Install-DockerIfMissing {
   Write-Host "Checking for Docker..."
   if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-    Write-Host "Docker not found. Installing Docker Desktop..."
+    Write-Host "Docker not found."
+    $confirmation = Read-Host "Download and run the Docker Desktop installer from Docker's website? Type 'YES' to continue"
+    if ($confirmation -ne "YES") {
+      Write-Host "Docker Desktop installation cancelled."
+      return
+    }
+
+    Write-Host "Downloading Docker Desktop installer..."
     $dockerInstaller = "$env:TEMP\DockerDesktopInstaller.exe"
     Invoke-WebRequest -Uri "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe" -OutFile $dockerInstaller
+
+    $signature = Get-AuthenticodeSignature -FilePath $dockerInstaller
+    if ($signature.Status -ne 'Valid' -or -not $signature.SignerCertificate -or $signature.SignerCertificate.Subject -notmatch 'Docker') {
+      Remove-Item -Path $dockerInstaller -ErrorAction SilentlyContinue
+      throw "Downloaded Docker Desktop installer failed Authenticode signature validation."
+    }
+
     Start-Process -FilePath $dockerInstaller -Wait
     Write-Host "Docker Desktop installation launched. Please complete the setup manually if prompted."
   }
