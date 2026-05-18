@@ -330,9 +330,11 @@ function New-WebApp {
   Write-ScriptInfo "    Plan Name: $PlanName"
   Write-ScriptInfo "    Command: az webapp create --resource-group $RgName --plan $PlanName --name $AppName --runtime 'DOTNETCORE:8.0'"
 
-  $azCmd = "az webapp create --resource-group $RgName --plan $PlanName --name $AppName --runtime DOTNETCORE:8.0"
-  Write-ScriptInfo "  Running via cmd.exe: $azCmd"
-  cmd.exe /c $azCmd
+  az webapp create `
+    --resource-group $RgName `
+    --plan $PlanName `
+    --name $AppName `
+    --runtime "DOTNETCORE:8.0"
 
   if ($LASTEXITCODE -ne 0) {
     Write-ScriptError "Failed to create Web app"
