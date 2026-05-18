@@ -1,3 +1,83 @@
+/* Navigation Status Strip */
+.init-home .nav-status-strip {
+  width: 100%;
+  background: linear-gradient(90deg, #23263a 0%, #1a1d25 100%);
+  color: #7f9fff;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.18rem 2vw 0.18rem 2vw;
+  border-bottom: 1px solid rgba(78, 127, 255, 0.10);
+  box-shadow: 0 1px 8px 0 rgba(78, 127, 255, 0.04);
+}
+
+.init-home .status-dot {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: #7f9fff;
+  box-shadow: 0 0 8px #4e7fff88;
+  margin-right: 0.3rem;
+}
+
+.init-home .status-dot.online {
+  background: #4e7fff;
+  box-shadow: 0 0 12px #4e7fffcc;
+}
+
+.init-home .status-label {
+  color: #b7c2e0;
+  font-weight: 500;
+}
+
+/* Lane Icon Placeholders */
+.init-home .lane-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.5rem;
+  background: linear-gradient(135deg, #23263a 60%, #4e7fff22 100%);
+  box-shadow: 0 1px 4px 0 rgba(78, 127, 255, 0.10);
+}
+
+.init-home .lane-icon.community {
+  background: linear-gradient(135deg, #7f9fff 0%, #23263a 100%);
+}
+
+.init-home .lane-icon.professional {
+  background: linear-gradient(135deg, #4e7fff 0%, #23263a 100%);
+}
+
+.init-home .lane-icon.institutional {
+  background: linear-gradient(135deg, #23263a 60%, #7f9fff 100%);
+}
+
+/* Founder Card Blockquote */
+.init-home .founder-statement blockquote {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 1.2rem 0;
+  padding-left: 1.2rem;
+  border-left: 3px solid #4e7fff;
+  opacity: 0.92;
+}
+
+/* Footer Status */
+.init-home .footer-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #7f9fff;
+  font-weight: 600;
+  font-size: 1.02rem;
+}
+
 /*
  * init-home.css
  * Dedicated homepage stylesheet for init / JPV-OS Access Gateway
@@ -201,4 +281,457 @@
   overflow-x: hidden;
 }
 
-/* Add more homepage section styles below, all scoped under .init-home */
+
+/* Sticky Glass Navigation */
+.init-home .init-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  background: rgba(24, 28, 38, 0.82);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 2px 24px 0 rgba(78, 127, 255, 0.08);
+  border-bottom: 1.5px solid rgba(78, 127, 255, 0.10);
+}
+
+.init-home .nav-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0.5rem 2.5vw;
+}
+
+.init-home .nav-logo {
+  font-family: 'Space Grotesk', 'Inter', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 1.7rem;
+  color: #7f9fff;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+  margin-right: 2.5vw;
+}
+
+.init-home .nav-links {
+  display: flex;
+  gap: 2.2vw;
+}
+
+.init-home .nav-link {
+  color: #b7c2e0;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.08rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 1.2rem;
+  transition: background 0.18s, color 0.18s;
+}
+
+.init-home .nav-link.active,
+.init-home .nav-link:hover,
+.init-home .nav-link:focus {
+  background: rgba(78, 127, 255, 0.13);
+  color: #fff;
+}
+
+.init-home .nav-cta {
+  background: linear-gradient(90deg, #4e7fff 0%, #7f9fff 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.08rem;
+  padding: 0.7rem 2.1rem;
+  border-radius: 2.2rem;
+  box-shadow: 0 2px 16px 0 rgba(78, 127, 255, 0.18);
+  border: none;
+  margin-left: 2vw;
+  transition: box-shadow 0.18s, transform 0.18s;
+  text-decoration: none;
+}
+
+.init-home .nav-cta:hover,
+.init-home .nav-cta:focus {
+  box-shadow: 0 4px 32px 0 rgba(78, 127, 255, 0.28);
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* Cinematic Hero Adjustments */
+.init-home .hero {
+  min-height: 100vh;
+  align-items: stretch;
+  padding-top: 4.5rem;
+}
+
+.init-home .glass-panel {
+  background: rgba(34, 38, 54, 0.82);
+  border-radius: 2.2rem;
+  box-shadow: 0 4px 48px 0 rgba(78, 127, 255, 0.13), 0 1.5px 8px 0 rgba(0, 0, 0, 0.10);
+  border: 1.5px solid rgba(78, 127, 255, 0.13);
+  backdrop-filter: blur(18px);
+  padding: 3.2rem 3.8rem;
+  margin-bottom: 2.2rem;
+}
+
+/* Animated Ecosystem Visualization */
+.init-home .animated-ecosystem {
+  position: relative;
+  background: rgba(30, 34, 48, 0.92);
+  border-radius: 2.5rem;
+  box-shadow: 0 8px 64px 0 rgba(78, 127, 255, 0.13), 0 1.5px 8px 0 rgba(0, 0, 0, 0.10);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 420px;
+  animation: ecosystem-float 8s ease-in-out infinite alternate;
+}
+
+.init-home .ecosystem-svg {
+  width: 90%;
+  height: 320px;
+  display: block;
+}
+
+.init-home .eco-node {
+  fill: #23263a;
+  stroke: #7f9fff;
+  stroke-width: 3.5;
+  filter: drop-shadow(0 0 16px #4e7fff44);
+  transition: filter 0.3s;
+}
+
+.init-home .eco-node.main {
+  fill: #4e7fff;
+  stroke: #fff;
+  filter: drop-shadow(0 0 32px #4e7fff88);
+}
+
+.init-home .eco-route {
+  stroke: #7f9fff;
+  stroke-width: 2.5;
+  opacity: 0.7;
+  stroke-dasharray: 8 8;
+  animation: route-pulse 2.5s linear infinite;
+}
+
+@keyframes route-pulse {
+  0% {
+    stroke-dashoffset: 0;
+  }
+
+  100% {
+    stroke-dashoffset: 32;
+  }
+}
+
+.init-home .eco-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, #4e7fff44 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: blur(18px);
+  opacity: 0.7;
+}
+
+/* Metrics Pulse Animation */
+.init-home .metric-card.pulse {
+  animation: metric-pulse 2.8s infinite alternate;
+}
+
+@keyframes metric-pulse {
+  0% {
+    box-shadow: 0 1.5px 8px 0 rgba(0, 0, 0, 0.10);
+  }
+
+  100% {
+    box-shadow: 0 4px 32px 0 rgba(78, 127, 255, 0.18);
+  }
+}
+
+/* Access Lanes */
+.init-home .access-lanes-section {
+  margin-top: 4.5rem;
+}
+
+.init-home .access-lanes {
+  display: flex;
+  gap: 2.5vw;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.init-home .lane-group {
+  flex: 1 1 28%;
+  min-width: 220px;
+}
+
+.init-home .lane-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.init-home .lane-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1.2rem;
+  padding: 1.2rem 2.2rem;
+  box-shadow: 0 1.5px 8px 0 rgba(0, 0, 0, 0.10);
+  font-size: 1.1rem;
+  color: #b7c2e0;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  min-width: 120px;
+  transition: box-shadow 0.18s, transform 0.18s;
+  cursor: pointer;
+  outline: none;
+}
+
+.init-home .lane-card:hover,
+.init-home .lane-card:focus {
+  box-shadow: 0 4px 32px 0 rgba(78, 127, 255, 0.18);
+  transform: translateY(-2px) scale(1.03);
+  color: #fff;
+}
+
+.init-home .lane-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  background: rgba(78, 127, 255, 0.13);
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.init-home .lane-status {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: auto;
+  background: #4e7fff;
+  box-shadow: 0 0 8px #4e7fff88;
+  animation: status-pulse 1.8s infinite alternate;
+}
+
+@keyframes status-pulse {
+  0% {
+    opacity: 0.7;
+  }
+
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 16px #4e7fffcc;
+  }
+}
+
+/* Partner Ecosystem Chips */
+.init-home .partner-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin: 2.2rem 0 3.2rem 0;
+}
+
+.init-home .partner-chip {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1.2rem;
+  padding: 0.7rem 1.5rem;
+  box-shadow: 0 1.5px 8px 0 rgba(0, 0, 0, 0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  min-height: 48px;
+  transition: box-shadow 0.18s, transform 0.18s;
+}
+
+.init-home .partner-chip img {
+  filter: grayscale(1) brightness(0.85);
+  max-height: 32px;
+  max-width: 90px;
+}
+
+.init-home .partner-chip:hover,
+.init-home .partner-chip:focus {
+  box-shadow: 0 4px 32px 0 rgba(78, 127, 255, 0.18);
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* Founder Card */
+.init-home .founder-section {
+  display: flex;
+  justify-content: center;
+  margin: 3.5rem 0;
+}
+
+.init-home .founder-card {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2rem;
+  box-shadow: 0 2px 24px 0 rgba(78, 127, 255, 0.10);
+  padding: 2.5rem 3.5rem;
+  min-width: 340px;
+  max-width: 700px;
+}
+
+.init-home .founder-portrait {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(78, 127, 255, 0.13);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.init-home .founder-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.init-home .founder-portrait img.placeholder {
+  object-fit: contain;
+  filter: grayscale(1) brightness(0.8);
+}
+
+.init-home .founder-statement {
+  flex: 1;
+  font-size: 1.15rem;
+  color: #c7cbe6;
+}
+
+.init-home .founder-signature {
+  margin-top: 1.2rem;
+  font-weight: 700;
+  color: #7f9fff;
+}
+
+/* Glass Footer */
+.init-home .glass-footer {
+  background: rgba(24, 28, 38, 0.82);
+  border-top: 1.5px solid rgba(78, 127, 255, 0.10);
+  box-shadow: 0 -2px 24px 0 rgba(78, 127, 255, 0.08);
+  backdrop-filter: blur(16px);
+  padding: 2.5rem 0;
+  margin-top: 4.5rem;
+}
+
+.init-home .footer-columns {
+  display: flex;
+  justify-content: center;
+  gap: 4vw;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.init-home .footer-col {
+  min-width: 180px;
+}
+
+.init-home .footer-col h4 {
+  color: #7f9fff;
+  font-size: 1.1rem;
+  margin-bottom: 0.7rem;
+}
+
+.init-home .footer-col a,
+.init-home .footer-col span {
+  color: #b7c2e0;
+  font-size: 1rem;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 0.3rem;
+  word-break: break-all;
+}
+
+.init-home .footer-col a:hover,
+.init-home .footer-col a:focus {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* Motion & Accessibility */
+@media (prefers-reduced-motion: reduce) {
+
+  .init-home .animated-ecosystem,
+  .init-home .metric-card.pulse,
+  .init-home .lane-card,
+  .init-home .partner-chip {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 900px) {
+  .init-home .hero {
+    flex-direction: column;
+    padding-top: 4.5rem;
+    min-height: unset;
+  }
+
+  .init-home .hero-left,
+  .init-home .hero-right {
+    padding: 2.5vw 5vw;
+    min-width: 0;
+  }
+
+  .init-home .glass-panel {
+    padding: 2rem 1.2rem;
+  }
+
+  .init-home .metrics {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .init-home .access-lanes {
+    flex-direction: column;
+    gap: 2.2rem;
+  }
+
+  .init-home .footer-columns {
+    flex-direction: column;
+    gap: 2.2rem;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .init-home .nav-content {
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 0.5rem 1vw;
+  }
+
+  .init-home .hero-title {
+    font-size: 2.1rem;
+  }
+
+  .init-home .hero-subtitle {
+    font-size: 1.05rem;
+  }
+
+  .init-home .glass-panel {
+    padding: 1.2rem 0.5rem;
+  }
+
+  .init-home .founder-card {
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 1.2rem 0.5rem;
+    min-width: 0;
+    max-width: 100%;
+  }
+}

@@ -2,158 +2,259 @@
 @layout HomeLayout
 
 @* init / JPV-OS Access Gateway Homepage — Clean Rebuild *@
+
 <div class="init-home">
-    <!-- Cinematic Atmospheric Background -->
-    <div class="atmospheric-bg"></div>
+  <!-- Cinematic Atmospheric Background -->
+  <div class="atmospheric-bg"></div>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-left">
-            <div class="hero-eyebrow">init &bull; powered by JPV-OS &bull; operated by JayPVentures LLC</div>
-            <h1 class="hero-title">Welcome to the Venture</h1>
-            <div class="hero-subtitle">
-                Connected infrastructure, creator ecosystems, enterprise access, and scalable operational architecture unified through a single intelligent platform.
-            </div>
-            <div class="hero-ctas">
-                <a href="/access" class="cta-primary">Enter the Ecosystem</a>
-                <a href="/ecosystem" class="cta-secondary">Explore Architecture</a>
-            </div>
-            <div class="metrics">
-                <div class="metric-card"><span>Uptime</span><strong>99.99%</strong></div>
-                <div class="metric-card"><span>Active Nodes</span><strong>14,200</strong></div>
-                <div class="metric-card"><span>Operations</span><strong>847</strong></div>
-                <div class="metric-card"><span>Regions</span><strong>52</strong></div>
-            </div>
-        </div>
-        <div class="hero-right">
-            <div class="ecosystem-visual">
-                <!-- Placeholder for animated ecosystem visualization / UI shell -->
-                <img src="/assets/visual-ecosystem.svg" alt="Ecosystem Visualization" style="width:90%;opacity:0.92;" />
-            </div>
-        </div>
-    </section>
+  <!-- Sticky Glass Navigation (Consolidated) -->
+  <nav class="init-nav glass-nav" aria-label="Main Navigation">
+    <div class="nav-content">
+      <a class="nav-logo" href="/">init</a>
+      <div class="nav-links">
+        <a href="/" class="nav-link active">Home</a>
+        <a href="/ecosystem" class="nav-link">Ecosystem</a>
+        <a href="/access" class="nav-link">Access</a>
+        <a href="/docs" class="nav-link">Docs</a>
+      </div>
+      <a href="/access" class="nav-cta">Get init</a>
+    </div>
+    <div class="nav-status-strip" aria-live="polite">
+      <span class="status-dot online"></span>
+      <span class="status-label">All systems operational</span>
+    </div>
+  </nav>
 
-    <!-- Ecosystem Metrics Section -->
-    <section>
-        <!-- Animated metrics, partner logos, etc. -->
-        <!-- ... -->
-    </section>
+  <!-- Hero Section (Cinematic, Tightened) -->
+  <section class="hero">
+    <div class="hero-left glass-panel">
+      <div class="hero-eyebrow">init &bull; powered by JPV-OS &bull; operated by JayPVentures LLC</div>
+      <h1 class="hero-title">Welcome to the Venture</h1>
+      <div class="hero-subtitle">
+        Connected infrastructure, creator ecosystems, enterprise access, and scalable operational architecture unified
+        through a single intelligent platform.
+      </div>
+      <div class="hero-ctas">
+        <a href="/access" class="cta-primary">Enter the Ecosystem</a>
+        <a href="/ecosystem" class="cta-secondary">Explore Architecture</a>
+      </div>
+      <div class="metrics">
+        <div class="metric-card pulse"><span>Uptime</span><strong>99.99%</strong></div>
+        <div class="metric-card pulse"><span>Active Nodes</span><strong>14,200</strong></div>
+        <div class="metric-card pulse"><span>Operations</span><strong>847</strong></div>
+        <div class="metric-card pulse"><span>Regions</span><strong>52</strong></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="ecosystem-visual animated-ecosystem" aria-label="Animated Ecosystem Visualization">
+        <!-- Cinematic SVG ecosystem visualization with telemetry, routing, orbital motion -->
+        <svg viewBox="0 0 320 320" width="90%" height="320" fill="none" xmlns="http://www.w3.org/2000/svg"
+             class="ecosystem-svg">
+          <defs>
+            <radialGradient id="ecoGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#4e7fff" stop-opacity="0.35" />
+              <stop offset="100%" stop-color="#4e7fff" stop-opacity="0" />
+            </radialGradient>
+            <filter id="ecoBlur" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="8" />
+            </filter>
+          </defs>
+          <!-- Orbital paths -->
+          <ellipse cx="160" cy="160" rx="110" ry="54" stroke="#7f9fff55" stroke-width="2" fill="none"
+                   stroke-dasharray="8 8" />
+          <ellipse cx="160" cy="160" rx="80" ry="110" stroke="#4e7fff33" stroke-width="2" fill="none"
+                   stroke-dasharray="12 12" />
+          <!-- Main node -->
+          <circle class="eco-node main" cx="160" cy="160" r="54" />
+          <!-- Layered nodes -->
+          <circle class="eco-node" cx="60" cy="80" r="18" />
+          <circle class="eco-node" cx="260" cy="80" r="18" />
+          <circle class="eco-node" cx="60" cy="240" r="18" />
+          <circle class="eco-node" cx="260" cy="240" r="18" />
+          <!-- Telemetry/routing pulses -->
+          <circle cx="160" cy="106" r="6" fill="#7f9fff" opacity="0.7">
+            <animate attributeName="r" values="6;12;6" dur="2.5s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.5s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="160" cy="214" r="6" fill="#7f9fff" opacity="0.7">
+            <animate attributeName="r" values="6;12;6" dur="2.5s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.5s" repeatCount="indefinite" />
+          </circle>
+          <!-- Routing lines -->
+          <path class="eco-route" d="M160 106 L60 80" />
+          <path class="eco-route" d="M160 106 L260 80" />
+          <path class="eco-route" d="M160 214 L60 240" />
+          <path class="eco-route" d="M160 214 L260 240" />
+          <!-- Ambient orbital activity -->
+          <circle cx="160" cy="50" r="4" fill="#7f9fff" opacity="0.18">
+            <animateMotion dur="8s" repeatCount="indefinite" path="M160,50 A110,54 0 1,1 159.9,50" />
+          </circle>
+          <circle cx="160" cy="270" r="4" fill="#7f9fff" opacity="0.18">
+            <animateMotion dur="8s" repeatCount="indefinite" path="M160,270 A110,54 0 1,0 160.1,270" />
+          </circle>
+          <!-- Glow -->
+          <circle cx="160" cy="160" r="120" fill="url(#ecoGlow)" filter="url(#ecoBlur)" />
+        </svg>
+        <div class="eco-glow"></div>
+      </div>
+    </div>
+  </section>
 
-    <!-- Access Lanes Section -->
-    <section>
-        <h2>Access Lanes</h2>
-        <div class="access-lanes">
-            <div class="lane-group">
-                <h3>Community</h3>
-                <div class="lane-cards">
-                    <div class="lane-card">Member Access</div>
-                    <div class="lane-card">VIP Venture</div>
+
+  <!-- Ecosystem Metrics Section (already in hero) -->
+
+
+  <!-- Access Lanes Section (Grouped, Glass, Icons, State) -->
+  <section class="access-lanes-section">
+    <h2>Access Lanes</h2>
+    <div class="access-lanes">
+      <div class="lane-group">
+        <h3>Community</h3>
+        <div class="lane-cards">
+          <div class="lane-card glass-card" tabindex="0"><span class="lane-icon community"></span>Member Access <span
+            class="lane-status online"></span></div>
+            <div class="lane-card glass-card" tabindex="0"><span class="lane-icon community"></span>VIP Venture <span
+              class="lane-status online"></span></div>
+            </div>
+          </div>
+          <div class="lane-group">
+            <h3>Professional</h3>
+            <div class="lane-cards">
+              <div class="lane-card glass-card" tabindex="0"><span class="lane-icon professional"></span>Creator Lane <span
+                class="lane-status online"></span></div>
+                <div class="lane-card glass-card" tabindex="0"><span class="lane-icon professional"></span>Operator <span
+                  class="lane-status online"></span></div>
                 </div>
-            </div>
-            <div class="lane-group">
-                <h3>Professional</h3>
-                <div class="lane-cards">
-                    <div class="lane-card">Creator Lane</div>
-                    <div class="lane-card">Operator</div>
-                </div>
-            </div>
-            <div class="lane-group">
+              </div>
+              <div class="lane-group">
                 <h3>Institutional</h3>
                 <div class="lane-cards">
-                    <div class="lane-card">Enterprise</div>
-                    <div class="lane-card">Sovereign</div>
+                  <div class="lane-card glass-card" tabindex="0"><span class="lane-icon institutional"></span>Enterprise <span
+                    class="lane-status online"></span></div>
+                    <div class="lane-card glass-card" tabindex="0"><span class="lane-icon institutional"></span>Sovereign <span
+                      class="lane-status online"></span></div>
+                    </div>
+                  </div>
                 </div>
-            </div>
-        </div>
-    </section>
+              </section>
 
-    <!-- Infrastructure Architecture Section -->
-    <section>
-        <h2>Infrastructure Architecture</h2>
-        <!-- Expandable infrastructure layers, animated routing map, etc. -->
-        <!-- ... -->
-    </section>
+              <!-- Infrastructure Architecture Section -->
+              <section>
+                <h2>Infrastructure Architecture</h2>
+                <!-- Expandable infrastructure layers, animated routing map, etc. -->
+                <!-- ... -->
+              </section>
 
-    <!-- Connected Partner Ecosystem Section -->
-    <section>
-        <h2>Connected Partner Ecosystem</h2>
-        <div class="partner-logos">
-            <!-- Monochrome SVG logos only -->
-            <img src="/assets/partners/microsoft.svg" alt="Microsoft" />
-            <img src="/assets/partners/github.svg" alt="GitHub" />
-            <img src="/assets/partners/cloudflare.svg" alt="Cloudflare" />
-            <img src="/assets/partners/stripe.svg" alt="Stripe" />
-            <img src="/assets/partners/discord.svg" alt="Discord" />
-            <img src="/assets/partners/openai.svg" alt="OpenAI" />
-            <img src="/assets/partners/intel.svg" alt="Intel" />
-            <img src="/assets/partners/hp.svg" alt="HP" />
-            <img src="/assets/partners/wix.svg" alt="Wix" />
-            <img src="/assets/partners/azure.svg" alt="Azure" />
-        </div>
-    </section>
 
-        <h2 class="venture-section-title">
-            Operational Routing Layers
-        </h2>
+              <!-- Connected Partner Ecosystem Section -->
+              <section>
+                <h2>Connected Partner Ecosystem</h2>
+                <div class="partner-logos">
+                  <span class="partner-chip"><img src="/assets/partners/microsoft.svg" alt="Microsoft" /></span>
+                  <span class="partner-chip"><img src="/assets/partners/github.svg" alt="GitHub" /></span>
+                  <span class="partner-chip"><img src="/assets/partners/cloudflare.svg" alt="Cloudflare" /></span>
+                  <span class="partner-chip"><img src="/assets/partners/stripe.svg" alt="Stripe" /></span>
+                  <span class="partner-chip"><img src="/assets/partners/discord.svg" alt="Discord" /></span>
+                  <span class="partner-chip"><img src="/assets/partners/openai.svg" alt="OpenAI" /></span>
+                  <span class="partner-chip"><img src="/assets/partners/intel.svg" alt="Intel" /></span>
+                  <span class="partner-chip"><img src="/assets/partners/hp.svg" alt="HP" /></span>
+                  <span class="partner-chip"><img src="/assets/partners/wix.svg" alt="Wix" /></span>
+                  <span class="partner-chip"><img src="/assets/partners/azure.svg" alt="Azure" /></span>
+                </div>
+              </section>
 
-        <p class="venture-section-copy">
-            JPV-OS are the operating standards for enterprise-grade infrastructure.
-            init is the application interface for the JPV-OS ecosystem.
-            Six access lanes engineered for distinct operational contexts
-            within the JPV-OS ecosystem.
-        </p>
+              <h2 class="venture-section-title">
+                Operational Routing Layers
+              </h2>
 
-        <div class="venture-routing-grid">
+              <p class="venture-section-copy">
+                JPV-OS are the operating standards for enterprise-grade infrastructure.
+                init is the application interface for the JPV-OS ecosystem.
+                Six access lanes engineered for distinct operational contexts
+                within the JPV-OS ecosystem.
+              </p>
 
-            <div class="venture-routing-card">
-                <h3>Member Access</h3>
-                <p>Community systems, updates, Discord access routing, and onboarding.</p>
-            </div>
+              <div class="venture-routing-grid">
 
-            <div class="venture-routing-card">
-                <h3>VIP Venture</h3>
-                <p>Private infrastructure channels, founder sessions, and VIP coordination.</p>
-            </div>
+                <div class="venture-routing-card">
+                  <h3>Member Access</h3>
+                  <p>Community systems, updates, Discord access routing, and onboarding.</p>
+                </div>
 
-            <div class="venture-routing-card">
-                <h3>Creator Lane</h3>
-                <p>Creator publishing infrastructure, monetization systems, and deployment tools.</p>
-            </div>
+                <div class="venture-routing-card">
+                  <h3>VIP Venture</h3>
+                  <p>Private infrastructure channels, founder sessions, and VIP coordination.</p>
+                </div>
 
-        </div>
+                <div class="venture-routing-card">
+                  <h3>Creator Lane</h3>
+                  <p>Creator publishing infrastructure, monetization systems, and deployment tools.</p>
+                </div>
 
-    <!-- Governance & Operational Standards Section -->
-    <section>
-        <h2>Governance &amp; Operational Standards</h2>
-        <!-- ... -->
-    </section>
+              </div>
 
-    <!-- Founder Vision Section -->
-    <section>
-        <h2>Founder Vision</h2>
-        <div class="founder-section">
-            <div class="founder-portrait">
-                <img src="/img/founder-portrait.jpg" alt="Founder Portrait" />
-            </div>
-            <div class="founder-statement">
-                <p>“Our mission is to unify digital infrastructure, empower creators, and enable enterprises to operate at scale with trust and intelligence.”</p>
-                <div class="founder-signature">— JayPVentures LLC</div>
-            </div>
-        </div>
-    </section>
+              <!-- Governance & Operational Standards Section -->
+              <section>
+                <h2>Governance &amp; Operational Standards</h2>
+                <!-- ... -->
+              </section>
 
-    <!-- Pricing Section -->
-    <section>
-        <h2>Pricing</h2>
-        <!-- Hybrid public pricing, tier comparison, Stripe checkout CTAs -->
-        <!-- ... -->
-    </section>
 
-    <!-- Live Status / Trust Layer Section -->
-    <section>
-        <h2>Live Status &amp; Trust Layer</h2>
-        <!-- Live system status, trust signals, etc. -->
-        <!-- ... -->
-    </section>
+              <!-- Founder Vision Section (Premium Card) -->
+              <section>
+                <h2>Founder Vision</h2>
+                <div class="founder-section">
+                  <div class="founder-card glass-card">
+                    <div class="founder-portrait">
+                      <img src="/img/founder-portrait.jpg" alt="Founder Portrait"
+                           onerror="this.src='/img/founder-placeholder.png';this.classList.add('placeholder');" />
+                    </div>
+                    <div class="founder-statement">
+                      <blockquote>“Our mission is to unify digital infrastructure, empower creators, and enable enterprises to
+                        operate at scale with trust and intelligence.”</blockquote>
+                        <div class="founder-signature">— JayPVentures LLC</div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
 
-</div>
+                <!-- Pricing Section -->
+                <section>
+                  <h2>Pricing</h2>
+                  <!-- Hybrid public pricing, tier comparison, Stripe checkout CTAs -->
+                  <!-- ... -->
+                </section>
+
+                <!-- Live Status / Trust Layer Section -->
+                <section>
+                  <h2>Live Status &amp; Trust Layer</h2>
+                  <!-- Live system status, trust signals, etc. -->
+                  <!-- ... -->
+                </section>
+
+
+                <!-- Glass Enterprise Footer (Operational Trust Layer) -->
+                <footer class="glass-footer">
+                  <div class="footer-columns">
+                    <div class="footer-col">
+                      <h4>Contact</h4>
+                      <a href="mailto:hello@jaypventures.com">hello@jaypventures.com</a><br />
+                      <a href="mailto:support@jaypventures.com">support@jaypventures.com</a>
+                    </div>
+                    <div class="footer-col">
+                      <h4>Legal</h4>
+                      <a href="/terms">Terms of Service</a><br />
+                      <a href="/privacy">Privacy Policy</a>
+                    </div>
+                    <div class="footer-col">
+                      <h4>Company</h4>
+                      <span>JPV-OS Access Gateway</span><br />
+                      <span>Operated by JayPVentures LLC</span>
+                    </div>
+                    <div class="footer-col">
+                      <h4>Status</h4>
+                      <span class="footer-status"><span class="status-dot online"></span> All systems operational</span>
+                    </div>
+                  </div>
+                </footer>
+              </div>
