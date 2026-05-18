@@ -28,3 +28,4 @@ azure-publish-profile-*.xml
 *.publishsettings
 .ssh/
 id_ed25519*
+.vscode/
