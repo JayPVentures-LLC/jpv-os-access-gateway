@@ -17,10 +17,16 @@ function Install-DockerIfMissing {
 
 
 function Start-Server {
-  Write-Host "Starting server (dotnet run)..."
+  Write-Host "Starting server (dotnet run) in the background..."
   Push-Location "src\JPVOS"
-  dotnet run --no-launch-profile
-  Pop-Location
+  try {
+    $serverProcess = Start-Process -FilePath "dotnet" -ArgumentList "run", "--no-launch-profile" -PassThru
+    Write-Host "Server started with PID $($serverProcess.Id)."
+    return $serverProcess
+  }
+  finally {
+    Pop-Location
+  }
 }
 
 function Build-And-Test-Homepage {
