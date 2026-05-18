@@ -1,0 +1,160 @@
+{
+  "generatedAt": "2026-05-14T16:57:24",
+  "assets": [
+    {
+      "name": "asset-manifest.json",
+      "relativePath": "asset-manifest.json",
+      "extension": ".json",
+      "sizeKB": 1.37,
+      "public": true
+    },
+    {
+      "name": "asset-registry.json",
+      "relativePath": "asset-registry.json",
+      "extension": ".json",
+      "sizeKB": 4.15,
+      "public": true
+    },
+    {
+      "name": "init-hero.png",
+      "relativePath": "init/init-hero.png",
+      "extension": ".png",
+      "sizeKB": 1171.46,
+      "public": true
+    },
+    {
+      "name": "jaypventures-characterstyles1.png",
+      "relativePath": "jaypventures/jaypventures-characterstyles1.png",
+      "extension": ".png",
+      "sizeKB": 2435.29,
+      "public": true
+    },
+    {
+      "name": "jaypventures-creative1.png",
+      "relativePath": "jaypventures/jaypventures-creative1.png",
+      "extension": ".png",
+      "sizeKB": 2375.95,
+      "public": true
+    },
+    {
+      "name": "jaypventures-creative2.png",
+      "relativePath": "jaypventures/jaypventures-creative2.png",
+      "extension": ".png",
+      "sizeKB": 2335.75,
+      "public": true
+    },
+    {
+      "name": "jaypventures-creative3.png",
+      "relativePath": "jaypventures/jaypventures-creative3.png",
+      "extension": ".png",
+      "sizeKB": 1771.32,
+      "public": true
+    },
+    {
+      "name": "jaypventures-hero.png",
+      "relativePath": "jaypventures/jaypventures-hero.png",
+      "extension": ".png",
+      "sizeKB": 1892.19,
+      "public": true
+    },
+    {
+      "name": "jaypventures-livestream1.png",
+      "relativePath": "jaypventures/jaypventures-livestream1.png",
+      "extension": ".png",
+      "sizeKB": 2299.68,
+      "public": true
+    },
+    {
+      "name": "jaypventures-livestreamagenda.png",
+      "relativePath": "jaypventures/jaypventures-livestreamagenda.png",
+      "extension": ".png",
+      "sizeKB": 1931.16,
+      "public": true
+    },
+    {
+      "name": "jaypventures-stickerpack1.png",
+      "relativePath": "jaypventures/jaypventures-stickerpack1.png",
+      "extension": ".png",
+      "sizeKB": 2357.38,
+      "public": true
+    },
+    {
+      "name": "jaypventures-stickerpack2.png",
+      "relativePath": "jaypventures/jaypventures-stickerpack2.png",
+      "extension": ".png",
+      "sizeKB": 2399.82,
+      "public": true
+    },
+    {
+      "name": "jaypventures-stickerpack3.png",
+      "relativePath": "jaypventures/jaypventures-stickerpack3.png",
+      "extension": ".png",
+      "sizeKB": 1993.07,
+      "public": true
+    },
+    {
+      "name": "jaypventures-llc-hero.png",
+      "relativePath": "jaypventures-llc/jaypventures-llc-hero.png",
+      "extension": ".png",
+      "sizeKB": 1816.26,
+      "public": true
+    },
+    {
+      "name": "jaypventures-llc-image-01.png",
+      "relativePath": "jaypventures-llc/jaypventures-llc-image-01.png",
+      "extension": ".png",
+      "sizeKB": 1597.97,
+      "public": true
+    },
+    {
+      "name": "jaypventures-llc-image-02.png",
+      "relativePath": "jaypventures-llc/jaypventures-llc-image-02.png",
+      "extension": ".png",
+      "sizeKB": 2086.86,
+      "public": true
+    },
+    {
+      "name": "jaypventures-llc-image-03.png",
+      "relativePath": "jaypventures-llc/jaypventures-llc-image-03.png",
+      "extension": ".png",
+      "sizeKB": 1971.1,
+      "public": true
+    },
+    {
+      "name": "jaypvlabs-hero.png",
+      "relativePath": "jaypVLabs/jaypvlabs-hero.png",
+      "extension": ".png",
+      "sizeKB": 1551.67,
+      "public": true
+    },
+    {
+      "name": "jpv-institute-hero.png",
+      "relativePath": "jaypVLabs/jpv-institute-hero.png",
+      "extension": ".png",
+      "sizeKB": 1910.95,
+      "public": true
+    },
+    {
+      "name": "jpv-os-hero.png",
+      "relativePath": "jpv-os/jpv-os-hero.png",
+      "extension": ".png",
+      "sizeKB": 1507.61,
+      "public": true
+    },
+    {
+      "name": "jpv-structureimage.png",
+      "relativePath": "jpv-os/jpv-structureimage.png",
+      "extension": ".png",
+      "sizeKB": 1909.63,
+      "public": true
+    },
+    {
+      "name": "allbrands-logos.png",
+      "relativePath": "logos/allbrands-logos.png",
+      "extension": ".png",
+      "sizeKB": 1729.44,
+      "public": true
+    }
+  ],
+  "root": "wwwroot/assets"
+}

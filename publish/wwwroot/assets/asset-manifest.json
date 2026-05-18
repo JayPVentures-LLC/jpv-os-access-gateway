@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-05-14T16:55:40",
+  "standard": "JPV-OS public asset structure",
+  "folders": {
+    "hero": "Primary landing visuals and above-the-fold compositions",
+    "ui/icons": "System UI icons only; brand logos stay in brand folders",
+    "backgrounds": "Full-page background images and abstract environment assets",
+    "ui/surfaces": "Reusable panels, cards, shells, and interface surfaces",
+    "ui/overlays": "Noise, grid, glow, vignette, and depth overlays",
+    "ui/gradients": "Approved gradient backgrounds and accent bands",
+    "typography": "Type lockups, text treatments, and wordmark-safe exports",
+    "motion": "Lottie, JSON, MP4, WEBM, or animation-ready assets",
+    "ui/glass": "Glassmorphism panels, frosted cards, light refraction layers",
+    "illustrations": "Non-logo diagrams, concepts, scenes, and visual explainers"
+  },
+  "naming": {
+    "examples": [
+      "glass-command-panel.webp",
+      "gradient-enterprise-blue.svg",
+      "overlay-grid-soft.svg",
+      "surface-access-card.webp",
+      "icon-routing.svg"
+    ],
+    "format": "lowercase-kebab-case"
+  },
+  "protectedRules": [
+    "Do not store private compliance screenshots in public wwwroot assets.",
+    "Do not use random generated filenames in production.",
+    "Do not place brand logos inside ui folders.",
+    "Do not overwrite existing approved logo files."
+  ]
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 56" role="img" aria-label="IBM logo">
+  <text x="4" y="42" font-family="Arial Black, IBM Plex Sans, Arial, sans-serif" font-size="44" font-weight="900" fill="#F5F7FA">IBM</text>
+  <g stroke="#07101C" stroke-width="4">
+    <line x1="0" y1="17" x2="118" y2="17"/>
+    <line x1="0" y1="29" x2="118" y2="29"/>
+    <line x1="0" y1="41" x2="118" y2="41"/>
+  </g>
+</svg>
