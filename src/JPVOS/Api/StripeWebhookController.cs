@@ -31,7 +31,8 @@ public class StripeWebhookController : ControllerBase
   public async Task<IActionResult> Post()
   {
 
-    var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+    using var reader = new StreamReader(HttpContext.Request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
+    var json = await reader.ReadToEndAsync();
     var signatureHeader = Request.Headers["Stripe-Signature"];
     var webhookSecret = _config["STRIPE_WEBHOOK_SECRET"];
     if (string.IsNullOrWhiteSpace(webhookSecret))
