@@ -37,7 +37,7 @@ jobs:
           set -e
           echo "Checking /api/health..."
           resp=$(curl -sSf https://jpv-os-access-gateway.azurewebsites.net/api/health)
-          echo "$resp" | grep '"status":"healthy"'
+          echo "$resp" | jq -e '.status == "healthy"' > /dev/null
           echo "Health endpoint OK."
 
           echo "Checking homepage for stylesheet..."
