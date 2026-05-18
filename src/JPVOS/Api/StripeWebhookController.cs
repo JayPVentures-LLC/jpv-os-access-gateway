@@ -152,7 +152,11 @@ public class StripeWebhookController : ControllerBase
               invoice = JsonSerializer.Deserialize<Stripe.Invoice>(stripeEvent.Data.Object.ToString() ?? "{}");
             }
           }
-          catch (Exception ex)
+          catch (JsonException ex)
+          {
+            _logger.LogWarning(ex, "Failed to deserialize Stripe.Invoice");
+          }
+          catch (NotSupportedException ex)
           {
             _logger.LogWarning(ex, "Failed to deserialize Stripe.Invoice");
           }
