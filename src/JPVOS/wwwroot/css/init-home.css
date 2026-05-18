@@ -487,6 +487,7 @@ section > p:first-of-type {
     height: 100%;
     object-fit: cover;
     opacity: 0.95;
+    z-index: 2;
 }
 
 .founder-portrait::before {
@@ -505,10 +506,6 @@ section > p:first-of-type {
     text-align: center;
     padding: 32px;
     z-index: 1;
-}
-
-.founder-portrait img {
-    z-index: 2;
 }
 
 .founder-statement {
@@ -545,11 +542,7 @@ section > p:first-of-type {
    ===================================================== */
 
 @media (prefers-reduced-motion: reduce) {
-    * {
-        animation: none !important;
-        transition: none !important;
-    }
-
+    /* Disable animations for elements that have them defined */
     .hero-left,
     .hero-right,
     .founder-portrait,
@@ -559,10 +552,20 @@ section > p:first-of-type {
         animation: none;
     }
 
-    .metric-card:hover,
-    .lane-card:hover,
+    /* Disable smooth transitions for all interactive elements */
+    .cta-primary,
+    .cta-secondary,
+    .metric-card,
+    .lane-card,
+    .partner-logos img {
+        transition: none;
+    }
+
+    /* Remove transforms on hover for animated elements */
     .cta-primary:hover,
     .cta-secondary:hover,
+    .metric-card:hover,
+    .lane-card:hover,
     .partner-logos img:hover {
         transform: none;
     }
@@ -675,24 +678,6 @@ section > p:first-of-type {
 
     .founder-statement p {
         font-size: clamp(14px, 1.5vw, 16px);
-    }
-
-    footer .footer-content {
-        grid-template-columns: 1fr;
-        gap: clamp(24px, 3vw, 32px);
-    }
-
-    footer h3 {
-        font-size: 13px;
-    }
-
-    footer a {
-        font-size: 13px;
-    }
-
-    footer .footer-bottom {
-        padding-top: clamp(18px, 2vw, 24px);
-        font-size: 12px;
     }
 
     .hero-ctas {
