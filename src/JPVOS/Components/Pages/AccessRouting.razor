@@ -1,28 +1,62 @@
 @page "/access"
 @page "/access-routing"
 
-<div class="page-stack">
-    <PageHero Kicker="Access"
-              Title="Login and environment routing."
-              Description="init routes people into the right access environment: member access, partner portal, enterprise governance, operational authority, and developer workflows."
-              Image="@AssetPaths.JpvOs.Core"
-              ImageAlt="JPV-OS access routing core visual" />
-
-    <section class="content-section">
-        <div class="access-grid">
-            <AccessCard Environment="Member" Title="Member Access" Description="Community entry, updates, selected resources, and guided ecosystem movement." Href="/login" />
-            <AccessCard Environment="Partner" Title="Partner Governance" Description="Technology ecosystem intake, collaboration review, and routing continuity." Href="/partners" />
-            <AccessCard Environment="Enterprise" Title="Infrastructure Authority" Description="Architecture, governance, identity, security, deployment, and operations requests." Href="/jaypventures-llc" />
-            <AccessCard Environment="Operations" Title="Operational Integrity" Description="Protected internal pathway for delivery governance, security posture, and release authority." Href="/admin" />
-            <AccessCard Environment="Developer" Title="Developer Routing" Description="Development workflow, repositories, automation, runtime tooling, and implementation pathways." Href="/ecosystem" />
-            <AccessCard Environment="Support" Title="Support Routing" Description="Support pathways for account, package, access, partner, and implementation requests." Href="/contact" />
+<div class="public-page page-stack">
+    <section class="public-hero" style="min-height: auto; padding: clamp(60px, 8vh, 100px) clamp(24px, 5vw, 80px);">
+        <div class="public-hero-content">
+            <p class="public-eyebrow">Access</p>
+            <h1 class="public-title" style="font-size: clamp(2.2rem, 5vw, 3.5rem);">Login and environment routing</h1>
+            <p class="public-subtitle">
+                init routes people into the right access environment: member access, partner portal, enterprise governance, operational authority, and developer workflows.
+            </p>
         </div>
     </section>
 
-    <CTASection Title="Get init access."
-                Description="Start with login routing, then move into the right environment for the next operational step."
-                PrimaryCta="Open login"
-                PrimaryHref="/login"
-                SecondaryCta="Explore Ecosystem"
-                SecondaryHref="/ecosystem" />
+    <section class="public-section">
+        <div class="public-access-grid">
+            <a class="public-access-card" href="/login">
+                <span>Member</span>
+                <strong>Member Access</strong>
+                <p>Community entry, updates, selected resources, and guided ecosystem movement.</p>
+            </a>
+            <a class="public-access-card" href="/partners">
+                <span>Partner</span>
+                <strong>Partner Governance</strong>
+                <p>Technology ecosystem intake, collaboration review, and routing continuity.</p>
+            </a>
+            <a class="public-access-card" href="/jaypventures-llc">
+                <span>Enterprise</span>
+                <strong>Infrastructure Authority</strong>
+                <p>Architecture, governance, identity, security, deployment, and operations requests.</p>
+            </a>
+            <a class="public-access-card" href="/admin">
+                <span>Operations</span>
+                <strong>Operational Integrity</strong>
+                <p>Protected internal pathway for delivery governance, security posture, and release authority.</p>
+            </a>
+            <a class="public-access-card" href="/ecosystem">
+                <span>Developer</span>
+                <strong>Developer Routing</strong>
+                <p>Development workflow, repositories, automation, runtime tooling, and implementation pathways.</p>
+            </a>
+            <a class="public-access-card" href="/contact">
+                <span>Support</span>
+                <strong>Support Routing</strong>
+                <p>Support pathways for account, package, access, partner, and implementation requests.</p>
+            </a>
+        </div>
+    </section>
+
+    <section class="public-section" style="text-align: center;">
+        <div class="public-section-header">
+            <h2 class="public-title" style="font-size: clamp(1.8rem, 4vw, 2.5rem);">Get init access</h2>
+            <p class="public-subtitle" style="margin: 0 auto 32px;">
+                Start with login routing, then move into the right environment for the next operational step.
+            </p>
+        </div>
+        <div class="public-hero-actions">
+            <a href="/login" class="public-btn public-btn-primary">Open login</a>
+            <a href="/ecosystem" class="public-btn public-btn-secondary">Explore Ecosystem</a>
+        </div>
+    </section>
 </div>

@@ -1,38 +1,52 @@
 @page "/login"
 @page "/access/login"
 
-<div class="page-stack">
-    <PageHero Kicker="Login"
-              Title="Identity handoff and access routing."
-              Description="Use the login surface to route identity into the right operational environment while preserving governance and infrastructure authority standards."
-              Image="@AssetPaths.JpvOs.Topology"
-              ImageAlt="identity routing topology" />
-
-    <section class="content-section">
-        <div class="access-grid">
-            <RouteTile Eyebrow="Member"
-                       Title="Member login"
-                       Description="Authentication pathway for updates, resources, and guided ecosystem routing."
-                       Href="/access" />
-            <RouteTile Eyebrow="Partner"
-                       Title="Partner login"
-                       Description="Identity handoff for partner governance workflows and collaboration routing."
-                       Href="/partners" />
-            <RouteTile Eyebrow="Enterprise"
-                       Title="Enterprise login"
-                       Description="Secure route for architecture governance and infrastructure authority workflows."
-                       Href="/jaypventures-llc" />
-            <RouteTile Eyebrow="Operations"
-                       Title="Operator login"
-                       Description="Protected entry for operational integrity reviews and release coordination."
-                       Href="/admin" />
+<div class="public-page page-stack">
+    <section class="public-hero" style="min-height: auto; padding: clamp(60px, 8vh, 100px) clamp(24px, 5vw, 80px);">
+        <div class="public-hero-content">
+            <p class="public-eyebrow">Login</p>
+            <h1 class="public-title" style="font-size: clamp(2.2rem, 5vw, 3.5rem);">Identity handoff and access routing</h1>
+            <p class="public-subtitle">
+                Use the login surface to route identity into the right operational environment while preserving governance and infrastructure authority standards.
+            </p>
         </div>
     </section>
 
-    <CTASection Title="Need immediate routing?"
-                Description="Start from access routing to identify your environment and continue through the right operational path."
-                PrimaryCta="Open access"
-                PrimaryHref="/access"
-                SecondaryCta="View pricing"
-                SecondaryHref="/pricing" />
+    <section class="public-section">
+        <div class="public-access-grid">
+            <a class="public-access-card" href="/access">
+                <span>Member</span>
+                <strong>Member login</strong>
+                <p>Authentication pathway for updates, resources, and guided ecosystem routing.</p>
+            </a>
+            <a class="public-access-card" href="/partners">
+                <span>Partner</span>
+                <strong>Partner login</strong>
+                <p>Identity handoff for partner governance workflows and collaboration routing.</p>
+            </a>
+            <a class="public-access-card" href="/jaypventures-llc">
+                <span>Enterprise</span>
+                <strong>Enterprise login</strong>
+                <p>Secure route for architecture governance and infrastructure authority workflows.</p>
+            </a>
+            <a class="public-access-card" href="/admin">
+                <span>Operations</span>
+                <strong>Operator login</strong>
+                <p>Protected entry for operational integrity reviews and release coordination.</p>
+            </a>
+        </div>
+    </section>
+
+    <section class="public-section" style="text-align: center;">
+        <div class="public-section-header">
+            <h2 class="public-title" style="font-size: clamp(1.8rem, 4vw, 2.5rem);">Need immediate routing?</h2>
+            <p class="public-subtitle" style="margin: 0 auto 32px;">
+                Start from access routing to identify your environment and continue through the right operational path.
+            </p>
+        </div>
+        <div class="public-hero-actions">
+            <a href="/access" class="public-btn public-btn-primary">Open access</a>
+            <a href="/pricing" class="public-btn public-btn-secondary">View pricing</a>
+        </div>
+    </section>
 </div>

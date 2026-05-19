@@ -2,42 +2,65 @@
 @page "/packages"
 @using JPVOS.Services
 
-<div class="page-stack">
-    <PageHero Kicker="Pricing"
-              Title="Packages built around outcomes."
-              Description="Choose the access path that fits what you are trying to activate: member entry, creator launch, partner routing, enterprise infrastructure, or a custom implementation."
-              Image="@AssetPaths.Init.Hero"
-              ImageAlt="init package and access interface visual" />
+<div class="public-page page-stack">
+    <section class="public-hero" style="min-height: auto; padding: clamp(60px, 8vh, 100px) clamp(24px, 5vw, 80px);">
+        <div class="public-hero-content">
+            <p class="public-eyebrow">Pricing</p>
+            <h1 class="public-title" style="font-size: clamp(2.2rem, 5vw, 3.5rem);">Packages built around outcomes</h1>
+            <p class="public-subtitle">
+                Choose the access path that fits what you are trying to activate: member entry, creator launch, partner routing, enterprise infrastructure, or a custom implementation.
+            </p>
+        </div>
+    </section>
 
-    <section class="content-section">
-        <div class="pricing-toggle">
+    <section class="public-section">
+        <div class="public-toggle pricing-toggle">
             <button class="toggle-btn @(annual ? "" : "active")" @onclick="() => annual = false">Monthly</button>
             <button class="toggle-btn @(annual ? "active" : "")" @onclick="() => annual = true">Annual <span class="toggle-save">(2 months free)</span></button>
         </div>
 
-        <div class="pricing-grid">
+        <div class="public-pricing-grid pricing-grid">
             @foreach (var pkg in Packages)
             {
-                <PricingCard
-                    Eyebrow="@pkg.Eyebrow"
-                    Name="@pkg.Name"
-                    Price="@GetPrice(pkg)"
-                    Term="@GetTerm(pkg)"
-                    Description="@pkg.Description"
-                    Features="@pkg.Features"
-                    Cta="@GetCta(pkg)"
-                    CheckoutUrl="@GetCheckoutUrl(pkg)"
-                    IsDisabled="@IsDisabled(pkg)" />
+                <div class="public-pricing-card pricing-card">
+                    <span class="card-eyebrow">@pkg.Eyebrow</span>
+                    <h3>@pkg.Name</h3>
+                    <div class="price-line">
+                        <strong>@GetPrice(pkg)</strong>
+                        <span>@GetTerm(pkg)</span>
+                    </div>
+                    <p>@pkg.Description</p>
+                    <div class="feature-list">
+                        @foreach (var feature in pkg.Features)
+                        {
+                            <span>@feature</span>
+                        }
+                    </div>
+                    @if (IsDisabled(pkg))
+                    {
+                        <a href="@pkg.Access" class="button public-btn public-btn-secondary public-btn-full">@GetCta(pkg)</a>
+                    }
+                    else
+                    {
+                        <a href="@GetCheckoutUrl(pkg)" class="button public-btn public-btn-primary public-btn-full">@GetCta(pkg)</a>
+                    }
+                </div>
             }
         </div>
     </section>
 
-    <CTASection Title="Start with the path that matches your next move."
-                Description="init keeps access, packages, and operational routing connected so users are not dropped into disconnected links or unclear handoffs."
-                PrimaryCta="Enter access gateway"
-                PrimaryHref="/access"
-                SecondaryCta="Contact for fit"
-                SecondaryHref="/contact" />
+    <section class="public-section" style="text-align: center;">
+        <div class="public-section-header">
+            <h2 class="public-title" style="font-size: clamp(1.8rem, 4vw, 2.5rem);">Start with the path that matches your next move</h2>
+            <p class="public-subtitle" style="margin: 0 auto 32px;">
+                init keeps access, packages, and operational routing connected so users are not dropped into disconnected links or unclear handoffs.
+            </p>
+        </div>
+        <div class="public-hero-actions">
+            <a href="/access" class="public-btn public-btn-primary">Enter access gateway</a>
+            <a href="/contact" class="public-btn public-btn-secondary">Contact for fit</a>
+        </div>
+    </section>
 </div>
 
 @code {

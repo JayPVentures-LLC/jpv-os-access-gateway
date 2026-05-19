@@ -1,169 +1,124 @@
 @page "/"
 @layout HomeLayout
 
-@* init / JPV-OS Access Gateway Homepage — Clean Rebuild *@
+@* init / JPV-OS Access Gateway Homepage - Canva-Aligned Public Enterprise Design *@
 
-<div class="init-home">
-  <!-- Cinematic Atmospheric Background -->
-  <div class="atmospheric-bg"></div>
-
-  <!-- Sticky Glass Navigation (Consolidated) -->
-  <nav class="init-nav glass-nav" aria-label="Main Navigation">
-    <div class="nav-content">
-      <a class="nav-logo" href="/">init</a>
-      <div class="nav-links">
-        <a href="/" class="nav-link active">Home</a>
-        <a href="/ecosystem" class="nav-link">Ecosystem</a>
-        <a href="/access" class="nav-link">Access</a>
-        <a href="/pricing" class="nav-link">Pricing</a>
-      </div>
-      <a href="/access" class="nav-cta">Get init</a>
+<div class="public-page init-home">
+  <!-- Public Hero Section (Canva-aligned: large, calm, premium) -->
+  <section class="public-hero">
+    <div class="public-hero-visual" aria-hidden="true">
+      <div class="platform-glow"></div>
+      <div class="platform-shape"></div>
+      <div class="platform-ring platform-ring-1"></div>
+      <div class="platform-ring platform-ring-2"></div>
+      <div class="platform-ring platform-ring-3"></div>
     </div>
-  </nav>
-
-  <!-- Hero Section (Cinematic, Tightened) -->
-  <section class="hero">
-    <div class="hero-left glass-panel">
-      <div class="hero-eyebrow">init &bull; powered by JPV-OS &bull; operated by JayPVentures LLC</div>
-      <h1 class="hero-title">Welcome to the Venture</h1>
-      <div class="hero-subtitle">
+    <div class="public-hero-content">
+      <p class="public-eyebrow">init &bull; powered by JPV-OS &bull; operated by JayPVentures LLC</p>
+      <h1 class="public-title">Welcome to the Venture</h1>
+      <p class="public-subtitle">
         The unified platform for creators, enterprises, and communities to build, connect, and scale with trust.
+      </p>
+      <div class="public-hero-actions">
+        <a href="/access" class="public-btn public-btn-primary">Enter the Ecosystem</a>
+        <a href="/ecosystem" class="public-btn public-btn-secondary">Explore Architecture</a>
       </div>
-      <div class="hero-ctas">
-        <a href="/access" class="cta-primary">Enter the Ecosystem</a>
-        <a href="/ecosystem" class="cta-secondary">Explore Architecture</a>
-      </div>
-      <div class="metrics trust-metrics">
-        <div class="metric-card"><span>Uptime</span><strong>99.99%</strong></div>
-        <div class="metric-card"><span>Global Reach</span><strong>52 Regions</strong></div>
-        <div class="metric-card"><span>Active Clients</span><strong>14,200+</strong></div>
-      </div>
-    </div>
-    <div class="hero-right">
-      <div class="product-visual" aria-label="Premium Platform Visual">
-        <div class="slab"></div>
-        <div class="slab-glow"></div>
-        <div class="slab-aura"></div>
-        <div class="slab-ring ring1"></div>
-        <div class="slab-ring ring2"></div>
-        <div class="slab-ring ring3"></div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- Ecosystem Metrics Section (already in hero) -->
-
-
-  <!-- Access Lanes Section (Grouped, Glass, Icons, State) -->
-  <section class="access-lanes-section">
-    <h2>Access Lanes</h2>
-    <div class="access-lanes product-lanes">
-      <div class="lane-card" tabindex="0">
-        <span class="lane-icon community"></span>
-        <div class="lane-content">
-          <div class="lane-title">Community</div>
-          <div class="lane-desc">Open access for creators, builders, and early adopters.</div>
+      <div class="public-metrics">
+        <div class="public-metric">
+          <span class="public-metric-label">Uptime</span>
+          <strong class="public-metric-value">99.99%</strong>
         </div>
-      </div>
-      <div class="lane-card" tabindex="0">
-        <span class="lane-icon professional"></span>
-        <div class="lane-content">
-          <div class="lane-title">Professional</div>
-          <div class="lane-desc">Advanced tools and integrations for teams and operators.</div>
+        <div class="public-metric">
+          <span class="public-metric-label">Global Reach</span>
+          <strong class="public-metric-value">52 Regions</strong>
         </div>
-      </div>
-      <div class="lane-card" tabindex="0">
-        <span class="lane-icon institutional"></span>
-        <div class="lane-content">
-          <div class="lane-title">Institutional</div>
-          <div class="lane-desc">Enterprise-grade delivery, compliance, and support.</div>
+        <div class="public-metric">
+          <span class="public-metric-label">Active Clients</span>
+          <strong class="public-metric-value">14,200+</strong>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Infrastructure Architecture Section -->
-  <section>
-    <h2>Infrastructure Architecture</h2>
-    <!-- Expandable infrastructure layers, animated routing map, etc. -->
-    <!-- ... -->
-  </section>
-
-
-  <!-- Connected Partner Ecosystem Section -->
-  <section>
-    <h2>Platform Compatibility</h2>
-    <div class="partner-ecosystem">
-      <span class="partner-text">Compatible with:</span>
-      <span class="partner-list">Microsoft, GitHub, Cloudflare, Stripe, Discord, OpenAI, Intel, HP, Wix, Azure</span>
+  <!-- Access Lanes Section (Public product options) -->
+  <section class="public-section">
+    <div class="public-section-header">
+      <p class="public-eyebrow">Access Lanes</p>
+      <h2 class="public-title" style="font-size: clamp(2rem, 4vw, 3rem);">Choose your path into the ecosystem</h2>
+      <p class="public-subtitle" style="margin: 0 auto;">Select the access tier that matches your operational needs and growth trajectory.</p>
+    </div>
+    <div class="public-grid public-grid-3">
+      <div class="public-card" tabindex="0">
+        <span class="public-card-eyebrow">Community</span>
+        <h3 class="public-card-title">Open Community Tier</h3>
+        <p class="public-card-description">Open access for creators, builders, and early adopters looking to explore the ecosystem.</p>
+      </div>
+      <div class="public-card" tabindex="0">
+        <span class="public-card-eyebrow">Professional</span>
+        <h3 class="public-card-title">Pro Tooling</h3>
+        <p class="public-card-description">Advanced tools and integrations for teams and operators ready to scale.</p>
+      </div>
+      <div class="public-card" tabindex="0">
+        <span class="public-card-eyebrow">Institutional</span>
+        <h3 class="public-card-title">Enterprise Tier</h3>
+        <p class="public-card-description">Enterprise-grade delivery, compliance, and dedicated support infrastructure.</p>
+      </div>
     </div>
   </section>
 
-  <section class="architecture-section">
-    <h2>Platform Architecture</h2>
-    <div class="architecture-layers">
-      <div class="arch-layer">Access</div>
-      <div class="arch-layer">Identity</div>
-      <div class="arch-layer">Payments</div>
-      <div class="arch-layer">Community</div>
-      <div class="arch-layer">Governance</div>
-      <div class="arch-layer">Enterprise Delivery</div>
+  <!-- Platform Compatibility Section -->
+  <section class="public-section" style="text-align: center;">
+    <p class="public-eyebrow">Platform Compatibility</p>
+    <p class="public-subtitle" style="max-width: 800px; margin: 0 auto;">
+      <strong style="color: var(--jpv-text);">Compatible with:</strong> Microsoft, GitHub, Cloudflare, Stripe, Discord, OpenAI, Intel, HP, Wix, Azure
+    </p>
+  </section>
+
+  <!-- Platform Architecture Section -->
+  <section class="public-section">
+    <div class="public-section-header">
+      <p class="public-eyebrow">Platform Architecture</p>
+      <h2 class="public-title" style="font-size: clamp(2rem, 4vw, 3rem);">Built on enterprise foundations</h2>
+      <p class="public-subtitle" style="margin: 0 auto;">JPV-OS are the operating standards that govern access, identity, payments, community, and infrastructure delivery. init is the application interface for the JPV-OS ecosystem.</p>
+    </div>
+    <div class="public-grid" style="max-width: 900px; margin: 0 auto;">
+      <div class="public-card" style="text-align: center;">
+        <h3 class="public-card-title" style="margin-top: 0;">Access</h3>
+      </div>
+      <div class="public-card" style="text-align: center;">
+        <h3 class="public-card-title" style="margin-top: 0;">Identity</h3>
+      </div>
+      <div class="public-card" style="text-align: center;">
+        <h3 class="public-card-title" style="margin-top: 0;">Payments</h3>
+      </div>
+      <div class="public-card" style="text-align: center;">
+        <h3 class="public-card-title" style="margin-top: 0;">Community</h3>
+      </div>
+      <div class="public-card" style="text-align: center;">
+        <h3 class="public-card-title" style="margin-top: 0;">Governance</h3>
+      </div>
+      <div class="public-card" style="text-align: center;">
+        <h3 class="public-card-title" style="margin-top: 0;">Enterprise Delivery</h3>
+      </div>
     </div>
   </section>
 
-  <!-- Governance & Operational Standards Section -->
-  <section>
-    <h2>Governance &amp; Operational Standards</h2>
-    <!-- ... -->
+  <!-- Founder Vision Section -->
+  <section class="public-section" style="text-align: center;">
+    <p class="public-eyebrow">Founder Vision</p>
+    <div class="public-card" style="max-width: 800px; margin: 0 auto; text-align: center;">
+      <blockquote style="margin: 0; font-size: clamp(18px, 2vw, 24px); font-weight: 500; line-height: 1.6; color: var(--jpv-text); font-style: italic;">
+        "Our mission is to unify digital infrastructure, empower creators, and enable enterprises to operate at scale with trust and intelligence."
+      </blockquote>
+      <p style="margin: 20px 0 0 0; font-size: 14px; color: var(--jpv-muted);">— JayPVentures LLC</p>
+    </div>
   </section>
 
-
-  <!-- Founder Vision Section (Premium Card) -->
-  <section>
-    <h2>Founder Vision</h2>
-    <div class="founder-section">
-      <div class="founder-card glass-card">
-        <div class="founder-portrait">
-          <img src="/img/founder-portrait.jpg" alt="Founder Portrait"
-               onerror="this.src='/img/founder-placeholder.png';this.classList.add('placeholder');" />
-        </div>
-        <div class="founder-statement">
-          <blockquote>“Our mission is to unify digital infrastructure, empower creators, and enable enterprises to
-            operate at scale with trust and intelligence.”</blockquote>
-            <div class="founder-signature">— JayPVentures LLC</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Pricing Section -->
-    <section>
-      <h2>Pricing</h2>
-      <!-- Hybrid public pricing, tier comparison, Stripe checkout CTAs -->
-      <!-- ... -->
-    </section>
-
-    <!-- Live Status / Trust Layer Section -->
-    <section class="trust-strip-section">
-      <div class="trust-strip" aria-live="polite">
-        <span class="trust-dot"></span>
-        <span class="trust-label">All systems operational &mdash; Enterprise-grade reliability</span>
-      </div>
-    </section>
-
-
-    <!-- Glass Enterprise Footer (Operational Trust Layer) -->
-    <footer class="glass-footer enterprise-footer">
-      <div class="footer-content">
-        <div class="footer-brand">init &bull; JPV-OS Access Gateway</div>
-        <div class="footer-links">
-          <a href="mailto:hello@jaypventures.com">hello@jaypventures.com</a>
-          <a href="mailto:support@jaypventures.com">support@jaypventures.com</a>
-          <a href="/terms">Terms</a>
-          <a href="/privacy">Privacy</a>
-        </div>
-        <div class="footer-meta">&copy; JayPVentures LLC. All rights reserved.</div>
-      </div>
-    </footer>
-  </div>
+  <!-- System Status Strip (Public trust, not dashboard telemetry) -->
+  <section class="public-section" style="text-align: center; padding-top: 0;">
+    <div class="public-card" style="display: inline-flex; align-items: center; gap: 12px; padding: 16px 32px;">
+      <span style="width: 10px; height: 10px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);"></span>
+      <span style="font-size: 14px; font-weight: 600; color: var(--jpv-text);">All systems operational - Enterprise-grade reliability</span>
+    </div>
+  </section>
+</div>
