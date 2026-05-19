@@ -1,0 +1,22 @@
+{
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "dotnet.defaultSolution": "src/JPVOS/JPVOS.csproj",
+  "github.copilot.enable": {
+    "*": true,
+    "markdown": true,
+    "scminput": true
+  },
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "text": "Respect the JPV-OS Stripe architecture: lookup_key -> backend resolver -> canonical pricing JSON -> Stripe price_id. Never hardcode price IDs or expose secrets."
+    }
+  ],
+  "files.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/.wrangler": true,
+    "**/.open-next": true
+  }
+}

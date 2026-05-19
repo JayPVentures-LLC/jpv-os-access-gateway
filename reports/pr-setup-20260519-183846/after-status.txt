@@ -1,0 +1,4 @@
+A  .github/copilot-instructions.md
+A  .github/workflows/validate-stripe-azure-config.yml
+A  .vscode/settings.json
+?? reports/
