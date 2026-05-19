@@ -294,7 +294,10 @@ a {
   gap: 18px;
 }
 
-.init-home .metrics,
+.init-home .metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .init-home .metric-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
