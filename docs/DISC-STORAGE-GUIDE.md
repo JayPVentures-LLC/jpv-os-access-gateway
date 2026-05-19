@@ -84,16 +84,42 @@ az storage blob upload \
 
 ### Scenario 2: Docker Container
 
-**Dockerfile:**
+**Multi-Stage Dockerfile:**
 ```dockerfile
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS builder
+WORKDIR /build
+COPY . .
+RUN dotnet build JPVOS.sln -c Release
+RUN dotnet publish src/JPVOS/JPVOS.csproj -c Release -o /app/publish
+
+# Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --chown=app:app src/JPVOS/bin/Release/net8.0 .
+COPY --from=builder --chown=app:app /app/publish .
 RUN mkdir -p /app/data && chown -R app:app /app/data
 USER app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+CMD ["dotnet", "JPVOS.dll"]
+```
+
+**Simplified Dockerfile (Using Pre-Built Artifacts):**
+```dockerfile
+# Pre-build with: dotnet publish src/JPVOS/JPVOS.csproj -c Release -o ./publish
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --chown=app:app publish .
+RUN mkdir -p /app/data && chown -R app:app /app/data
+USER app
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
 CMD ["dotnet", "JPVOS.dll"]
 ```
 

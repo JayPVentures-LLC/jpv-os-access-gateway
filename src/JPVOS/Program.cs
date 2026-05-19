@@ -24,19 +24,23 @@ else
     var dbPath = builder.Configuration["ENTITLEMENTS_DB_PATH"];
     
     // Default database paths for common deployment scenarios
+    // Priority: Explicit config > Azure App Service > Container > Fallback
     if (string.IsNullOrWhiteSpace(dbPath))
     {
         // Azure App Service: Use /home directory for persistent storage
+        // WEBSITE_INSTANCE_ID is set by Azure App Service runtime
         if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")))
         {
             dbPath = Path.Combine("/home", "entitlements.db");
         }
-        // Docker/Container: Use /app/data directory
+        // Docker/Container: Use /app/data directory if it exists or container environment is detected
+        // This allows for explicit volume mounts in containerized deployments
         else if (Directory.Exists("/app/data") || Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
         {
             dbPath = Path.Combine("/app/data", "entitlements.db");
         }
         // Fallback: Use application directory
+        // Note: Not recommended for production as app directory may not persist across updates
         else
         {
             dbPath = Path.Combine(AppContext.BaseDirectory, "entitlements.db");

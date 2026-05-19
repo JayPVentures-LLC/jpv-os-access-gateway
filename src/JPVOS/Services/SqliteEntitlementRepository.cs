@@ -48,13 +48,19 @@ public class SqliteEntitlementRepository : IEntitlementRepository
             }
         }
 
-        // Validate write permissions
+        // Validate write and read permissions
         if (File.Exists(_dbPath))
         {
             try
             {
-                // Test write permission by opening in read mode
-                using var fs = File.OpenRead(_dbPath);
+                // Test read permission
+                using (var fs = File.OpenRead(_dbPath))
+                {
+                }
+                // Test write permission by opening for read/write
+                using (var fs = File.Open(_dbPath, FileMode.Open, FileAccess.ReadWrite))
+                {
+                }
                 _logger?.LogInformation("Entitlements database accessible at {DbPath}", _dbPath);
             }
             catch (Exception ex)
@@ -67,8 +73,17 @@ public class SqliteEntitlementRepository : IEntitlementRepository
         {
             try
             {
-                // Test write permission by creating the file
-                using var fs = File.Create(_dbPath);
+                // Test write permission by creating and removing a test file in the directory
+                var testFile = Path.Combine(directory ?? AppContext.BaseDirectory, ".write-test-" + Guid.NewGuid());
+                using (var fs = File.Create(testFile))
+                {
+                }
+                File.Delete(testFile);
+                
+                // Create the database file
+                using (var fs = File.Create(_dbPath))
+                {
+                }
                 _logger?.LogInformation("Created new entitlements database at {DbPath}", _dbPath);
             }
             catch (Exception ex)
@@ -174,7 +189,8 @@ public class SqliteEntitlementRepository : IEntitlementRepository
                     AccessExpiration = @AccessExpiration
                     WHERE StripeSubscriptionId = @StripeSubscriptionId",
                     record);
-                _logger?.LogInformation("Updated entitlement for Stripe subscription: {SubscriptionId}", record.StripeSubscriptionId);
+                _logger?.LogInformation("Updated entitlement for Stripe subscription: {SubscriptionIdHash}", 
+                    ComputeHash(record.StripeSubscriptionId));
             }
             else
             {
@@ -183,14 +199,28 @@ public class SqliteEntitlementRepository : IEntitlementRepository
                 ) VALUES (
                     @Email, @StripeCustomerId, @StripeSubscriptionId, @PackageKey, @BillingInterval, @Status, @DiscordUserId, @DiscordRole, @CreatedAt, @UpdatedAt, @AccessExpiration
                 )", record);
-                _logger?.LogInformation("Created new entitlement for Stripe subscription: {SubscriptionId}", record.StripeSubscriptionId);
+                _logger?.LogInformation("Created new entitlement for Stripe subscription: {SubscriptionIdHash}", 
+                    ComputeHash(record.StripeSubscriptionId));
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Failed to add or update entitlement: {StripeCustomerId}", record.StripeCustomerId);
+            _logger?.LogError(ex, "Failed to add or update entitlement for customer: {CustomerIdHash}", 
+                ComputeHash(record.StripeCustomerId));
             throw;
         }
+    }
+
+    private static string ComputeHash(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return "[empty]";
+        // Log first few characters + hash for debugging without exposing full PII
+        var prefix = input.Length > 8 ? input.Substring(0, 8) : input;
+        using var sha = System.Security.Cryptography.SHA256.Create();
+        var hash = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
+        var hashHex = System.Convert.ToHexString(hash).Substring(0, 8);
+        return $"{prefix}...{hashHex}";
     }
 
     public void RemoveByStripeCustomerId(string customerId)
