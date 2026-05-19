@@ -23,7 +23,7 @@ Write-Log "Stopping WSL..."
 wsl --shutdown 2>$null
 
 Write-Log "Stopping heavy nonessential dev/media processes..."
-Get-Process Docker*,vmmem*,wsl,node,npm,dotnet,Spotify,M365Copilot,Canva -ErrorAction SilentlyContinue |
+Get-Process Docker*,vmmem*,wsl,node,npm,dotnet,M365Copilot,Canva -ErrorAction SilentlyContinue |
     Stop-Process -Force -ErrorAction SilentlyContinue
 
 Write-Log "Checking disk space..."
