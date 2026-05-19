@@ -1,0 +1,66 @@
+name: Validate Stripe Azure Configuration
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Validate required files
+        shell: pwsh
+        run: |
+          $required = @(
+            "src/JPVOS/JPVOS.csproj",
+            "src/JPVOS/Api/CheckoutController.cs",
+            "src/JPVOS/Api/CheckoutConfigStatusController.cs",
+            "src/JPVOS/Infrastructure/Stripe/StripePricingLoader.cs",
+            "src/JPVOS/Infrastructure/Stripe/StripeCheckoutService.cs",
+            "infrastructure/stripe/generated/stripe-pricing.test.json"
+          )
+
+          foreach ($file in $required) {
+            if (!(Test-Path $file)) {
+              throw "Missing required file: $file"
+            }
+          }
+
+      - name: Validate pricing map
+        shell: pwsh
+        run: |
+          $json = Get-Content "infrastructure/stripe/generated/stripe-pricing.test.json" -Raw | ConvertFrom-Json
+
+          $requiredKeys = @(
+            "member_access_monthly",
+            "member_access_annual",
+            "vip_venture_monthly",
+            "vip_venture_annual",
+            "creator_lane_monthly",
+            "operator_monthly",
+            "enterprise_monthly"
+          )
+
+          foreach ($key in $requiredKeys) {
+            if (-not ($json.prices.PSObject.Properties.Name -contains $key)) {
+              throw "Missing Stripe lookup key: $key"
+            }
+
+            $priceId = $json.prices.$key.price_id
+            if (-not ($priceId -like "price_*")) {
+              throw "Invalid Stripe price id for ${key}: $priceId"
+            }
+          }
+
+      - name: Build JPVOS
+        run: dotnet build src/JPVOS/JPVOS.csproj --configuration Release
