@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using JPVOS.Infrastructure.Stripe;
+using Stripe.BillingPortal;
 
 namespace JPVOS.Api;
 
@@ -43,4 +44,39 @@ public sealed class CheckoutController : ControllerBase
             sessionId = session.Id
         });
     }
+
+    public sealed class PortalRequest
+    {
+        public string CustomerId { get; set; } = "";
+    }
+
+    [HttpPost("portal")]
+    public async Task<IActionResult> CreatePortalSession(
+        [FromBody] PortalRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.CustomerId))
+        {
+            return BadRequest(new
+            {
+                error = "customer_id_required"
+            });
+        }
+
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+
+        var options = new SessionCreateOptions
+        {
+            Customer = request.CustomerId,
+            ReturnUrl = $"{baseUrl}/account/billing"
+        };
+
+        var service = new SessionService();
+        var session = await service.CreateAsync(options);
+
+        return Ok(new
+        {
+            url = session.Url
+        });
+    }
 }
+
