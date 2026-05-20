@@ -6,43 +6,36 @@
 |----------------------------------|-----------------------------------|-----------------|--------------|
 | member_access_monthly            | Member Access (Monthly)           | monthly         | $10/mo       |
 | member_access_annual             | Member Access (Annual)            | annual          | $100/yr      |
-| creator_launch_monthly           | Creator Launch (Monthly)          | monthly         | $25/mo       |
-| creator_launch_annual            | Creator Launch (Annual)           | annual          | $250/yr      |
-| partner_package_monthly          | Partner Package (Monthly)         | monthly         | $100/mo      |
-| partner_package_annual           | Partner Package (Annual)          | annual          | $1000/yr     |
-| enterprise_infrastructure_monthly| Enterprise Infrastructure (Monthly)| monthly        | $500/mo      |
-| enterprise_infrastructure_annual | Enterprise Infrastructure (Annual)| annual          | $5000/yr     |
-| custom_implementation_one_time   | Custom Implementation (One-Time)  | one_time        | Custom       |
+| vip_venture_monthly              | VIP Venture (Monthly)             | monthly         | $25/mo       |
+| vip_venture_annual               | VIP Venture (Annual)              | annual          | $250/yr      |
+| creator_lane_monthly             | Creator Lane (Monthly)            | monthly         | $100/mo      |
+| operator_monthly                 | Operator (Monthly)                | monthly         | $500/mo      |
+| enterprise_monthly               | Enterprise (Monthly)              | monthly         | Custom       |
 
 ## 2. Stripe Products & Prices to Create
 
-For each package above, create a Stripe Product and a Price (recurring or one-time as appropriate). Copy the Price ID for each and set as an environment variable.
+Do not wire frontend directly to Stripe `price_id` values.
+Use lookup-key based checkout and generated pricing maps.
 
-// Deprecated: STRIPE_PRICE_MEMBER_MONTHLY
-// Deprecated: STRIPE_PRICE_MEMBER_ANNUAL
-// Deprecated: STRIPE_PRICE_CREATOR_MONTHLY
-// Deprecated: STRIPE_PRICE_CREATOR_ANNUAL
-// Deprecated: STRIPE_PRICE_PARTNER_MONTHLY
-// Deprecated: STRIPE_PRICE_PARTNER_ANNUAL
-// Deprecated: STRIPE_PRICE_ENTERPRISE_MONTHLY
-- STRIPE_PRICE_ENTERPRISE_ANNUAL
-- STRIPE_PRICE_CUSTOM_IMPLEMENTATION
+Canonical lookup keys:
+- member_access_monthly
+- member_access_annual
+- vip_venture_monthly
+- vip_venture_annual
+- creator_lane_monthly
+- operator_monthly
+- enterprise_monthly
+
+Canonical flow:
+`Frontend -> lookup_key -> CheckoutController -> StripePricingLoader -> infrastructure/stripe/generated/stripe-pricing.{mode}.json -> Stripe price_id`
 
 ## 3. Required Environment Variables
 
 Set these as environment variables in your deployment environment (do NOT store secrets in appsettings.json):
 
+- STRIPE_MODE
 - STRIPE_SECRET_KEY
 - STRIPE_WEBHOOK_SECRET
-- STRIPE_PRICE_MEMBER_MONTHLY
-- STRIPE_PRICE_MEMBER_ANNUAL
-- STRIPE_PRICE_CREATOR_MONTHLY
-- STRIPE_PRICE_CREATOR_ANNUAL
-- STRIPE_PRICE_PARTNER_MONTHLY
-- STRIPE_PRICE_PARTNER_ANNUAL
-- STRIPE_PRICE_ENTERPRISE_MONTHLY
-- STRIPE_PRICE_ENTERPRISE_ANNUAL
-- STRIPE_PRICE_CUSTOM_IMPLEMENTATION
 - DISCORD_CLIENT_ID
 - DISCORD_CLIENT_SECRET
 - DISCORD_BOT_TOKEN
@@ -95,7 +88,8 @@ Assign the role IDs to the corresponding environment variables above.
 ## 6. Production Deployment Checklist
 
 - [ ] Set all environment variables in your production environment (Azure, AWS, etc).
-- [ ] Use live Stripe keys and price IDs.
+- [ ] Use live Stripe keys and set `STRIPE_MODE=live`.
+- [ ] Ensure `infrastructure/stripe/generated/stripe-pricing.test.json` exists for test-mode validation.
 - [ ] Use live Discord bot token and client secret.
 - [ ] Confirm HTTPS is enabled.
 - [ ] Confirm Stripe webhook endpoint is reachable and secret is set.
@@ -111,4 +105,4 @@ Assign the role IDs to the corresponding environment variables above.
 
 ---
 
-**Never commit real secrets or live price IDs to source control. Always use environment variables for secrets and IDs.**
+**Never commit real secrets or live price IDs to source control. Always keep secrets in environment variables and resolve price IDs server-side from lookup keys.**

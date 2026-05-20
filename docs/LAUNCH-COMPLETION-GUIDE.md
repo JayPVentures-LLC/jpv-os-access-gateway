@@ -216,10 +216,9 @@ Preserve Query String: Yes
 
 ```
 # Stripe
+STRIPE_MODE: live
 STRIPE_SECRET_KEY: sk_live_[your-key]
 STRIPE_WEBHOOK_SECRET: whsec_[your-secret]
-STRIPE_PRICE_ENTERPRISE_ANNUAL: price_[your-id]
-STRIPE_PRICE_CUSTOM_IMPLEMENTATION: price_[your-id]
 
 # Discord
 DISCORD_CLIENT_ID: [your-client-id]
@@ -229,6 +228,12 @@ DISCORD_GUILD_ID: [your-guild-id]
 DISCORD_ROLE_CUSTOM: [your-role-id]
 DISCORD_REDIRECT_URI: https://yourdomain.com/api/discord/oauth/callback
 ```
+
+Stripe checkout model:
+- Frontend sends `lookup_key`
+- `CheckoutController` accepts lookup key only
+- `StripePricingLoader` resolves the key from `infrastructure/stripe/generated/stripe-pricing.{mode}.json`
+- Stripe `price_id` is selected server-side
 
 ### Application Settings
 - **Runtime**: .NET 8.0
