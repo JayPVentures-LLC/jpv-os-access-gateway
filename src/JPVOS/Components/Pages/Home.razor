@@ -1,124 +1,72 @@
 @page "/"
 @layout HomeLayout
 
-@* init / JPV-OS Access Gateway Homepage - Canva-Aligned Public Enterprise Design *@
-
-<div class="public-page init-home">
-  <!-- Public Hero Section (Canva-aligned: large, calm, premium) -->
-  <section class="public-hero">
-    <div class="public-hero-visual" aria-hidden="true">
-      <div class="platform-glow"></div>
-      <div class="platform-shape"></div>
-      <div class="platform-ring platform-ring-1"></div>
-      <div class="platform-ring platform-ring-2"></div>
-      <div class="platform-ring platform-ring-3"></div>
-    </div>
-    <div class="public-hero-content">
-      <p class="public-eyebrow">init &bull; powered by JPV-OS &bull; operated by JayPVentures LLC</p>
-      <h1 class="public-title">Welcome to the Venture</h1>
-      <p class="public-subtitle">
-        The unified platform for creators, enterprises, and communities to build, connect, and scale with trust.
-      </p>
-      <div class="public-hero-actions">
-        <a href="/access" class="public-btn public-btn-primary">Enter the Ecosystem</a>
-        <a href="/ecosystem" class="public-btn public-btn-secondary">Explore Architecture</a>
-      </div>
-      <div class="public-metrics">
-        <div class="public-metric">
-          <span class="public-metric-label">Uptime</span>
-          <strong class="public-metric-value">99.99%</strong>
+<div class="canva-public-page">
+    <section class="canva-hero">
+        <div class="canva-hero__frame">
+            <p class="canva-kicker">init · powered by JPV-OS · operated by JayPVentures LLC</p>
+            <h1>Welcome to the Venture</h1>
+            <p class="canva-lead">
+                A unified access gateway for creators, members, partners, and enterprise operators moving through the JayPVentures ecosystem.
+            </p>
+            <div class="canva-actions">
+                <a class="canva-button canva-button-primary" href="/pricing">View Access Options</a>
+                <a class="canva-button canva-button-secondary" href="/ecosystem">Explore the Ecosystem</a>
+            </div>
         </div>
-        <div class="public-metric">
-          <span class="public-metric-label">Global Reach</span>
-          <strong class="public-metric-value">52 Regions</strong>
+    </section>
+
+    <section class="canva-section">
+        <div class="canva-section__intro">
+            <p class="canva-kicker">Ecosystem Architecture</p>
+            <h2>One gateway. Multiple operational lanes.</h2>
+            <p>
+                init routes access into JPV-OS, JayPVentures LLC, jaypventures, jaypVLabs, and JPV Institute without flattening each entity into the same page template.
+            </p>
         </div>
-        <div class="public-metric">
-          <span class="public-metric-label">Active Clients</span>
-          <strong class="public-metric-value">14,200+</strong>
+
+        <div class="canva-access-grid">
+            <a href="/jaypventures-llc" class="canva-access-card"><span>Enterprise</span><strong>JayPVentures LLC</strong><p>Infrastructure, operations, security, and delivery authority.</p></a>
+            <a href="/jaypventures" class="canva-access-card"><span>Creator</span><strong>jaypventures</strong><p>Venture studio, creator access, community, and adoption.</p></a>
+            <a href="/jaypvlabs" class="canva-access-card"><span>Labs</span><strong>jaypVLabs</strong><p>Prototype validation, AI behavior, systems testing, and readiness.</p></a>
+            <a href="/jpv-institute" class="canva-access-card"><span>Institute</span><strong>JPV Institute</strong><p>Doctrine, literacy, standards, research, and accreditation.</p></a>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Access Lanes Section (Public product options) -->
-  <section class="public-section">
-    <div class="public-section-header">
-      <p class="public-eyebrow">Access Lanes</p>
-      <h2 class="public-title" style="font-size: clamp(2rem, 4vw, 3rem);">Choose your path into the ecosystem</h2>
-      <p class="public-subtitle" style="margin: 0 auto;">Select the access tier that matches your operational needs and growth trajectory.</p>
-    </div>
-    <div class="public-grid public-grid-3">
-      <div class="public-card" tabindex="0">
-        <span class="public-card-eyebrow">Community</span>
-        <h3 class="public-card-title">Open Community Tier</h3>
-        <p class="public-card-description">Open access for creators, builders, and early adopters looking to explore the ecosystem.</p>
-      </div>
-      <div class="public-card" tabindex="0">
-        <span class="public-card-eyebrow">Professional</span>
-        <h3 class="public-card-title">Pro Tooling</h3>
-        <p class="public-card-description">Advanced tools and integrations for teams and operators ready to scale.</p>
-      </div>
-      <div class="public-card" tabindex="0">
-        <span class="public-card-eyebrow">Institutional</span>
-        <h3 class="public-card-title">Enterprise Tier</h3>
-        <p class="public-card-description">Enterprise-grade delivery, compliance, and dedicated support infrastructure.</p>
-      </div>
-    </div>
-  </section>
+    <section class="canva-section">
+        <div class="canva-section__intro">
+            <p class="canva-kicker">Access Gateway</p>
+            <h2>Access that matches the role.</h2>
+            <p>
+                Member, VIP, creator, operator, enterprise, and sovereign paths connect payments, entitlements, and Discord access without forcing every user through the same experience.
+            </p>
+        </div>
 
-  <!-- Platform Compatibility Section -->
-  <section class="public-section" style="text-align: center;">
-    <p class="public-eyebrow">Platform Compatibility</p>
-    <p class="public-subtitle" style="max-width: 800px; margin: 0 auto;">
-      <strong style="color: var(--jpv-text);">Compatible with:</strong> Microsoft, GitHub, Cloudflare, Stripe, Discord, OpenAI, Intel, HP, Wix, Azure
-    </p>
-  </section>
+        <div class="canva-access-grid">
+            <a href="/pricing" class="canva-access-card"><span>Members</span><strong>Member Access</strong><p>Community access, membership routing, and entry-level ecosystem participation.</p></a>
+            <a href="/pricing" class="canva-access-card"><span>VIP</span><strong>VIP Venture</strong><p>Priority experiences, elevated community access, and venture-facing access lanes.</p></a>
+            <a href="/pricing" class="canva-access-card"><span>Creator</span><strong>Creator Lane</strong><p>Creator tooling, monetization routing, and ecosystem growth support.</p></a>
+            <a href="/pricing" class="canva-access-card"><span>Operator</span><strong>Operator</strong><p>Operational access for builders, moderators, implementation support, and delivery workflows.</p></a>
+            <a href="/pricing" class="canva-access-card"><span>Enterprise</span><strong>Enterprise</strong><p>Partner packages, implementation visibility, infrastructure support, and governed delivery.</p></a>
+            <a href="/contact" class="canva-access-card"><span>Sovereign</span><strong>Custom Access</strong><p>Custom architecture, private routing, and higher-governance implementation paths.</p></a>
+        </div>
+    </section>
 
-  <!-- Platform Architecture Section -->
-  <section class="public-section">
-    <div class="public-section-header">
-      <p class="public-eyebrow">Platform Architecture</p>
-      <h2 class="public-title" style="font-size: clamp(2rem, 4vw, 3rem);">Built on enterprise foundations</h2>
-      <p class="public-subtitle" style="margin: 0 auto;">JPV-OS are the operating standards that govern access, identity, payments, community, and infrastructure delivery. init is the application interface for the JPV-OS ecosystem.</p>
-    </div>
-    <div class="public-grid" style="max-width: 900px; margin: 0 auto;">
-      <div class="public-card" style="text-align: center;">
-        <h3 class="public-card-title" style="margin-top: 0;">Access</h3>
-      </div>
-      <div class="public-card" style="text-align: center;">
-        <h3 class="public-card-title" style="margin-top: 0;">Identity</h3>
-      </div>
-      <div class="public-card" style="text-align: center;">
-        <h3 class="public-card-title" style="margin-top: 0;">Payments</h3>
-      </div>
-      <div class="public-card" style="text-align: center;">
-        <h3 class="public-card-title" style="margin-top: 0;">Community</h3>
-      </div>
-      <div class="public-card" style="text-align: center;">
-        <h3 class="public-card-title" style="margin-top: 0;">Governance</h3>
-      </div>
-      <div class="public-card" style="text-align: center;">
-        <h3 class="public-card-title" style="margin-top: 0;">Enterprise Delivery</h3>
-      </div>
-    </div>
-  </section>
+    <section class="canva-section canva-founder">
+        <div class="canva-founder__media">
+            <div class="canva-founder__placeholder">JPV</div>
+        </div>
+        <div class="canva-founder__copy">
+            <p class="canva-kicker">Founder Direction</p>
+            <h2>Built to route access, infrastructure, and opportunity with operational integrity.</h2>
+            <p>This gateway is the public entry point into creator access, enterprise delivery, community membership, partner routing, and governed infrastructure.</p>
+        </div>
+    </section>
 
-  <!-- Founder Vision Section -->
-  <section class="public-section" style="text-align: center;">
-    <p class="public-eyebrow">Founder Vision</p>
-    <div class="public-card" style="max-width: 800px; margin: 0 auto; text-align: center;">
-      <blockquote style="margin: 0; font-size: clamp(18px, 2vw, 24px); font-weight: 500; line-height: 1.6; color: var(--jpv-text); font-style: italic;">
-        "Our mission is to unify digital infrastructure, empower creators, and enable enterprises to operate at scale with trust and intelligence."
-      </blockquote>
-      <p style="margin: 20px 0 0 0; font-size: 14px; color: var(--jpv-muted);">— JayPVentures LLC</p>
-    </div>
-  </section>
-
-  <!-- System Status Strip (Public trust, not dashboard telemetry) -->
-  <section class="public-section" style="text-align: center; padding-top: 0;">
-    <div class="public-card" style="display: inline-flex; align-items: center; gap: 12px; padding: 16px 32px;">
-      <span style="width: 10px; height: 10px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);"></span>
-      <span style="font-size: 14px; font-weight: 600; color: var(--jpv-text);">All systems operational - Enterprise-grade reliability</span>
-    </div>
-  </section>
+    <section class="canva-final-cta">
+        <p class="canva-kicker">Launch Path</p>
+        <h2>Enter the ecosystem.</h2>
+        <p>Choose the access lane that matches your role and move through the correct operational path.</p>
+        <a class="canva-button canva-button-primary" href="/pricing">Get init</a>
+    </section>
 </div>
