@@ -1,0 +1,10 @@
+{
+  "visual_source_of_truth": "Canva",
+  "status": "required",
+  "public_ui_drift_allowed": false,
+  "notes": [
+    "Do not create independent public page designs outside the Canva schematic.",
+    "Implement routes and sections from the Canva design only.",
+    "Backend and runtime work may continue, but public UI must preserve Canva layout authority."
+  ]
+}
