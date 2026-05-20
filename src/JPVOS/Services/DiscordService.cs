@@ -147,6 +147,30 @@ public class DiscordService
         throw new InvalidOperationException("Retry loop exhausted unexpectedly.");
     }
 
+    private static TimeSpan GetRetryDelay(HttpResponseMessage response, int attempt)
+    {
+        if (response.Headers.TryGetValues("Retry-After", out var values))
+        {
+            var raw = values.FirstOrDefault();
+
+            if (int.TryParse(raw, out var seconds) && seconds >= 0)
+            {
+                return TimeSpan.FromSeconds(seconds);
+            }
+
+            if (DateTimeOffset.TryParse(raw, out var retryAt))
+            {
+                var delay = retryAt - DateTimeOffset.UtcNow;
+                if (delay > TimeSpan.Zero)
+                {
+                    return delay;
+                }
+            }
+        }
+
+        return TimeSpan.FromMilliseconds(250 * attempt);
+    }
+
     private static HttpRequestMessage CloneRequest(HttpRequestMessage request)
     {
         var clone = new HttpRequestMessage(request.Method, request.RequestUri);
@@ -158,4 +182,5 @@ public class DiscordService
         return clone;
     }
 }
+
 
