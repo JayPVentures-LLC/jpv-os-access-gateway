@@ -23,11 +23,25 @@ public class DiscordService
 
     public async Task AssignRoleAsync(string discordUserId, string roleId)
     {
+        if (!IsRoleSyncEnabled())
+        {
+            AuditDeferred("assign", discordUserId, roleId);
+            _logger.LogWarning("Discord role assignment deferred because DISCORD_ROLE_SYNC_ENABLED is false.");
+            return;
+        }
+
         await SendRoleRequestAsync(HttpMethod.Put, discordUserId, roleId, "assign");
     }
 
     public async Task RemoveRoleAsync(string discordUserId, string roleId)
     {
+        if (!IsRoleSyncEnabled())
+        {
+            AuditDeferred("remove", discordUserId, roleId);
+            _logger.LogWarning("Discord role removal deferred because DISCORD_ROLE_SYNC_ENABLED is false.");
+            return;
+        }
+
         await SendRoleRequestAsync(HttpMethod.Delete, discordUserId, roleId, "remove");
     }
 
@@ -182,5 +196,6 @@ public class DiscordService
         return clone;
     }
 }
+
 
 
