@@ -75,6 +75,7 @@ public class StripeWebhookController : ControllerBase
     string? auditCustomerId = null;
     string? auditSubscriptionId = null;
     string? auditStatus = null;
+    bool handledSuccessfully = false;
 
     switch (stripeEvent.Type)
     {
