@@ -79,17 +79,19 @@
      --resource-group jpvos-rg \
      --name jpvos-gateway \
      --settings \
-       STRIPE_SECRET_KEY="sk_live_..." \
-       STRIPE_WEBHOOK_SECRET="whsec_..." \
-       STRIPE_PRICE_ENTERPRISE_ANNUAL="price_..." \
-       STRIPE_PRICE_CUSTOM_IMPLEMENTATION="price_..." \
-       DISCORD_CLIENT_ID="..." \
-       DISCORD_CLIENT_SECRET="..." \
-       DISCORD_BOT_TOKEN="..." \
-       DISCORD_GUILD_ID="..." \
-       DISCORD_ROLE_CUSTOM="..." \
-       DISCORD_REDIRECT_URI="https://yourdomain.com/api/discord/oauth/callback"
+        STRIPE_MODE="live" \
+        STRIPE_SECRET_KEY="sk_live_..." \
+        STRIPE_WEBHOOK_SECRET="whsec_..." \
+        DISCORD_CLIENT_ID="..." \
+        DISCORD_CLIENT_SECRET="..." \
+        DISCORD_BOT_TOKEN="..." \
+        DISCORD_GUILD_ID="..." \
+        DISCORD_ROLE_CUSTOM="..." \
+        DISCORD_REDIRECT_URI="https://yourdomain.com/api/discord/oauth/callback"
    ```
+
+   Stripe checkout pricing resolves via lookup keys and the generated pricing map:
+   `infrastructure/stripe/generated/stripe-pricing.test.json` (or `.live.json` when `STRIPE_MODE=live`).
 
 5. **Enable HTTPS Only**
    ```bash

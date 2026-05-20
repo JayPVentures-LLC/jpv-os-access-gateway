@@ -83,11 +83,16 @@ This produces a runtime-specific self-contained application ready for deployment
 
 **Stripe Configuration:**
 ```
+STRIPE_MODE=live                                      # Pricing map mode (test or live)
 STRIPE_SECRET_KEY=sk_live_...                          # Stripe secret key
 STRIPE_WEBHOOK_SECRET=whsec_...                        # Webhook endpoint secret
-STRIPE_PRICE_ENTERPRISE_ANNUAL=price_...               # Enterprise annual subscription price ID
-STRIPE_PRICE_CUSTOM_IMPLEMENTATION=price_...           # Custom implementation one-time price ID
 ```
+
+Pricing is loaded from:
+`infrastructure/stripe/generated/stripe-pricing.{mode}.json`
+
+Checkout flow:
+`Frontend -> lookup_key -> CheckoutController -> StripePricingLoader -> stripe-pricing.{mode}.json -> Stripe price_id`
 
 **Discord Configuration:**
 ```
