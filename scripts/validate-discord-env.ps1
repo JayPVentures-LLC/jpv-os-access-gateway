@@ -21,7 +21,13 @@ $placeholderValues = @(
     "YOUR_REDIRECT_URI",
     "ROLE_ID",
     "REAL_ROLE_ID",
-    "ROLE_ID_HERE",`n    "REAL_MEMBER_ACCESS_ROLE_ID",`n    "REAL_VIP_VENTURE_ROLE_ID",`n    "REAL_CREATOR_LANE_ROLE_ID",`n    "REAL_OPERATOR_ROLE_ID",`n    "REAL_ENTERPRISE_ROLE_ID"
+    "ROLE_ID_HERE",
+    "REAL_MEMBER_ACCESS_ROLE_ID",
+    "REAL_VIP_VENTURE_ROLE_ID",
+    "REAL_CREATOR_LANE_ROLE_ID",
+    "REAL_OPERATOR_ROLE_ID",
+    "REAL_ENTERPRISE_ROLE_ID",
+    "ACTUAL_NUMERIC_ROLE_ID"
 )
 
 $reportDir = Split-Path -Parent $ReportPath
@@ -86,4 +92,5 @@ if ($missing.Count -gt 0 -or $placeholder.Count -gt 0) {
 
 "PASSED: All required settings are present and non-placeholder." | Add-Content $ReportPath
 exit 0
+
 
