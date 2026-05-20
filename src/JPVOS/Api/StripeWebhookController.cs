@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Stripe;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using JPVOS.Infrastructure.Stripe;
 
 [ApiController]
@@ -302,7 +304,12 @@ public class StripeWebhookController : ControllerBase
                 await _discordService.RemoveRoleAsync(ent.DiscordUserId, ent.DiscordRole);
                 _logger.LogInformation("Discord role {DiscordRole} revoked for user {DiscordUserId}", ent.DiscordRole, ent.DiscordUserId);
               }
-              catch (Exception ex)
+              catch (HttpRequestException ex)
+              {
+                _logger.LogError(ex, "Failed to revoke Discord role {DiscordRole} for user {DiscordUserId}", ent.DiscordRole, ent.DiscordUserId);
+                return StatusCode(502, "Failed to revoke Discord role.");
+              }
+              catch (TaskCanceledException ex)
               {
                 _logger.LogError(ex, "Failed to revoke Discord role {DiscordRole} for user {DiscordUserId}", ent.DiscordRole, ent.DiscordUserId);
                 return StatusCode(502, "Failed to revoke Discord role.");
