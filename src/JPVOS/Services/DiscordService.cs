@@ -1,20 +1,24 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
+using JPVOS.Infrastructure.Discord;
 
 public class DiscordService
 {
     private readonly HttpClient _http;
     private readonly IConfiguration _config;
     private readonly ILogger<DiscordService> _logger;
+    private readonly DiscordRoleSyncAuditStore _auditStore;
 
     public DiscordService(
         HttpClient http,
         IConfiguration config,
-        ILogger<DiscordService> logger)
+        ILogger<DiscordService> logger,
+        DiscordRoleSyncAuditStore auditStore)
     {
         _http = http;
         _config = config;
         _logger = logger;
+        _auditStore = auditStore;
     }
 
     public async Task AssignRoleAsync(string discordUserId, string roleId)
@@ -67,6 +71,16 @@ public class DiscordService
 
         if (!response.IsSuccessStatusCode)
         {
+            _auditStore.Append(new DiscordRoleSyncAuditRecord
+            {
+                Action = action,
+                DiscordUserId = discordUserId,
+                RoleId = roleId,
+                Success = false,
+                StatusCode = (int)response.StatusCode,
+                ErrorMessage = responseBody,
+                CreatedAt = DateTimeOffset.UtcNow
+            });
             _logger.LogWarning(
                 "Discord role {Action} failed for user {DiscordUserId}, role {RoleId}. Status: {StatusCode}. Body: {Body}",
                 action,
@@ -79,6 +93,17 @@ public class DiscordService
                 $"Discord role {action} failed with status {(int)response.StatusCode}.");
         }
 
+        _auditStore.Append(new DiscordRoleSyncAuditRecord
+        {
+            Action = action,
+            DiscordUserId = discordUserId,
+            RoleId = roleId,
+            Success = true,
+            StatusCode = (int)response.StatusCode,
+            ErrorMessage = null,
+            CreatedAt = DateTimeOffset.UtcNow
+        });
+
         _logger.LogInformation(
             "Discord role {Action} succeeded for user {DiscordUserId}, role {RoleId}.",
             action,
@@ -86,3 +111,4 @@ public class DiscordService
             roleId);
     }
 }
+
