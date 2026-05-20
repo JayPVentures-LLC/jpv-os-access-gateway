@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Stripe;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using JPVOS.Infrastructure.Stripe;
 
 [ApiController]
@@ -297,8 +299,21 @@ public class StripeWebhookController : ControllerBase
             // Remove Discord role if linked
             if (!string.IsNullOrEmpty(ent.DiscordUserId) && !string.IsNullOrEmpty(ent.DiscordRole))
             {
-              _ = _discordService.RemoveRoleAsync(ent.DiscordUserId, ent.DiscordRole);
-              _logger.LogInformation("Discord role {DiscordRole} revoked for user {DiscordUserId}", ent.DiscordRole, ent.DiscordUserId);
+              try
+              {
+                await _discordService.RemoveRoleAsync(ent.DiscordUserId, ent.DiscordRole);
+                _logger.LogInformation("Discord role {DiscordRole} revoked for user {DiscordUserId}", ent.DiscordRole, ent.DiscordUserId);
+              }
+              catch (HttpRequestException ex)
+              {
+                _logger.LogError(ex, "Failed to revoke Discord role {DiscordRole} for user {DiscordUserId}", ent.DiscordRole, ent.DiscordUserId);
+                return StatusCode(502, "Failed to revoke Discord role.");
+              }
+              catch (TaskCanceledException ex)
+              {
+                _logger.LogError(ex, "Failed to revoke Discord role {DiscordRole} for user {DiscordUserId}", ent.DiscordRole, ent.DiscordUserId);
+                return StatusCode(502, "Failed to revoke Discord role.");
+              }
             }
             _entitlementService.RemoveByStripeCustomerId(customerId);
             _logger.LogWarning("Subscription deleted for customer {CustomerId}, entitlement revoked", customerId);
@@ -354,4 +369,5 @@ public class StripeWebhookController : ControllerBase
     return null;
   }
 }
+
 
