@@ -9,11 +9,14 @@ namespace JPVOS.Api;
 public sealed class CheckoutController : ControllerBase
 {
     private readonly StripeCheckoutService _checkout;
+    private readonly IEntitlementService _entitlementService;
 
     public CheckoutController(
-        StripeCheckoutService checkout)
+        StripeCheckoutService checkout,
+        IEntitlementService entitlementService)
     {
         _checkout = checkout;
+        _entitlementService = entitlementService;
     }
 
     public sealed class CheckoutRequest
@@ -48,6 +51,7 @@ public sealed class CheckoutController : ControllerBase
     public sealed class PortalRequest
     {
         public string CustomerId { get; set; } = "";
+        public string DiscordUserId { get; set; } = "";
     }
 
     [HttpPost("portal")]
@@ -60,6 +64,29 @@ public sealed class CheckoutController : ControllerBase
             {
                 error = "customer_id_required"
             });
+        }
+
+        if (string.IsNullOrWhiteSpace(request.DiscordUserId))
+        {
+            return BadRequest(new
+            {
+                error = "discord_user_id_required"
+            });
+        }
+
+        var entitlement = _entitlementService.GetByStripeCustomerId(request.CustomerId);
+
+        if (entitlement is null)
+        {
+            return NotFound(new
+            {
+                error = "entitlement_not_found"
+            });
+        }
+
+        if (!string.Equals(entitlement.DiscordUserId, request.DiscordUserId, StringComparison.Ordinal))
+        {
+            return Forbid();
         }
 
         var baseUrl = $"{Request.Scheme}://{Request.Host}";
@@ -79,4 +106,5 @@ public sealed class CheckoutController : ControllerBase
         });
     }
 }
+
 
