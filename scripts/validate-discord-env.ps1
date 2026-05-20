@@ -17,12 +17,20 @@ $required = @(
     "DISCORD_ROLE_ENTERPRISE"
 )
 
+$placeholderValues = @(
+    "YOUR_REDIRECT_URI",
+    "ROLE_ID",
+    "REAL_ROLE_ID",
+    "ROLE_ID_HERE",`n    "REAL_MEMBER_ACCESS_ROLE_ID",`n    "REAL_VIP_VENTURE_ROLE_ID",`n    "REAL_CREATOR_LANE_ROLE_ID",`n    "REAL_OPERATOR_ROLE_ID",`n    "REAL_ENTERPRISE_ROLE_ID"
+)
+
 $reportDir = Split-Path -Parent $ReportPath
 if ($reportDir) {
     New-Item -ItemType Directory -Force $reportDir | Out-Null
 }
 
 $missing = @()
+$placeholder = @()
 
 "# Discord / Stripe Environment Validation" | Set-Content $ReportPath
 "" | Add-Content $ReportPath
@@ -39,6 +47,11 @@ foreach ($key in $required) {
         "- $key : MISSING" | Add-Content $ReportPath
         Write-Host "MISSING: $key"
     }
+    elseif ($placeholderValues -contains $value) {
+        $placeholder += $key
+        "- $key : PLACEHOLDER" | Add-Content $ReportPath
+        Write-Host "PLACEHOLDER: $key"
+    }
     else {
         "- $key : SET" | Add-Content $ReportPath
         Write-Host "SET: $key"
@@ -49,17 +62,28 @@ foreach ($key in $required) {
 "## Result" | Add-Content $ReportPath
 "" | Add-Content $ReportPath
 
-if ($missing.Count -gt 0) {
-    "FAILED: Missing $($missing.Count) required setting(s)." | Add-Content $ReportPath
+if ($missing.Count -gt 0 -or $placeholder.Count -gt 0) {
+    "FAILED: Runtime configuration is incomplete." | Add-Content $ReportPath
     "" | Add-Content $ReportPath
-    "Missing:" | Add-Content $ReportPath
-    foreach ($key in $missing) {
-        "- $key" | Add-Content $ReportPath
+
+    if ($missing.Count -gt 0) {
+        "Missing:" | Add-Content $ReportPath
+        foreach ($key in $missing) {
+            "- $key" | Add-Content $ReportPath
+        }
+        "" | Add-Content $ReportPath
+    }
+
+    if ($placeholder.Count -gt 0) {
+        "Placeholder values:" | Add-Content $ReportPath
+        foreach ($key in $placeholder) {
+            "- $key" | Add-Content $ReportPath
+        }
     }
 
     exit 1
 }
 
-"PASSED: All required settings are present." | Add-Content $ReportPath
+"PASSED: All required settings are present and non-placeholder." | Add-Content $ReportPath
 exit 0
 
