@@ -45,6 +45,27 @@ public class DiscordService
         await SendRoleRequestAsync(HttpMethod.Delete, discordUserId, roleId, "remove");
     }
 
+    private bool IsRoleSyncEnabled()
+    {
+        var raw = _config["DISCORD_ROLE_SYNC_ENABLED"];
+
+        return string.Equals(raw, "true", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void AuditDeferred(string action, string discordUserId, string roleId)
+    {
+        _auditStore.Append(new DiscordRoleSyncAuditRecord
+        {
+            Action = action,
+            DiscordUserId = discordUserId,
+            RoleId = roleId,
+            Success = false,
+            StatusCode = null,
+            ErrorMessage = "Deferred because DISCORD_ROLE_SYNC_ENABLED is false.",
+            CreatedAt = DateTimeOffset.UtcNow
+        });
+    }
+
     private async Task SendRoleRequestAsync(
         HttpMethod method,
         string discordUserId,
@@ -196,6 +217,7 @@ public class DiscordService
         return clone;
     }
 }
+
 
 
 
