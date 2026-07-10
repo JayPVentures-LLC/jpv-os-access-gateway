@@ -3,6 +3,10 @@ name: deploy-appservice
 on:
   workflow_dispatch:
 
+# Least-privilege token scope required by this workflow.
+permissions:
+  contents: read
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
