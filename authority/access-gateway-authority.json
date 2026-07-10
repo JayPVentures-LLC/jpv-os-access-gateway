@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0.0",
+  "system": "access-gateway",
+  "repo": "JayPVentures-LLC/jpv-os-access-gateway",
+  "authorityLane": "access",
+  "owns": [
+    "access gateway",
+    "entitlement routing",
+    "role mapping",
+    "access state transitions",
+    "identity and access audit handoff"
+  ],
+  "mustNotOwn": [
+    "pricing authority",
+    "public marketing copy",
+    "legal review conclusions",
+    "case evidence records"
+  ],
+  "accessStates": [
+    "requested",
+    "checkout_started",
+    "payment_confirmed",
+    "active",
+    "past_due",
+    "cancelled",
+    "revoked",
+    "manual_review"
+  ],
+  "entitlementRoles": [
+    "Free Access",
+    "Member Access",
+    "VIP Venture",
+    "Creator Lane",
+    "Operator Access",
+    "Enterprise",
+    "Sovereign Review"
+  ],
+  "auditEvents": [
+    "access_requested",
+    "checkout_started",
+    "payment_confirmed",
+    "entitlement_granted",
+    "entitlement_changed",
+    "payment_failed",
+    "subscription_cancelled",
+    "entitlement_revoked",
+    "manual_review_required"
+  ],
+  "pricingAuthority": "JayPVentures-LLC/jpv-governance and public-site pricing standard; gateway may reference lookup keys but must not define final prices."
+}
