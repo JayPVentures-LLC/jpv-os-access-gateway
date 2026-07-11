@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "test": "node --test test/rules.test.mjs",
-    "test:emulators": "firebase emulators:exec --only auth,firestore,storage \"npm test\""
+    "test:emulators": "firebase --config ../firebase.json emulators:exec --only auth,firestore,storage \"npm test\""
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "5.0.0",
