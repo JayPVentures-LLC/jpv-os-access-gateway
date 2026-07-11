@@ -1,0 +1,70 @@
+name: Firebase Security Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".firebaserc"
+      - "firebase.json"
+      - "firebase/**"
+      - "scripts/verify-firebase-project.ps1"
+      - ".github/workflows/firebase-security.yml"
+  push:
+    branches: [main]
+    paths:
+      - ".firebaserc"
+      - "firebase.json"
+      - "firebase/**"
+      - ".github/workflows/firebase-security.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firebase-security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rules:
+    name: Deny-by-default rules
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: firebase
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Install validation dependencies
+        run: npm install --package-lock-only && npm ci
+
+      - name: Run Firestore and Storage rules tests
+        run: npm run test:emulators
+
+  deployment-guard:
+    name: Confirm deployment remains manual
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Reject deploy commands in validation workflow
+        shell: pwsh
+        run: |
+          $workflow = Get-Content ".github/workflows/firebase-security.yml" -Raw
+          if ($workflow -match 'firebase\s+deploy') {
+            throw "Production deployment commands are prohibited in the validation workflow."
+          }
+          Write-Host "PASS: workflow validates only; it does not deploy."

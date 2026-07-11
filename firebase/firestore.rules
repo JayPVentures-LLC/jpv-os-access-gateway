@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Production baseline: clients receive no implicit data authority.
+    // Privileged JPV Core operations use server-side IAM and emit Ledger events.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
