@@ -16,8 +16,8 @@ let environment;
 before(async () => {
   environment = await initializeTestEnvironment({
     projectId: "jpv-nexus-production-502019",
-    firestore: { rules: "../../firebase/firestore.rules" },
-    storage: { rules: "../../firebase/storage.rules" }
+    firestore: { rules: "firestore.rules" },
+    storage: { rules: "storage.rules" }
   });
 });
 
