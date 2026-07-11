@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { after, before, test } from "node:test";
 import {
   assertFails,
@@ -16,8 +17,8 @@ let environment;
 before(async () => {
   environment = await initializeTestEnvironment({
     projectId: "jpv-nexus-production-502019",
-    firestore: { rules: "firestore.rules" },
-    storage: { rules: "storage.rules" }
+    firestore: { rules: readFileSync("firestore.rules", "utf8") },
+    storage: { rules: readFileSync("storage.rules", "utf8") }
   });
 });
 
