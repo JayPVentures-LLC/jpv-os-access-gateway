@@ -1,0 +1,10 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Production baseline: no public or client-authored object access.
+    match /{object=**} {
+      allow read, write: if false;
+    }
+  }
+}
