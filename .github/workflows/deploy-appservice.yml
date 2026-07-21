@@ -3,13 +3,16 @@ name: deploy-appservice
 on:
   workflow_dispatch:
 
-# Least-privilege token scope required by this workflow.
 permissions:
   contents: read
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
+    env:
+      AZURE_RESOURCE_GROUP: rg-jpv-os-access-gateway
+      AZURE_WEBAPP_NAME: jpv-os-access-gateway
 
     steps:
       - name: Checkout
@@ -29,31 +32,64 @@ jobs:
       - name: Publish
         run: dotnet publish ./src/JPVOS/JPVOS.csproj -c Release -o ./publish
 
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Configure Stripe runtime secrets
+        run: |
+          az webapp config appsettings set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$AZURE_WEBAPP_NAME" \
+            --settings \
+              STRIPE_SECRET_KEY="${{ secrets.STRIPE_SECRET_KEY }}" \
+              STRIPE_WEBHOOK_SECRET="${{ secrets.STRIPE_WEBHOOK_SECRET }}" \
+              STRIPE_AUTOMATIC_TAX_ENABLED="false" \
+              STRIPE_PRICE_MEMBER_MONTHLY="${{ secrets.STRIPE_PRICE_MEMBER_MONTHLY }}" \
+              STRIPE_PRICE_MEMBER_ANNUAL="${{ secrets.STRIPE_PRICE_MEMBER_ANNUAL }}" \
+              STRIPE_PRICE_VIP_MONTHLY="${{ secrets.STRIPE_PRICE_VIP_MONTHLY }}" \
+              STRIPE_PRICE_VIP_ANNUAL="${{ secrets.STRIPE_PRICE_VIP_ANNUAL }}" \
+              STRIPE_PRICE_CREATOR_LANE_MONTHLY="${{ secrets.STRIPE_PRICE_CREATOR_LANE_MONTHLY }}" \
+              STRIPE_PRICE_OPERATOR_MONTHLY="${{ secrets.STRIPE_PRICE_OPERATOR_MONTHLY }}" \
+              STRIPE_PRICE_ENTERPRISE_MONTHLY="${{ secrets.STRIPE_PRICE_ENTERPRISE_MONTHLY }}" \
+            --output none
+
       - name: Deploy
         uses: azure/webapps-deploy@v3
         with:
-          app-name: jpv-os-access-gateway
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: ./publish
 
-      - name: Post-deploy health and homepage check
+      - name: Restart App Service
+        run: |
+          az webapp restart \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$AZURE_WEBAPP_NAME"
+
+      - name: Wait for startup
+        run: sleep 20
+
+      - name: Post-deploy health check
         run: |
           set -e
-          echo "Checking /api/health..."
-          resp=$(curl -sSf https://jpv-os-access-gateway.azurewebsites.net/api/health)
-          echo "$resp" | jq -e '.status == "healthy"' > /dev/null
-          echo "Health endpoint OK."
 
-          echo "Checking homepage for stylesheet..."
-          homepage=$(curl -sSf https://jpv-os-access-gateway.azurewebsites.net/)
-          echo "$homepage" | grep 'init-home.css'
-          echo "Homepage stylesheet present."
+          echo "Checking health..."
+          curl -sSf \
+            https://jpv-os-access-gateway.azurewebsites.net/api/health \
+            | jq -e '.status == "healthy"'
 
-          echo "Checking homepage for hero text..."
-          echo "$homepage" | grep 'Welcome to the Venture'
-          echo "Homepage hero text present."
+          echo "Health check passed."
 
-          echo "Checking homepage for CTA..."
-          echo "$homepage" | grep 'Enter the Ecosystem'
-          echo "Homepage CTA present."
-        shell: bash
+      - name: Verify homepage
+        run: |
+          set -e
+
+          homepage=$(curl -sSf \
+            https://jpv-os-access-gateway.azurewebsites.net/)
+
+          echo "$homepage" | grep "init-home.css"
+          echo "$homepage" | grep "Welcome to the Venture"
+          echo "$homepage" | grep "Enter the Ecosystem"
+
+          echo "Homepage verification passed."
