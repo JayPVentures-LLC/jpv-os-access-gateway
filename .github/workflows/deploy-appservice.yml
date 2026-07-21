@@ -3,13 +3,16 @@ name: deploy-appservice
 on:
   workflow_dispatch:
 
-# Least-privilege token scope required by this workflow.
 permissions:
   contents: read
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
+    env:
+      AZURE_RESOURCE_GROUP: rg-jpv-os-access-gateway
+      AZURE_WEBAPP_NAME: jpv-os-access-gateway
 
     steps:
       - name: Checkout
@@ -29,31 +32,42 @@ jobs:
       - name: Publish
         run: dotnet publish ./src/JPVOS/JPVOS.csproj -c Release -o ./publish
 
+      - name: Azure Login
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Configure Stripe runtime
+        run: |
+          az webapp config appsettings set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$AZURE_WEBAPP_NAME" \
+            --settings \
+              STRIPE_MODE="live" \
+              STRIPE_SECRET_KEY="${{ secrets.STRIPE_SECRET_KEY }}" \
+              STRIPE_WEBHOOK_SECRET="${{ secrets.STRIPE_WEBHOOK_SECRET }}" \
+            --output none
+
       - name: Deploy
         uses: azure/webapps-deploy@v3
         with:
-          app-name: jpv-os-access-gateway
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: ./publish
 
-      - name: Post-deploy health and homepage check
+      - name: Wait for startup
+        run: sleep 20
+
+      - name: Post-deploy health check
         run: |
-          set -e
-          echo "Checking /api/health..."
-          resp=$(curl -sSf https://jpv-os-access-gateway.azurewebsites.net/api/health)
-          echo "$resp" | jq -e '.status == "healthy"' > /dev/null
-          echo "Health endpoint OK."
+          set -euo pipefail
+          curl -sSf \
+            https://jpv-os-access-gateway.azurewebsites.net/api/health \
+            | jq -e '.status == "healthy"'
 
-          echo "Checking homepage for stylesheet..."
+      - name: Verify homepage
+        run: |
+          set -euo pipefail
           homepage=$(curl -sSf https://jpv-os-access-gateway.azurewebsites.net/)
-          echo "$homepage" | grep 'init-home.css'
-          echo "Homepage stylesheet present."
-
-          echo "Checking homepage for hero text..."
-          echo "$homepage" | grep 'Welcome to the Venture'
-          echo "Homepage hero text present."
-
-          echo "Checking homepage for CTA..."
-          echo "$homepage" | grep 'Enter the Ecosystem'
-          echo "Homepage CTA present."
-        shell: bash
+          printf '%s' "$homepage" | grep -Fq "init-home.css"
+          printf '%s' "$homepage" | grep -Fq "Welcome to the Venture"
+          printf '%s' "$homepage" | grep -Fq "Enter the Ecosystem"
