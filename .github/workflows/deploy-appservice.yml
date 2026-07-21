@@ -33,26 +33,19 @@ jobs:
         run: dotnet publish ./src/JPVOS/JPVOS.csproj -c Release -o ./publish
 
       - name: Azure Login
-        uses: azure/login@v2
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Configure Stripe runtime secrets
+      - name: Configure Stripe runtime
         run: |
           az webapp config appsettings set \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$AZURE_WEBAPP_NAME" \
             --settings \
+              STRIPE_MODE="live" \
               STRIPE_SECRET_KEY="${{ secrets.STRIPE_SECRET_KEY }}" \
               STRIPE_WEBHOOK_SECRET="${{ secrets.STRIPE_WEBHOOK_SECRET }}" \
-              STRIPE_AUTOMATIC_TAX_ENABLED="false" \
-              STRIPE_PRICE_MEMBER_MONTHLY="${{ secrets.STRIPE_PRICE_MEMBER_MONTHLY }}" \
-              STRIPE_PRICE_MEMBER_ANNUAL="${{ secrets.STRIPE_PRICE_MEMBER_ANNUAL }}" \
-              STRIPE_PRICE_VIP_MONTHLY="${{ secrets.STRIPE_PRICE_VIP_MONTHLY }}" \
-              STRIPE_PRICE_VIP_ANNUAL="${{ secrets.STRIPE_PRICE_VIP_ANNUAL }}" \
-              STRIPE_PRICE_CREATOR_LANE_MONTHLY="${{ secrets.STRIPE_PRICE_CREATOR_LANE_MONTHLY }}" \
-              STRIPE_PRICE_OPERATOR_MONTHLY="${{ secrets.STRIPE_PRICE_OPERATOR_MONTHLY }}" \
-              STRIPE_PRICE_ENTERPRISE_MONTHLY="${{ secrets.STRIPE_PRICE_ENTERPRISE_MONTHLY }}" \
             --output none
 
       - name: Deploy
@@ -61,35 +54,20 @@ jobs:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: ./publish
 
-      - name: Restart App Service
-        run: |
-          az webapp restart \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
-            --name "$AZURE_WEBAPP_NAME"
-
       - name: Wait for startup
         run: sleep 20
 
       - name: Post-deploy health check
         run: |
-          set -e
-
-          echo "Checking health..."
+          set -euo pipefail
           curl -sSf \
             https://jpv-os-access-gateway.azurewebsites.net/api/health \
             | jq -e '.status == "healthy"'
 
-          echo "Health check passed."
-
       - name: Verify homepage
         run: |
-          set -e
-
-          homepage=$(curl -sSf \
-            https://jpv-os-access-gateway.azurewebsites.net/)
-
-          echo "$homepage" | grep "init-home.css"
-          echo "$homepage" | grep "Welcome to the Venture"
-          echo "$homepage" | grep "Enter the Ecosystem"
-
-          echo "Homepage verification passed."
+          set -euo pipefail
+          homepage=$(curl -sSf https://jpv-os-access-gateway.azurewebsites.net/)
+          printf '%s' "$homepage" | grep -Fq "init-home.css"
+          printf '%s' "$homepage" | grep -Fq "Welcome to the Venture"
+          printf '%s' "$homepage" | grep -Fq "Enter the Ecosystem"
