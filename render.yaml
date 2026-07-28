@@ -1,19 +1,20 @@
-# Render Blueprint for JPV-OS
-# See https://render.com/docs/blueprint-spec for documentation
-# NOTE: This uses the free tier for evaluation. For production, change plan to 'starter' or higher.
-
+# Authoritative production deployment for JPV-OS Access Gateway
 services:
   - type: web
     name: jpv-os
-    env: docker
+    runtime: docker
     dockerfilePath: ./src/JPVOS/Dockerfile
     dockerContext: ./src/JPVOS
     region: oregon
-    # Change to 'starter' or higher for production (free tier has cold starts)
-    plan: free
+    plan: starter
+    numInstances: 1
     healthCheckPath: /health
+    previews:
+      generation: manual
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: ASPNETCORE_HTTP_PORTS
         value: "8080"
+      - key: JPV_DEPLOYMENT_AUTHORITY
+        value: render-production
