@@ -1,5 +1,5 @@
-# Standby deployment configuration only.
-# Render is the authoritative production target.
+# Canonical deployment configuration for the access gateway.
+# Deployment authority must map only to infrastructure that exists and is controlled.
 
 app = "jpv-os"
 primary_region = "iad"
@@ -9,7 +9,7 @@ primary_region = "iad"
 
 [env]
   ASPNETCORE_ENVIRONMENT = "Production"
-  JPV_DEPLOYMENT_AUTHORITY = "standby-only"
+  JPV_DEPLOYMENT_AUTHORITY = "production"
 
 [http_service]
   internal_port = 8080
