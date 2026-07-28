@@ -1,27 +1,22 @@
-# Fly.io configuration for JPV-OS
-# See https://fly.io/docs/reference/configuration/ for documentation
-# NOTE: This is a cost-saving development/staging configuration.
-# For production, set min_machines_running = 1 to avoid cold starts.
+# Standby deployment configuration only.
+# Render is the authoritative production target.
 
 app = "jpv-os"
 primary_region = "iad"
 
-# Use pre-built image from GitHub Container Registry
-# Replace <commit-sha> with actual commit SHA for production deployments
-# Or use 'latest' for development/testing
 [build]
-  image = "ghcr.io/jaypventures-llc/jpv-os:latest"
+  image = "ghcr.io/jaypventures-llc/jpv-os:85cb6fc6b85d3d7b2a8fb7799a283a4094016794"
 
 [env]
   ASPNETCORE_ENVIRONMENT = "Production"
+  JPV_DEPLOYMENT_AUTHORITY = "standby-only"
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = "stop"
+  auto_stop_machines = "off"
   auto_start_machines = true
-  # Set to 1 for production to avoid cold starts
-  min_machines_running = 0
+  min_machines_running = 1
 
   [http_service.concurrency]
     type = "connections"
