@@ -4,7 +4,7 @@
 
 The access gateway does not own final pricing authority.
 
-Use governance-approved lookup keys and resolve payment processor price IDs server-side. Final prices come from the active JPV-OS canonical pricing authority. The gateway must fail closed when a generated processor map is stale, incomplete, or lacks the active authority marker.
+Use governance-approved lookup keys and resolve payment processor price IDs server-side. Final prices come from the active JPV-OS canonical pricing authority. The gateway must fail closed when processor configuration is stale, incomplete, or lacks the active authority marker.
 
 | Package Key | Access Path | Billing Interval |
 |---|---|---|
@@ -21,7 +21,7 @@ Legacy lookup keys including `vip_venture_*`, `creator_lane_*`, `operator_monthl
 
 ## 2. Stripe Products & Prices to Create
 
-Do not wire frontend directly to Stripe `price_id` values. Use lookup-key based checkout and generated pricing maps.
+Do not wire frontend directly to Stripe `price_id` values. Use lookup-key based checkout and governed processor configuration.
 
 Canonical lookup keys:
 
@@ -36,17 +36,26 @@ Canonical lookup keys:
 
 Canonical flow:
 
-`Frontend -> lookup_key -> CheckoutController -> StripePricingLoader -> canonical authority validation -> infrastructure/stripe/generated/stripe-pricing.{mode}.json -> Stripe price_id`
+`Frontend -> lookup_key -> CheckoutController -> StripePricingLoader -> canonical authority validation -> runtime Stripe price_id -> Stripe live object verification -> Checkout Session`
 
-`StripePricingLoader` validates the map against `JPV-OS-v2.1.0` before any checkout session can be created. A missing authority marker, legacy lookup key, wrong amount, wrong interval, wrong currency, missing product ID, or missing price ID rejects checkout rather than using stale pricing.
+`StripePricingLoader` validates runtime processor configuration against `JPV-OS-v2.1.0` before any checkout session can be created. A missing authority marker, legacy lookup key, wrong amount, wrong interval, wrong currency, or missing price ID rejects checkout rather than using divergent pricing.
 
 ## 3. Required Environment Variables
 
-Set these as environment variables in your deployment environment. Do not store secrets in appsettings files or source code.
+Set these as environment variables in the deployment environment. Do not store secrets or processor price IDs in appsettings files or source code.
 
 - STRIPE_MODE
+- JPV_PRICING_AUTHORITY
 - STRIPE_SECRET_KEY
 - STRIPE_WEBHOOK_SECRET
+- STRIPE_PRICE_MEMBER_ACCESS_MONTHLY
+- STRIPE_PRICE_MEMBER_ACCESS_ANNUAL
+- STRIPE_PRICE_CREATOR_INFRASTRUCTURE_MONTHLY
+- STRIPE_PRICE_CREATOR_INFRASTRUCTURE_ANNUAL
+- STRIPE_PRICE_PARTNER_INFRASTRUCTURE_MONTHLY
+- STRIPE_PRICE_PARTNER_INFRASTRUCTURE_ANNUAL
+- STRIPE_PRICE_ENTERPRISE_INFRASTRUCTURE_MONTHLY
+- STRIPE_PRICE_ENTERPRISE_INFRASTRUCTURE_ANNUAL
 - DISCORD_CLIENT_ID
 - DISCORD_CLIENT_SECRET
 - DISCORD_BOT_TOKEN
@@ -71,7 +80,7 @@ Deprecated role variables:
 
 ## 4. Discord Roles to Create
 
-Create the following roles in your Discord server and copy their IDs:
+Create the following roles in the Discord server and copy their IDs:
 
 - Free Access
 - Member Access
@@ -98,16 +107,16 @@ The access gateway recognizes these entitlement states:
 
 ## 6. Validation Checklist
 
-- [ ] Generated processor pricing map carries `pricing_authority=JPV-OS-v2.1.0`.
+- [ ] Runtime processor configuration carries `JPV_PRICING_AUTHORITY=JPV-OS-v2.1.0`.
 - [ ] All eight canonical subscription lookup keys exist.
-- [ ] Member Access resolves to $20 monthly / $200 annual.
-- [ ] Creator Infrastructure resolves to $500 monthly / $5,000 annual.
-- [ ] Partner Infrastructure resolves to $2,500 monthly / $25,000 annual.
-- [ ] Enterprise Infrastructure resolves to $10,000 monthly / $100,000 annual.
+- [ ] Runtime amounts exactly match the active upstream canonical pricing authority.
 - [ ] No legacy pricing lookup key is accepted by runtime checkout.
-- [ ] Checkout rejects stale or incomplete maps.
+- [ ] Checkout rejects stale, incomplete, or divergent processor configuration.
+- [ ] The live Stripe Price object is verified before Checkout Session creation.
+- [ ] Checkout metadata preserves canonical lookup key, package key, billing interval, source, and pricing authority.
+- [ ] Webhook entitlement grants reject invalid canonical metadata.
 - [ ] Webhook delivery and entitlement state transitions remain auditable.
-- [ ] No secrets are present in appsettings files or source code.
+- [ ] No secrets or processor price IDs are present in appsettings files or source code.
 
 ## 7. Persistence Requirement
 
@@ -140,7 +149,7 @@ Review entitlement and role state regularly for consistency.
 
 ## 10. Production Deployment Invariant
 
-Production checkout must not start unless the processor map passes canonical pricing validation. Price provisioning may create or replace processor price objects, but it may not lower, invent, or silently reuse a divergent amount.
+Production checkout must not start unless runtime processor configuration passes canonical pricing validation and the actual Stripe Price object matches the active canonical authority. Provisioning may create or replace processor price objects, but it may not invent, lower, or silently reuse a divergent amount.
 
 ## 11. Revocation Rules
 
@@ -150,4 +159,4 @@ Production checkout must not start unless the processor map passes canonical pri
 
 ---
 
-Never commit real secrets or live price IDs to source control. Keep secrets in environment variables and resolve price IDs server-side from governed lookup keys.
+Never commit real secrets or live price IDs to source control. Keep secrets and processor IDs in governed runtime configuration and resolve them server-side from canonical lookup keys.
