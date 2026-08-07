@@ -24,3 +24,9 @@ appsettings.Production.json
 azure-publish-profile-*.xml
 *.PublishProfile
 *.pubxml
+
+# Processor-generated pricing state is evidence/runtime output, never source authority.
+infrastructure/stripe/generated/stripe-pricing.*.json
+infrastructure/stripe/generated/stripe-pricing.*.*.md
+infrastructure/stripe/generated/stripe-env.*.template
+artifacts/commercial/stripe/*.json
