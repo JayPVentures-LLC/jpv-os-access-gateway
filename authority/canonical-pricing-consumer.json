@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0.0",
+  "authorityVersion": "JPV-OS-v2.1.0",
+  "sourceAuthorityRepo": "jaypVLabs/JPV-OS",
+  "sourceAuthorityCommit": "592acce5d7f47487669164012404c5cd3f4cfef2",
+  "currency": "USD",
+  "offers": [
+    {"key":"member_access","monthly":20,"annual":200,"monthlyLookupKey":"member_access_monthly","annualLookupKey":"member_access_annual"},
+    {"key":"creator_infrastructure","monthly":500,"annual":5000,"monthlyLookupKey":"creator_infrastructure_monthly","annualLookupKey":"creator_infrastructure_annual"},
+    {"key":"partner_infrastructure","monthly":2500,"annual":25000,"monthlyLookupKey":"partner_infrastructure_monthly","annualLookupKey":"partner_infrastructure_annual"},
+    {"key":"enterprise_infrastructure","monthly":10000,"annual":100000,"monthlyLookupKey":"enterprise_infrastructure_monthly","annualLookupKey":"enterprise_infrastructure_annual"}
+  ],
+  "engagementMinimums": {
+    "custom_implementation": 25000,
+    "enterprise_pilot": 50000,
+    "strategic_implementation": 100000,
+    "enterprise_transformation": 250000,
+    "sovereign_public_system_review": 500000
+  },
+  "legacyLookupKeysRejected": [
+    "vip_venture_monthly",
+    "vip_venture_annual",
+    "creator_lane_monthly",
+    "operator_monthly",
+    "enterprise_monthly"
+  ]
+}
