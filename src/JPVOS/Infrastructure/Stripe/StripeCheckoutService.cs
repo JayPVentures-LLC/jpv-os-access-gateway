@@ -7,6 +7,19 @@ public sealed class StripeCheckoutService
 {
     private readonly StripePricingLoader _pricingLoader;
 
+    private static readonly IReadOnlyDictionary<string, (string PackageKey, string BillingInterval)> EntitlementIdentity =
+        new Dictionary<string, (string PackageKey, string BillingInterval)>(StringComparer.Ordinal)
+        {
+            ["member_access_monthly"] = ("member_access", "monthly"),
+            ["member_access_annual"] = ("member_access", "annual"),
+            ["creator_infrastructure_monthly"] = ("creator_infrastructure", "monthly"),
+            ["creator_infrastructure_annual"] = ("creator_infrastructure", "annual"),
+            ["partner_infrastructure_monthly"] = ("partner_infrastructure", "monthly"),
+            ["partner_infrastructure_annual"] = ("partner_infrastructure", "annual"),
+            ["enterprise_infrastructure_monthly"] = ("enterprise_infrastructure", "monthly"),
+            ["enterprise_infrastructure_annual"] = ("enterprise_infrastructure", "annual")
+        };
+
     public StripeCheckoutService(StripePricingLoader pricingLoader)
     {
         _pricingLoader = pricingLoader;
@@ -18,6 +31,11 @@ public sealed class StripeCheckoutService
     {
         var configuredPrice = _pricingLoader.Resolve(lookupKey);
         var expected = _pricingLoader.ResolveExpected(lookupKey);
+
+        if (!EntitlementIdentity.TryGetValue(lookupKey, out var entitlement))
+        {
+            throw new InvalidOperationException($"No entitlement identity defined for canonical lookup key: {lookupKey}");
+        }
 
         if (string.IsNullOrWhiteSpace(configuredPrice.Price_Id))
         {
@@ -67,19 +85,22 @@ public sealed class StripeCheckoutService
                 $"Stripe price is not stamped with {StripePricingLoader.CanonicalPricingAuthority}: {lookupKey}");
         }
 
-        var baseUrl =
-            $"{request.Scheme}://{request.Host}";
+        var baseUrl = $"{request.Scheme}://{request.Host}";
+        var metadata = new Dictionary<string, string>
+        {
+            ["ecosystem"] = "JPV-OS",
+            ["lookup_key"] = lookupKey,
+            ["package_key"] = entitlement.PackageKey,
+            ["interval"] = entitlement.BillingInterval,
+            ["pricing_authority"] = StripePricingLoader.CanonicalPricingAuthority,
+            ["source"] = "access_gateway"
+        };
 
         var options = new SessionCreateOptions
         {
             Mode = "subscription",
-
-            SuccessUrl =
-                $"{baseUrl}/billing/success?session_id={{CHECKOUT_SESSION_ID}}",
-
-            CancelUrl =
-                $"{baseUrl}/billing/cancelled",
-
+            SuccessUrl = $"{baseUrl}/billing/success?session_id={{CHECKOUT_SESSION_ID}}",
+            CancelUrl = $"{baseUrl}/billing/cancelled",
             LineItems = new List<SessionLineItemOptions>
             {
                 new()
@@ -88,34 +109,18 @@ public sealed class StripeCheckoutService
                     Quantity = 1
                 }
             },
-
             AutomaticTax = new SessionAutomaticTaxOptions
             {
                 Enabled = true
             },
-
-            Metadata = new Dictionary<string, string>
-            {
-                ["ecosystem"] = "JPV-OS",
-                ["lookup_key"] = lookupKey,
-                ["pricing_authority"] = StripePricingLoader.CanonicalPricingAuthority,
-                ["source"] = "access_gateway"
-            },
-
+            Metadata = new Dictionary<string, string>(metadata),
             SubscriptionData = new SessionSubscriptionDataOptions
             {
-                Metadata = new Dictionary<string, string>
-                {
-                    ["ecosystem"] = "JPV-OS",
-                    ["lookup_key"] = lookupKey,
-                    ["pricing_authority"] = StripePricingLoader.CanonicalPricingAuthority,
-                    ["source"] = "access_gateway"
-                }
+                Metadata = new Dictionary<string, string>(metadata)
             }
         };
 
         var service = new SessionService();
-
         return await service.CreateAsync(options);
     }
 }
