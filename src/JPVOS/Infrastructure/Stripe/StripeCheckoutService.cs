@@ -1,10 +1,10 @@
+using Stripe;
 using Stripe.Checkout;
 
 namespace JPVOS.Infrastructure.Stripe;
 
 public sealed class StripeCheckoutService
 {
-    private const string CanonicalPricingAuthority = "JPV-OS-v2.1.0";
     private readonly StripePricingLoader _pricingLoader;
 
     public StripeCheckoutService(StripePricingLoader pricingLoader)
@@ -16,12 +16,54 @@ public sealed class StripeCheckoutService
         string lookupKey,
         HttpRequest request)
     {
-        var price = _pricingLoader.Resolve(lookupKey);
+        var configuredPrice = _pricingLoader.Resolve(lookupKey);
+        var expected = _pricingLoader.ResolveExpected(lookupKey);
 
-        if (string.IsNullOrWhiteSpace(price.Price_Id))
+        if (string.IsNullOrWhiteSpace(configuredPrice.Price_Id))
         {
             throw new InvalidOperationException(
                 $"Price ID missing for lookup key: {lookupKey}");
+        }
+
+        var priceService = new PriceService();
+        var stripePrice = await priceService.GetAsync(configuredPrice.Price_Id);
+
+        if (!stripePrice.Active)
+        {
+            throw new InvalidOperationException(
+                $"Stripe price is inactive for canonical lookup key: {lookupKey}");
+        }
+
+        if (stripePrice.UnitAmount != expected.Amount)
+        {
+            throw new InvalidOperationException(
+                $"Stripe amount mismatch for {lookupKey}: expected {expected.Amount}, found {stripePrice.UnitAmount?.ToString() ?? "<missing>"}.");
+        }
+
+        if (!string.Equals(stripePrice.Currency, expected.Currency, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                $"Stripe currency mismatch for {lookupKey}: expected {expected.Currency}, found {stripePrice.Currency ?? "<missing>"}.");
+        }
+
+        if (stripePrice.Recurring is null ||
+            !string.Equals(stripePrice.Recurring.Interval, expected.Interval, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"Stripe recurring interval mismatch for {lookupKey}: expected {expected.Interval}, found {stripePrice.Recurring?.Interval ?? "<missing>"}.");
+        }
+
+        if (!string.Equals(stripePrice.LookupKey, lookupKey, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"Stripe lookup-key mismatch: expected {lookupKey}, found {stripePrice.LookupKey ?? "<missing>"}.");
+        }
+
+        if (!stripePrice.Metadata.TryGetValue("pricing_authority", out var authority) ||
+            !string.Equals(authority, StripePricingLoader.CanonicalPricingAuthority, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"Stripe price is not stamped with {StripePricingLoader.CanonicalPricingAuthority}: {lookupKey}");
         }
 
         var baseUrl =
@@ -41,7 +83,7 @@ public sealed class StripeCheckoutService
             {
                 new()
                 {
-                    Price = price.Price_Id,
+                    Price = configuredPrice.Price_Id,
                     Quantity = 1
                 }
             },
@@ -55,7 +97,7 @@ public sealed class StripeCheckoutService
             {
                 ["ecosystem"] = "JPV-OS",
                 ["lookup_key"] = lookupKey,
-                ["pricing_authority"] = CanonicalPricingAuthority,
+                ["pricing_authority"] = StripePricingLoader.CanonicalPricingAuthority,
                 ["source"] = "access_gateway"
             },
 
@@ -65,7 +107,7 @@ public sealed class StripeCheckoutService
                 {
                     ["ecosystem"] = "JPV-OS",
                     ["lookup_key"] = lookupKey,
-                    ["pricing_authority"] = CanonicalPricingAuthority,
+                    ["pricing_authority"] = StripePricingLoader.CanonicalPricingAuthority,
                     ["source"] = "access_gateway"
                 }
             }
