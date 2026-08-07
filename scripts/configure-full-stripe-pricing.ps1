@@ -202,7 +202,8 @@ $envLines = @(
     "# Stripe $Mode environment template",
     "# Canonical pricing authority: JPV-OS v2.1.0",
     "# Generated $(Get-Date)",
-    "STRIPE_MODE=$Mode"
+    "STRIPE_MODE=$Mode",
+    "JPV_PRICING_AUTHORITY=JPV-OS-v2.1.0"
 )
 
 foreach ($k in $Results.Keys) {
