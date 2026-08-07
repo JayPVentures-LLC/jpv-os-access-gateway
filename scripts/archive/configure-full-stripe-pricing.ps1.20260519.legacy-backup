@@ -1,4 +1,0 @@
-# Backup of configure-full-stripe-pricing.ps1 before legacy code removal
-# Created: 2026-05-19
-# This is a full backup of the script before deleting unreachable/prompt logic after the main completion output.
-
