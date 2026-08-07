@@ -24,6 +24,30 @@ public sealed class CheckoutController : ControllerBase
         public string LookupKey { get; set; } = "";
     }
 
+    [HttpGet("start")]
+    public async Task<IActionResult> StartCheckout([FromQuery] string lookupKey)
+    {
+        if (string.IsNullOrWhiteSpace(lookupKey))
+        {
+            return BadRequest(new
+            {
+                error = "lookup_key_required"
+            });
+        }
+
+        var session = await _checkout.CreateCheckoutSessionAsync(lookupKey, Request);
+
+        if (string.IsNullOrWhiteSpace(session.Url))
+        {
+            return StatusCode(StatusCodes.Status502BadGateway, new
+            {
+                error = "checkout_session_url_missing"
+            });
+        }
+
+        return Redirect(session.Url);
+    }
+
     [HttpPost("session")]
     public async Task<IActionResult> CreateSession(
         [FromBody] CheckoutRequest request)
@@ -106,5 +130,3 @@ public sealed class CheckoutController : ControllerBase
         });
     }
 }
-
-
