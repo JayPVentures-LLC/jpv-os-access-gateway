@@ -43,19 +43,22 @@ function Invoke-StripeJson {
     return $text | ConvertFrom-Json
 }
 
+# Consumer snapshot of JPV-OS canonical pricing authority v2.1.0.
+# This script MUST NOT invent or lower prices independently.
 $Tiers = @(
-    @{ key="member_access_monthly"; name="Member Access"; amount=900; interval="month" },
-    @{ key="member_access_annual"; name="Member Access Annual"; amount=9000; interval="year" },
-    @{ key="vip_venture_monthly"; name="VIP Venture"; amount=2900; interval="month" },
-    @{ key="vip_venture_annual"; name="VIP Venture Annual"; amount=29000; interval="year" },
-    @{ key="creator_lane_monthly"; name="Creator Lane"; amount=7900; interval="month" },
-    @{ key="operator_monthly"; name="Operator"; amount=24900; interval="month" },
-    @{ key="enterprise_monthly"; name="Enterprise"; amount=89900; interval="month" }
+    @{ key="member_access_monthly"; name="Member Access"; amount=2000; interval="month" },
+    @{ key="member_access_annual"; name="Member Access Annual"; amount=20000; interval="year" },
+    @{ key="creator_infrastructure_monthly"; name="Creator Infrastructure"; amount=50000; interval="month" },
+    @{ key="creator_infrastructure_annual"; name="Creator Infrastructure Annual"; amount=500000; interval="year" },
+    @{ key="partner_infrastructure_monthly"; name="Partner Infrastructure"; amount=250000; interval="month" },
+    @{ key="partner_infrastructure_annual"; name="Partner Infrastructure Annual"; amount=2500000; interval="year" },
+    @{ key="enterprise_infrastructure_monthly"; name="Enterprise Infrastructure"; amount=1000000; interval="month" },
+    @{ key="enterprise_infrastructure_annual"; name="Enterprise Infrastructure Annual"; amount=10000000; interval="year" }
 )
 
 $Results = [ordered]@{}
 
-"# Stripe Pricing Report`nMode: $Mode`nGenerated: $(Get-Date)`nStripe CLI: $StripeCmd`n" |
+"# Stripe Pricing Report`nMode: $Mode`nCanonical pricing: JPV-OS v2.1.0`nGenerated: $(Get-Date)`nStripe CLI: $StripeCmd`n" |
     Set-Content $ReportPath -Encoding UTF8
 
 foreach ($tier in $Tiers) {
@@ -68,13 +71,63 @@ foreach ($tier in $Tiers) {
         "-d",
         "lookup_keys[]=$lookup",
         "-d",
+        "active=true",
+        "-d",
         "limit=1"
     )
 
+    $price = $null
+    $productId = $null
+
     if ($existing.data.Count -gt 0) {
-        $price = $existing.data[0]
-        $productId = $price.product
-        "Reused price: $($price.id)" | Add-Content $ReportPath
+        $candidate = $existing.data[0]
+        $amountMatches = ([int64]$candidate.unit_amount -eq [int64]$tier.amount)
+        $intervalMatches = ($candidate.recurring.interval -eq $tier.interval)
+
+        if ($amountMatches -and $intervalMatches) {
+            $price = $candidate
+            $productId = $candidate.product
+            "Reused canonical price: $($price.id)" | Add-Content $ReportPath
+        } else {
+            "Detected stale lookup-key price: $($candidate.id) amount=$($candidate.unit_amount) interval=$($candidate.recurring.interval)" | Add-Content $ReportPath
+
+            $productId = $candidate.product
+            $price = Invoke-StripeJson -CommandArgs @(
+                "post",
+                "/v1/prices",
+                "-d",
+                "product=$productId",
+                "-d",
+                "currency=usd",
+                "-d",
+                "unit_amount=$($tier.amount)",
+                "-d",
+                "recurring[interval]=$($tier.interval)",
+                "-d",
+                "lookup_key=$lookup",
+                "-d",
+                "transfer_lookup_key=true",
+                "-d",
+                "tax_behavior=exclusive",
+                "-d",
+                "metadata[ecosystem]=JPV-OS",
+                "-d",
+                "metadata[legal_entity]=JayPVentures LLC",
+                "-d",
+                "metadata[pricing_authority]=JPV-OS-v2.1.0",
+                "-d",
+                "metadata[mode]=$Mode"
+            )
+
+            Invoke-StripeJson -CommandArgs @(
+                "post",
+                "/v1/prices/$($candidate.id)",
+                "-d",
+                "active=false"
+            ) | Out-Null
+
+            "Replaced stale price with canonical price: $($price.id)" | Add-Content $ReportPath
+        }
     } else {
         $product = Invoke-StripeJson -CommandArgs @(
             "post",
@@ -87,6 +140,8 @@ foreach ($tier in $Tiers) {
             "metadata[ecosystem]=JPV-OS",
             "-d",
             "metadata[legal_entity]=JayPVentures LLC",
+            "-d",
+            "metadata[pricing_authority]=JPV-OS-v2.1.0",
             "-d",
             "metadata[mode]=$Mode"
         )
@@ -111,12 +166,14 @@ foreach ($tier in $Tiers) {
             "-d",
             "metadata[legal_entity]=JayPVentures LLC",
             "-d",
+            "metadata[pricing_authority]=JPV-OS-v2.1.0",
+            "-d",
             "metadata[mode]=$Mode"
         )
 
         $productId = $product.id
-        "Created product: $productId" | Add-Content $ReportPath
-        "Created price: $($price.id)" | Add-Content $ReportPath
+        "Created canonical product: $productId" | Add-Content $ReportPath
+        "Created canonical price: $($price.id)" | Add-Content $ReportPath
     }
 
     $Results[$lookup] = [ordered]@{
@@ -127,11 +184,13 @@ foreach ($tier in $Tiers) {
         product_id = $productId
         price_id = $price.id
         lookup_key = $lookup
+        pricing_authority = "JPV-OS-v2.1.0"
     }
 }
 
 $Output = [ordered]@{
     mode = $Mode
+    pricing_authority = "JPV-OS-v2.1.0"
     generated = (Get-Date).ToString("o")
     stripe_cli = $StripeCmd
     prices = $Results
@@ -141,6 +200,7 @@ $Output | ConvertTo-Json -Depth 10 | Set-Content $JsonPath -Encoding UTF8
 
 $envLines = @(
     "# Stripe $Mode environment template",
+    "# Canonical pricing authority: JPV-OS v2.1.0",
     "# Generated $(Get-Date)",
     "STRIPE_MODE=$Mode"
 )
@@ -155,6 +215,7 @@ $envLines | Set-Content $EnvTemplatePath -Encoding UTF8
 Write-Host "======================================"
 Write-Host "STRIPE CONFIG COMPLETE"
 Write-Host "Mode: $Mode"
+Write-Host "Authority: JPV-OS v2.1.0"
 Write-Host "JSON: $JsonPath"
 Write-Host "Report: $ReportPath"
 Write-Host "Env template: $EnvTemplatePath"
