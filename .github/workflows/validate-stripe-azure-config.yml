@@ -21,49 +21,38 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Validate required files
+      - name: Validate required source files
         shell: pwsh
         run: |
           $required = @(
+            "authority/canonical-pricing-consumer.json",
+            "scripts/validate-canonical-pricing.mjs",
+            "scripts/configure-full-stripe-pricing.ps1",
+            "scripts/Invoke-JPVCanonicalStripeAzureConvergence.ps1",
             "src/JPVOS/JPVOS.csproj",
             "src/JPVOS/Api/CheckoutController.cs",
             "src/JPVOS/Api/CheckoutConfigStatusController.cs",
+            "src/JPVOS/Api/StripeWebhookController.cs",
             "src/JPVOS/Infrastructure/Stripe/StripePricingLoader.cs",
-            "src/JPVOS/Infrastructure/Stripe/StripeCheckoutService.cs",
-            "infrastructure/stripe/generated/stripe-pricing.test.json"
+            "src/JPVOS/Infrastructure/Stripe/StripeCheckoutService.cs"
           )
 
           foreach ($file in $required) {
             if (!(Test-Path $file)) {
-              throw "Missing required file: $file"
+              throw "Missing required source file: $file"
             }
           }
 
-      - name: Validate pricing map
-        shell: pwsh
-        run: |
-          $json = Get-Content "infrastructure/stripe/generated/stripe-pricing.test.json" -Raw | ConvertFrom-Json
-
-          $requiredKeys = @(
-            "member_access_monthly",
-            "member_access_annual",
-            "vip_venture_monthly",
-            "vip_venture_annual",
-            "creator_lane_monthly",
-            "operator_monthly",
-            "enterprise_monthly"
-          )
-
-          foreach ($key in $requiredKeys) {
-            if (-not ($json.prices.PSObject.Properties.Name -contains $key)) {
-              throw "Missing Stripe lookup key: $key"
-            }
-
-            $priceId = $json.prices.$key.price_id
-            if (-not ($priceId -like "price_*")) {
-              throw "Invalid Stripe price id for ${key}: $priceId"
+          if (Test-Path "infrastructure/stripe/generated") {
+            $generated = Get-ChildItem "infrastructure/stripe/generated" -File -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -match '^stripe-(pricing|env)\.' }
+            if ($generated) {
+              throw "Generated processor pricing artifacts must not be committed as source authority: $($generated.Name -join ', ')"
             }
           }
+
+      - name: Validate canonical pricing authority
+        run: node scripts/validate-canonical-pricing.mjs
 
       - name: Build JPVOS
         run: dotnet build src/JPVOS/JPVOS.csproj --configuration Release
