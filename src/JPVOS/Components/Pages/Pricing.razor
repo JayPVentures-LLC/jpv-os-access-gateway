@@ -1,6 +1,5 @@
 @page "/pricing"
 @page "/packages"
-@using JPVOS.Services
 
 <div class="public-page page-stack">
     <section class="public-hero" style="min-height: auto; padding: clamp(60px, 8vh, 100px) clamp(24px, 5vw, 80px);">
@@ -36,7 +35,7 @@
                             <span>@feature</span>
                         }
                     </div>
-                    @if (IsDisabled(pkg))
+                    @if (RequiresScopedAccess(pkg))
                     {
                         <a href="@pkg.Access" class="button public-btn public-btn-secondary public-btn-full">@GetCta(pkg)</a>
                     }
@@ -64,12 +63,11 @@
 </div>
 
 @code {
-    [Inject] private WixCheckoutConfig WixConfig { get; set; } = default!;
-
     private bool annual = false;
 
-    // Values mirror JPV-OS canonical pricing authority v2.1.0.
-    // This gateway is a consumer, not pricing authority.
+    // Consumer snapshot of JPV-OS canonical pricing authority v2.1.0.
+    // Paid checkout is routed through StripePricingLoader, which verifies the
+    // processor map before a session can be created.
     private record Package(
         string Key,
         string Eyebrow,
@@ -78,8 +76,7 @@
         string[] Features,
         int Monthly,
         int Annual,
-        string Access,
-        string DiscordRole
+        string Access
     );
 
     private Package[] Packages = new[]
@@ -92,8 +89,7 @@
             new[] { "Updates", "Resource access", "Member routing", "Community entry" },
             20,
             200,
-            "/access",
-            "community"
+            "/access"
         ),
         new Package(
             "creator_infrastructure",
@@ -103,8 +99,7 @@
             new[] { "Creator role", "Launch resources", "Venture support", "Operational routing" },
             500,
             5000,
-            "/access",
-            "vip"
+            "/access"
         ),
         new Package(
             "partner_infrastructure",
@@ -114,8 +109,7 @@
             new[] { "Partner role", "Partner portal", "Implementation review", "Operational alignment" },
             2500,
             25000,
-            "/partners",
-            "partner"
+            "/partners"
         ),
         new Package(
             "enterprise_infrastructure",
@@ -125,8 +119,7 @@
             new[] { "Enterprise role", "Private access", "Implementation intake", "Infrastructure review" },
             10000,
             100000,
-            "/access",
-            "enterprise"
+            "/access"
         ),
         new Package(
             "custom_implementation",
@@ -136,8 +129,7 @@
             new[] { "Scoped quote", "Governed delivery", "Workflow design", "Deployment support" },
             25000,
             0,
-            "/contact",
-            "custom"
+            "/contact"
         )
     };
 
@@ -149,21 +141,12 @@
         ? annual ? "engagement" : "minimum"
         : annual ? "annual" : "monthly";
 
-    private string GetPackageKey(Package pkg)
-    {
-        return pkg.Key switch
-        {
-            "member_access" => "member_access",
-            "creator_infrastructure" => "creator_infrastructure",
-            _ => pkg.Key
-        };
-    }
+    private string GetLookupKey(Package pkg) => $"{pkg.Key}_{(annual ? "annual" : "monthly")}";
 
     private string GetCheckoutUrl(Package pkg)
     {
-        var packageKey = GetPackageKey(pkg);
-        var interval = GetTerm(pkg);
-        return WixConfig.GetCheckoutUrl(packageKey, interval);
+        var lookupKey = Uri.EscapeDataString(GetLookupKey(pkg));
+        return $"/api/checkout/start?lookupKey={lookupKey}";
     }
 
     private string GetCta(Package pkg)
@@ -179,7 +162,7 @@
         };
     }
 
-    private bool IsDisabled(Package pkg)
+    private bool RequiresScopedAccess(Package pkg)
     {
         return pkg.Key == "partner_infrastructure"
             || pkg.Key == "enterprise_infrastructure"
