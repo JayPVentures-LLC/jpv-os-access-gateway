@@ -4,7 +4,6 @@ using JPVOS.Components;
 using JPVOS.Services;
 using JPVOS.Infrastructure.Stripe;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Stripe
@@ -26,7 +25,6 @@ else
 }
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<DiscordService>();
-builder.Services.AddSingleton<WixCheckoutConfig>();
 
 // Governed Stripe checkout path. Pricing loader fails closed on any map that
 // does not match the active JPV-OS canonical pricing authority.
@@ -44,7 +42,6 @@ PeopleProtectionStartupGuard.Verify(app);
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -59,10 +56,7 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// Map API endpoints
 app.MapControllers();
-
-// Health check endpoint for Azure monitoring
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 app.Run();
