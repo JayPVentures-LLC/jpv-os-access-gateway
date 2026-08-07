@@ -4,38 +4,41 @@
 
 The access gateway does not own final pricing authority.
 
-Use governance-approved lookup keys and resolve payment processor price IDs server-side. Final prices must come from the active governance/public-site pricing standard, not this gateway document.
+Use governance-approved lookup keys and resolve payment processor price IDs server-side. Final prices come from the active JPV-OS canonical pricing authority. The gateway must fail closed when a generated processor map is stale, incomplete, or lacks the active authority marker.
 
 | Package Key | Access Path | Billing Interval |
 |---|---|---|
 | member_access_monthly | Member Access | monthly |
 | member_access_annual | Member Access | annual |
-| vip_venture_monthly | VIP Venture | monthly |
-| vip_venture_annual | VIP Venture | annual |
-| creator_lane_monthly | Creator Lane | monthly |
-| operator_monthly | Operator Access | monthly |
-| enterprise_monthly | Enterprise | monthly |
-| sovereign_review | Sovereign Review | review |
+| creator_infrastructure_monthly | Creator Infrastructure | monthly |
+| creator_infrastructure_annual | Creator Infrastructure | annual |
+| partner_infrastructure_monthly | Partner Infrastructure | monthly |
+| partner_infrastructure_annual | Partner Infrastructure | annual |
+| enterprise_infrastructure_monthly | Enterprise Infrastructure | monthly |
+| enterprise_infrastructure_annual | Enterprise Infrastructure | annual |
+
+Legacy lookup keys including `vip_venture_*`, `creator_lane_*`, `operator_monthly`, and `enterprise_monthly` are prohibited for new checkout activity.
 
 ## 2. Stripe Products & Prices to Create
 
-Do not wire frontend directly to Stripe `price_id` values.
-Use lookup-key based checkout and generated pricing maps.
+Do not wire frontend directly to Stripe `price_id` values. Use lookup-key based checkout and generated pricing maps.
 
 Canonical lookup keys:
 
 - member_access_monthly
 - member_access_annual
-- vip_venture_monthly
-- vip_venture_annual
-- creator_lane_monthly
-- operator_monthly
-- enterprise_monthly
-- sovereign_review
+- creator_infrastructure_monthly
+- creator_infrastructure_annual
+- partner_infrastructure_monthly
+- partner_infrastructure_annual
+- enterprise_infrastructure_monthly
+- enterprise_infrastructure_annual
 
 Canonical flow:
 
-`Frontend -> lookup_key -> CheckoutController -> StripePricingLoader -> infrastructure/stripe/generated/stripe-pricing.{mode}.json -> Stripe price_id`
+`Frontend -> lookup_key -> CheckoutController -> StripePricingLoader -> canonical authority validation -> infrastructure/stripe/generated/stripe-pricing.{mode}.json -> Stripe price_id`
+
+`StripePricingLoader` validates the map against `JPV-OS-v2.1.0` before any checkout session can be created. A missing authority marker, legacy lookup key, wrong amount, wrong interval, wrong currency, missing product ID, or missing price ID rejects checkout rather than using stale pricing.
 
 ## 3. Required Environment Variables
 
@@ -56,6 +59,8 @@ Set these as environment variables in your deployment environment. Do not store 
 - DISCORD_ROLE_ENTERPRISE
 - DISCORD_ROLE_SOVEREIGN_REVIEW
 - DISCORD_REDIRECT_URI
+
+Discord role labels are entitlement identifiers and are independent from commercial pricing lookup keys.
 
 Deprecated role variables:
 
@@ -91,15 +96,18 @@ The access gateway recognizes these entitlement states:
 - revoked
 - manual_review
 
-## 6. Local Test Checklist
+## 6. Validation Checklist
 
-- [ ] Set all required environment variables in your `.env` or launch profile.
-- [ ] Run `dotnet build` and `dotnet run`.
-- [ ] Test checkout flow with test keys.
-- [ ] Test webhook delivery with a local forwarding tool.
-- [ ] Test OAuth connection and role assignment.
-- [ ] Confirm entitlement state updates on payment, cancellation, and failure.
-- [ ] Confirm no secrets are present in appsettings files or source code.
+- [ ] Generated processor pricing map carries `pricing_authority=JPV-OS-v2.1.0`.
+- [ ] All eight canonical subscription lookup keys exist.
+- [ ] Member Access resolves to $20 monthly / $200 annual.
+- [ ] Creator Infrastructure resolves to $500 monthly / $5,000 annual.
+- [ ] Partner Infrastructure resolves to $2,500 monthly / $25,000 annual.
+- [ ] Enterprise Infrastructure resolves to $10,000 monthly / $100,000 annual.
+- [ ] No legacy pricing lookup key is accepted by runtime checkout.
+- [ ] Checkout rejects stale or incomplete maps.
+- [ ] Webhook delivery and entitlement state transitions remain auditable.
+- [ ] No secrets are present in appsettings files or source code.
 
 ## 7. Persistence Requirement
 
@@ -130,16 +138,9 @@ Required audit events:
 
 Review entitlement and role state regularly for consistency.
 
-## 10. Production Deployment Checklist
+## 10. Production Deployment Invariant
 
-- [ ] Set all environment variables in the production environment.
-- [ ] Use live payment keys only in production secrets.
-- [ ] Ensure generated pricing maps exist for the intended mode.
-- [ ] Use live OAuth/client secrets only in production secrets.
-- [ ] Confirm HTTPS is enabled.
-- [ ] Confirm webhook endpoint is reachable and webhook secret is set.
-- [ ] Confirm bot permissions can manage roles.
-- [ ] Confirm no secrets are present in appsettings files or source code.
+Production checkout must not start unless the processor map passes canonical pricing validation. Price provisioning may create or replace processor price objects, but it may not lower, invent, or silently reuse a divergent amount.
 
 ## 11. Revocation Rules
 
@@ -149,4 +150,4 @@ Review entitlement and role state regularly for consistency.
 
 ---
 
-Never commit real secrets or live price IDs to source control. Keep secrets in environment variables and resolve price IDs server-side from lookup keys.
+Never commit real secrets or live price IDs to source control. Keep secrets in environment variables and resolve price IDs server-side from governed lookup keys.
