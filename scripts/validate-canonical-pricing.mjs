@@ -12,6 +12,10 @@ const pricingLoaderPath = path.join(root, 'src', 'JPVOS', 'Infrastructure', 'Str
 const checkoutServicePath = path.join(root, 'src', 'JPVOS', 'Infrastructure', 'Stripe', 'StripeCheckoutService.cs');
 const programPath = path.join(root, 'src', 'JPVOS', 'Program.cs');
 const docsPath = path.join(root, 'docs', 'COMMERCIAL-ACCESS-SETUP.md');
+const appsettingsPath = path.join(root, 'src', 'JPVOS', 'appsettings.json');
+const developmentSettingsPath = path.join(root, 'src', 'JPVOS', 'appsettings.Development.json');
+const gitignorePath = path.join(root, '.gitignore');
+const generatedPricingDirectory = path.join(root, 'infrastructure', 'stripe', 'generated');
 
 const obsoleteActivePaths = [
   'scripts/auto-setup-stripe-pricing-azure.ps1',
@@ -48,6 +52,9 @@ const pricingLoader = read(pricingLoaderPath);
 const checkoutService = read(checkoutServicePath);
 const program = read(programPath);
 const docs = read(docsPath);
+const appsettings = read(appsettingsPath);
+const developmentSettings = read(developmentSettingsPath);
+const gitignore = read(gitignorePath);
 
 requireText(pricingPage, '/api/checkout/start?lookupKey=', 'Pricing page');
 requireText(pricingLoader, manifest.authorityVersion, 'Stripe pricing loader');
@@ -61,6 +68,11 @@ requireText(checkoutService, 'new PriceService()', 'Live Stripe price verificati
 requireText(checkoutService, 'stripePrice.UnitAmount != expected.Amount', 'Live Stripe amount verification');
 requireText(checkoutService, 'stripePrice.LookupKey', 'Live Stripe lookup-key verification');
 requireText(checkoutService, 'pricing_authority', 'Live Stripe authority verification');
+requireText(checkoutService, '["package_key"] = entitlement.PackageKey', 'Entitlement metadata');
+requireText(checkoutService, '["interval"] = entitlement.BillingInterval', 'Entitlement metadata');
+requireText(gitignore, 'infrastructure/stripe/generated/stripe-pricing.*.json', '.gitignore');
+requireText(gitignore, 'infrastructure/stripe/generated/stripe-pricing.*.*.md', '.gitignore');
+requireText(gitignore, 'infrastructure/stripe/generated/stripe-env.*.template', '.gitignore');
 
 for (const offer of manifest.offers) {
   requireText(pricingPage, `\"${offer.key}\"`, 'Pricing page');
@@ -94,6 +106,20 @@ for (const relativePath of obsoleteActivePaths) {
   }
 }
 
+if (fs.existsSync(generatedPricingDirectory)) {
+  const committedRuntimeArtifacts = fs.readdirSync(generatedPricingDirectory)
+    .filter((name) => /^stripe-(pricing|env)\./.test(name));
+  if (committedRuntimeArtifacts.length > 0) {
+    fail(`Generated processor pricing artifacts remain in source authority: ${committedRuntimeArtifacts.join(', ')}`);
+  }
+}
+
+for (const [label, text] of [['appsettings.json', appsettings], ['appsettings.Development.json', developmentSettings]]) {
+  if (/STRIPE_PRICE_/i.test(text)) {
+    fail(`${label} contains stale processor pricing configuration.`);
+  }
+}
+
 if (!pricingLoader.includes('throw new InvalidOperationException')) {
   fail('Stripe pricing loader must fail closed on pricing drift.');
 }
@@ -111,5 +137,5 @@ if (pricingPage.includes('99,') || pricingPage.includes('199,') || pricingPage.i
 }
 
 if (!process.exitCode) {
-  console.log('PASS: canonical authority, public pricing, provisioning, Azure propagation, runtime map validation, live Stripe verification, and checkout routing are aligned.');
+  console.log('PASS: canonical authority, public pricing, provisioning, Azure propagation, generated-artifact hygiene, runtime map validation, live Stripe verification, entitlement metadata, and checkout routing are aligned.');
 }
