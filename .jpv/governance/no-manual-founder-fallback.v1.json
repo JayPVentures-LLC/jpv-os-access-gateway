@@ -1,0 +1,10 @@
+{
+  "schema_version":"1.0.0",
+  "standard_id":"JPV-NO-MANUAL-FOUNDER-FALLBACK-V1",
+  "source_authority":"JayPVentures-LLC/jpv-governance",
+  "enforcement":"REJECT",
+  "repository":"JayPVentures-LLC/jpv-os-access-gateway",
+  "machine_owned_classes":["runtime","provider_access","credential_already_authorized","tooling","merge","deployment","retry","monitoring","reconciliation","artifact_movement","routine_routing","external_dependency"],
+  "founder_decision_classes":["material_authority_grant","legally_required_consent","irreversible_business_decision","financial_commitment","material_policy_choice"],
+  "forbidden_founder_labor":["merge","deploy","run_local_command","copy_paste","retry","monitor_dependency","reconcile_runtime","propagate_authorized_credential","move_artifact","routine_operator_work"]
+}
