@@ -1,19 +1,15 @@
-using Stripe;
 using Stripe.Checkout;
 
 namespace JPVOS.Infrastructure.Stripe;
 
 public sealed class StripeCheckoutService
 {
+    private const string CanonicalPricingAuthority = "JPV-OS-v2.1.0";
     private readonly StripePricingLoader _pricingLoader;
-    private readonly IConfiguration _configuration;
 
-    public StripeCheckoutService(
-        StripePricingLoader pricingLoader,
-        IConfiguration configuration)
+    public StripeCheckoutService(StripePricingLoader pricingLoader)
     {
         _pricingLoader = pricingLoader;
-        _configuration = configuration;
     }
 
     public async Task<Session> CreateCheckoutSessionAsync(
@@ -59,7 +55,19 @@ public sealed class StripeCheckoutService
             {
                 ["ecosystem"] = "JPV-OS",
                 ["lookup_key"] = lookupKey,
+                ["pricing_authority"] = CanonicalPricingAuthority,
                 ["source"] = "access_gateway"
+            },
+
+            SubscriptionData = new SessionSubscriptionDataOptions
+            {
+                Metadata = new Dictionary<string, string>
+                {
+                    ["ecosystem"] = "JPV-OS",
+                    ["lookup_key"] = lookupKey,
+                    ["pricing_authority"] = CanonicalPricingAuthority,
+                    ["source"] = "access_gateway"
+                }
             }
         };
 
