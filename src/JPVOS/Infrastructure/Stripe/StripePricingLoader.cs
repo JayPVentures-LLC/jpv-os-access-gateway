@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.Json;
 
 namespace JPVOS.Infrastructure.Stripe;
@@ -188,15 +189,35 @@ public sealed class StripePricingLoader
             return explicitPath;
         }
 
+        if (string.IsNullOrWhiteSpace(mode) ||
+            mode.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 ||
+            mode.Contains(Path.DirectorySeparatorChar) ||
+            mode.Contains(Path.AltDirectorySeparatorChar))
+        {
+            throw new InvalidOperationException("Stripe mode contains invalid path or filename characters.");
+        }
+
+        var fileName = $"stripe-pricing.{mode}.json";
+        if (!string.Equals(fileName, Path.GetFileName(fileName), StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("Stripe pricing filename must not contain a directory component.");
+        }
+
         var relative = Path.Combine(
             "infrastructure",
             "stripe",
             "generated",
-            $"stripe-pricing.{mode}.json");
+            fileName);
 
-        foreach (var origin in new[] { _env.ContentRootPath, AppContext.BaseDirectory })
+        if (Path.IsPathRooted(relative))
         {
-            var current = new DirectoryInfo(origin);
+            throw new InvalidOperationException("Stripe pricing relative path must not be rooted.");
+        }
+
+        foreach (var root in new[] { _env.ContentRootPath, AppContext.BaseDirectory }
+            .Select(static origin => new DirectoryInfo(origin)))
+        {
+            var current = root;
             while (current is not null)
             {
                 var candidate = Path.Combine(current.FullName, relative);
@@ -220,13 +241,10 @@ public sealed class StripePricingLoader
                 $"Stripe pricing map is stale or unauthoritative: {source}. Expected pricing_authority={CanonicalPricingAuthority}; found {map.Pricing_Authority ?? "<missing>"}.");
         }
 
-        foreach (var legacyKey in LegacyLookupKeys)
+        foreach (var legacyKey in LegacyLookupKeys.Where(map.Prices.ContainsKey))
         {
-            if (map.Prices.ContainsKey(legacyKey))
-            {
-                throw new InvalidOperationException(
-                    $"Legacy Stripe lookup key is prohibited under {CanonicalPricingAuthority}: {legacyKey}");
-            }
+            throw new InvalidOperationException(
+                $"Legacy Stripe lookup key is prohibited under {CanonicalPricingAuthority}: {legacyKey}");
         }
 
         foreach (var expected in CanonicalPrices)
