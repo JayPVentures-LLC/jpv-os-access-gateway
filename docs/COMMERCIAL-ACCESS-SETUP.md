@@ -4,46 +4,58 @@
 
 The access gateway does not own final pricing authority.
 
-Use governance-approved lookup keys and resolve payment processor price IDs server-side. Final prices must come from the active governance/public-site pricing standard, not this gateway document.
+Use governance-approved lookup keys and resolve payment processor price IDs server-side. Final prices come from the active JPV-OS canonical pricing authority. The gateway must fail closed when processor configuration is stale, incomplete, or lacks the active authority marker.
 
 | Package Key | Access Path | Billing Interval |
 |---|---|---|
 | member_access_monthly | Member Access | monthly |
 | member_access_annual | Member Access | annual |
-| vip_venture_monthly | VIP Venture | monthly |
-| vip_venture_annual | VIP Venture | annual |
-| creator_lane_monthly | Creator Lane | monthly |
-| operator_monthly | Operator Access | monthly |
-| enterprise_monthly | Enterprise | monthly |
-| sovereign_review | Sovereign Review | review |
+| creator_infrastructure_monthly | Creator Infrastructure | monthly |
+| creator_infrastructure_annual | Creator Infrastructure | annual |
+| partner_infrastructure_monthly | Partner Infrastructure | monthly |
+| partner_infrastructure_annual | Partner Infrastructure | annual |
+| enterprise_infrastructure_monthly | Enterprise Infrastructure | monthly |
+| enterprise_infrastructure_annual | Enterprise Infrastructure | annual |
+
+Legacy lookup keys including `vip_venture_*`, `creator_lane_*`, `operator_monthly`, and `enterprise_monthly` are prohibited for new checkout activity.
 
 ## 2. Stripe Products & Prices to Create
 
-Do not wire frontend directly to Stripe `price_id` values.
-Use lookup-key based checkout and generated pricing maps.
+Do not wire frontend directly to Stripe `price_id` values. Use lookup-key based checkout and governed processor configuration.
 
 Canonical lookup keys:
 
 - member_access_monthly
 - member_access_annual
-- vip_venture_monthly
-- vip_venture_annual
-- creator_lane_monthly
-- operator_monthly
-- enterprise_monthly
-- sovereign_review
+- creator_infrastructure_monthly
+- creator_infrastructure_annual
+- partner_infrastructure_monthly
+- partner_infrastructure_annual
+- enterprise_infrastructure_monthly
+- enterprise_infrastructure_annual
 
 Canonical flow:
 
-`Frontend -> lookup_key -> CheckoutController -> StripePricingLoader -> infrastructure/stripe/generated/stripe-pricing.{mode}.json -> Stripe price_id`
+`Frontend -> lookup_key -> CheckoutController -> StripePricingLoader -> canonical authority validation -> runtime Stripe price_id -> Stripe live object verification -> Checkout Session`
+
+`StripePricingLoader` validates runtime processor configuration against `JPV-OS-v2.1.0` before any checkout session can be created. A missing authority marker, legacy lookup key, wrong amount, wrong interval, wrong currency, or missing price ID rejects checkout rather than using divergent pricing.
 
 ## 3. Required Environment Variables
 
-Set these as environment variables in your deployment environment. Do not store secrets in appsettings files or source code.
+Set these as environment variables in the deployment environment. Do not store secrets or processor price IDs in appsettings files or source code.
 
 - STRIPE_MODE
+- JPV_PRICING_AUTHORITY
 - STRIPE_SECRET_KEY
 - STRIPE_WEBHOOK_SECRET
+- STRIPE_PRICE_MEMBER_ACCESS_MONTHLY
+- STRIPE_PRICE_MEMBER_ACCESS_ANNUAL
+- STRIPE_PRICE_CREATOR_INFRASTRUCTURE_MONTHLY
+- STRIPE_PRICE_CREATOR_INFRASTRUCTURE_ANNUAL
+- STRIPE_PRICE_PARTNER_INFRASTRUCTURE_MONTHLY
+- STRIPE_PRICE_PARTNER_INFRASTRUCTURE_ANNUAL
+- STRIPE_PRICE_ENTERPRISE_INFRASTRUCTURE_MONTHLY
+- STRIPE_PRICE_ENTERPRISE_INFRASTRUCTURE_ANNUAL
 - DISCORD_CLIENT_ID
 - DISCORD_CLIENT_SECRET
 - DISCORD_BOT_TOKEN
@@ -57,6 +69,8 @@ Set these as environment variables in your deployment environment. Do not store 
 - DISCORD_ROLE_SOVEREIGN_REVIEW
 - DISCORD_REDIRECT_URI
 
+Discord role labels are entitlement identifiers and are independent from commercial pricing lookup keys.
+
 Deprecated role variables:
 
 - DISCORD_ROLE_MEMBER
@@ -66,7 +80,7 @@ Deprecated role variables:
 
 ## 4. Discord Roles to Create
 
-Create the following roles in your Discord server and copy their IDs:
+Create the following roles in the Discord server and copy their IDs:
 
 - Free Access
 - Member Access
@@ -91,15 +105,18 @@ The access gateway recognizes these entitlement states:
 - revoked
 - manual_review
 
-## 6. Local Test Checklist
+## 6. Validation Checklist
 
-- [ ] Set all required environment variables in your `.env` or launch profile.
-- [ ] Run `dotnet build` and `dotnet run`.
-- [ ] Test checkout flow with test keys.
-- [ ] Test webhook delivery with a local forwarding tool.
-- [ ] Test OAuth connection and role assignment.
-- [ ] Confirm entitlement state updates on payment, cancellation, and failure.
-- [ ] Confirm no secrets are present in appsettings files or source code.
+- [ ] Runtime processor configuration carries `JPV_PRICING_AUTHORITY=JPV-OS-v2.1.0`.
+- [ ] All eight canonical subscription lookup keys exist.
+- [ ] Runtime amounts exactly match the active upstream canonical pricing authority.
+- [ ] No legacy pricing lookup key is accepted by runtime checkout.
+- [ ] Checkout rejects stale, incomplete, or divergent processor configuration.
+- [ ] The live Stripe Price object is verified before Checkout Session creation.
+- [ ] Checkout metadata preserves canonical lookup key, package key, billing interval, source, and pricing authority.
+- [ ] Webhook entitlement grants reject invalid canonical metadata.
+- [ ] Webhook delivery and entitlement state transitions remain auditable.
+- [ ] No secrets or processor price IDs are present in appsettings files or source code.
 
 ## 7. Persistence Requirement
 
@@ -130,16 +147,9 @@ Required audit events:
 
 Review entitlement and role state regularly for consistency.
 
-## 10. Production Deployment Checklist
+## 10. Production Deployment Invariant
 
-- [ ] Set all environment variables in the production environment.
-- [ ] Use live payment keys only in production secrets.
-- [ ] Ensure generated pricing maps exist for the intended mode.
-- [ ] Use live OAuth/client secrets only in production secrets.
-- [ ] Confirm HTTPS is enabled.
-- [ ] Confirm webhook endpoint is reachable and webhook secret is set.
-- [ ] Confirm bot permissions can manage roles.
-- [ ] Confirm no secrets are present in appsettings files or source code.
+Production checkout must not start unless runtime processor configuration passes canonical pricing validation and the actual Stripe Price object matches the active canonical authority. Provisioning may create or replace processor price objects, but it may not invent, lower, or silently reuse a divergent amount.
 
 ## 11. Revocation Rules
 
@@ -149,4 +159,4 @@ Review entitlement and role state regularly for consistency.
 
 ---
 
-Never commit real secrets or live price IDs to source control. Keep secrets in environment variables and resolve price IDs server-side from lookup keys.
+Never commit real secrets or live price IDs to source control. Keep secrets and processor IDs in governed runtime configuration and resolve them server-side from canonical lookup keys.

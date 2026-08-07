@@ -1,18 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Stripe;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using JPVOS.Infrastructure.Stripe;
 
 [ApiController]
 [Route("api/stripe/webhook")]
-
 public class StripeWebhookController : ControllerBase
 {
+  private static readonly IReadOnlyDictionary<string, (string PackageKey, string Interval)> CanonicalEntitlements =
+    new Dictionary<string, (string PackageKey, string Interval)>(StringComparer.Ordinal)
+    {
+      ["member_access_monthly"] = ("member_access", "monthly"),
+      ["member_access_annual"] = ("member_access", "annual"),
+      ["creator_infrastructure_monthly"] = ("creator_infrastructure", "monthly"),
+      ["creator_infrastructure_annual"] = ("creator_infrastructure", "annual"),
+      ["partner_infrastructure_monthly"] = ("partner_infrastructure", "monthly"),
+      ["partner_infrastructure_annual"] = ("partner_infrastructure", "annual"),
+      ["enterprise_infrastructure_monthly"] = ("enterprise_infrastructure", "monthly"),
+      ["enterprise_infrastructure_annual"] = ("enterprise_infrastructure", "annual")
+    };
+
   private readonly IConfiguration _config;
   private readonly IEntitlementService _entitlementService;
   private readonly DiscordService _discordService;
@@ -39,16 +47,17 @@ public class StripeWebhookController : ControllerBase
   [HttpPost]
   public async Task<IActionResult> Post()
   {
-
     using var reader = new StreamReader(HttpContext.Request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
     var json = await reader.ReadToEndAsync();
     var signatureHeader = Request.Headers["Stripe-Signature"];
     var webhookSecret = _config["STRIPE_WEBHOOK_SECRET"];
+
     if (string.IsNullOrWhiteSpace(webhookSecret))
     {
       _logger.LogError("Stripe webhook secret is not configured.");
       return BadRequest("Webhook secret not configured.");
     }
+
     Event stripeEvent;
     try
     {
@@ -59,6 +68,7 @@ public class StripeWebhookController : ControllerBase
       _logger.LogWarning("Stripe webhook signature verification failed: {Message}", ex.Message);
       return BadRequest("Invalid Stripe signature.");
     }
+
     if (_eventStore.HasProcessed(stripeEvent.Id))
     {
       _logger.LogInformation("Duplicate Stripe webhook event ignored: {EventId} ({EventType})", stripeEvent.Id, stripeEvent.Type);
@@ -71,9 +81,6 @@ public class StripeWebhookController : ControllerBase
       });
     }
 
-
-
-    // Handle events
     string? auditCustomerId = null;
     string? auditSubscriptionId = null;
     string? auditStatus = null;
@@ -83,30 +90,9 @@ public class StripeWebhookController : ControllerBase
     {
       case "checkout.session.completed":
         {
-          Stripe.Checkout.Session? session = null;
-          try
-          {
-            session = stripeEvent.Data.Object as Stripe.Checkout.Session;
-            if (session == null)
-            {
-              session = JsonSerializer.Deserialize<Stripe.Checkout.Session>(stripeEvent.Data.Object.ToString() ?? "{}");
-            }
-          }
-          catch (JsonException ex)
-          {
-            _logger.LogWarning(ex, "Failed to deserialize Stripe Checkout.Session");
-          }
-          catch (InvalidCastException ex)
-          {
-            _logger.LogWarning(ex, "Failed to deserialize Stripe Checkout.Session");
-          }
-          catch (FormatException ex)
-          {
-            _logger.LogWarning(ex, "Failed to deserialize Stripe Checkout.Session");
-          }
+          var session = DeserializeStripeObject<Stripe.Checkout.Session>(stripeEvent, "Stripe Checkout.Session");
           if (session == null)
           {
-            _logger.LogWarning("Received checkout.session.completed with null session");
             return BadRequest("Invalid session payload.");
           }
           if (string.IsNullOrWhiteSpace(session.CustomerId))
@@ -114,10 +100,15 @@ public class StripeWebhookController : ControllerBase
             _logger.LogWarning("Received checkout.session.completed with missing customer ID");
             return BadRequest("Missing customer id.");
           }
+
+          if (!TryValidateCanonicalCheckoutMetadata(session.Metadata, out var lookupKey, out var packageKey, out var interval, out var metadataError))
+          {
+            _logger.LogError("Rejected checkout entitlement because canonical metadata validation failed: {Reason}", metadataError);
+            return BadRequest("Canonical checkout metadata validation failed.");
+          }
+
           var customerId = session.CustomerId;
           var subscriptionId = session.SubscriptionId;
-          var interval = session.Metadata?["interval"] ?? "";
-          var packageKey = session.Metadata?["package_key"] ?? "";
           var ent = new JPVOS.Models.Entitlement
           {
             StripeCustomerId = customerId,
@@ -128,32 +119,23 @@ public class StripeWebhookController : ControllerBase
             AccessExpiration = null
           };
           _entitlementService.AddOrUpdate(ent);
-          _logger.LogInformation("Checkout session completed for customer {CustomerId}", customerId);
-          // Discord role assignment deferred until Discord user is linked
+          _logger.LogInformation(
+            "Checkout session completed for customer {CustomerId} under canonical lookup key {LookupKey}",
+            customerId,
+            lookupKey);
+
           auditCustomerId = customerId;
           auditSubscriptionId = subscriptionId;
           auditStatus = "active";
           handledSuccessfully = true;
           break;
         }
+
       case "invoice.paid":
         {
-          Stripe.Invoice? invoice = null;
-          try
-          {
-            invoice = stripeEvent.Data.Object as Stripe.Invoice;
-            if (invoice == null)
-            {
-              invoice = JsonSerializer.Deserialize<Stripe.Invoice>(stripeEvent.Data.Object.ToString() ?? "{}");
-            }
-          }
-          catch (JsonException ex)
-          {
-            _logger.LogWarning(ex, "Failed to deserialize Stripe.Invoice");
-          }
+          var invoice = DeserializeStripeObject<Stripe.Invoice>(stripeEvent, "Stripe.Invoice");
           if (invoice == null)
           {
-            _logger.LogWarning("Received invoice.paid with null invoice");
             return BadRequest("Invalid invoice payload.");
           }
           if (string.IsNullOrWhiteSpace(invoice.CustomerId))
@@ -161,6 +143,7 @@ public class StripeWebhookController : ControllerBase
             _logger.LogWarning("Received invoice.paid with missing customer ID");
             return BadRequest("Missing customer id.");
           }
+
           var customerId = invoice.CustomerId;
           var ent = _entitlementService.GetByStripeCustomerId(customerId);
           if (ent != null)
@@ -169,35 +152,20 @@ public class StripeWebhookController : ControllerBase
             ent.AccessExpiration = null;
             _entitlementService.AddOrUpdate(ent);
             _logger.LogInformation("Invoice paid for customer {CustomerId}", customerId);
-            handledSuccessfully = true;
           }
+
           auditCustomerId = customerId;
           auditSubscriptionId = invoice.Parent?.SubscriptionDetails?.SubscriptionId;
           auditStatus = ent?.Status ?? "active";
+          handledSuccessfully = true;
           break;
         }
+
       case "invoice.payment_failed":
         {
-          Stripe.Invoice? invoice = null;
-          try
-          {
-            invoice = stripeEvent.Data.Object as Stripe.Invoice;
-            if (invoice == null)
-            {
-              invoice = JsonSerializer.Deserialize<Stripe.Invoice>(stripeEvent.Data.Object.ToString() ?? "{}");
-            }
-          }
-          catch (JsonException ex)
-          {
-            _logger.LogWarning(ex, "Failed to deserialize Stripe.Invoice");
-          }
-          catch (NotSupportedException ex)
-          {
-            _logger.LogWarning(ex, "Failed to deserialize Stripe.Invoice");
-          }
+          var invoice = DeserializeStripeObject<Stripe.Invoice>(stripeEvent, "Stripe.Invoice");
           if (invoice == null)
           {
-            _logger.LogWarning("Received invoice.payment_failed with null invoice");
             return BadRequest("Invalid invoice payload.");
           }
           if (string.IsNullOrWhiteSpace(invoice.CustomerId))
@@ -205,6 +173,7 @@ public class StripeWebhookController : ControllerBase
             _logger.LogWarning("Received invoice.payment_failed with missing customer ID");
             return BadRequest("Missing customer id.");
           }
+
           var customerId = invoice.CustomerId;
           var ent = _entitlementService.GetByStripeCustomerId(customerId);
           if (ent != null)
@@ -212,35 +181,20 @@ public class StripeWebhookController : ControllerBase
             ent.Status = "past_due";
             _entitlementService.AddOrUpdate(ent);
             _logger.LogWarning("Payment failed for customer {CustomerId}", customerId);
-            handledSuccessfully = true;
           }
+
           auditCustomerId = customerId;
           auditSubscriptionId = invoice.Parent?.SubscriptionDetails?.SubscriptionId;
           auditStatus = ent?.Status ?? "past_due";
+          handledSuccessfully = true;
           break;
         }
+
       case "customer.subscription.updated":
         {
-          Stripe.Subscription? sub = null;
-          try
-          {
-            sub = stripeEvent.Data.Object as Stripe.Subscription;
-            if (sub == null)
-            {
-              sub = JsonSerializer.Deserialize<Stripe.Subscription>(stripeEvent.Data.Object.ToString() ?? "{}");
-            }
-          }
-          catch (JsonException ex)
-          {
-            _logger.LogWarning(ex, "Failed to deserialize Stripe.Subscription");
-          }
-          catch (NotSupportedException ex)
-          {
-            _logger.LogWarning(ex, "Failed to deserialize Stripe.Subscription");
-          }
+          var sub = DeserializeStripeObject<Stripe.Subscription>(stripeEvent, "Stripe.Subscription");
           if (sub == null)
           {
-            _logger.LogWarning("Received customer.subscription.updated with null subscription");
             return BadRequest("Invalid subscription payload.");
           }
           if (string.IsNullOrWhiteSpace(sub.CustomerId))
@@ -248,6 +202,7 @@ public class StripeWebhookController : ControllerBase
             _logger.LogWarning("Received customer.subscription.updated with missing customer ID");
             return BadRequest("Missing customer id.");
           }
+
           var ent = _entitlementService.GetByStripeCustomerId(sub.CustomerId);
           if (ent != null)
           {
@@ -256,35 +211,20 @@ public class StripeWebhookController : ControllerBase
             ent.AccessExpiration = GetCurrentPeriodEnd(sub);
             _entitlementService.AddOrUpdate(ent);
             _logger.LogInformation("Subscription updated for customer {CustomerId}, status: {Status}", sub.CustomerId, sub.Status);
-            handledSuccessfully = true;
           }
+
           auditCustomerId = sub.CustomerId;
           auditSubscriptionId = sub.Id;
           auditStatus = sub.Status;
+          handledSuccessfully = true;
           break;
         }
+
       case "customer.subscription.deleted":
         {
-          Stripe.Subscription? sub = null;
-          try
-          {
-            sub = stripeEvent.Data.Object as Stripe.Subscription;
-            if (sub == null)
-            {
-              sub = JsonSerializer.Deserialize<Stripe.Subscription>(stripeEvent.Data.Object.ToString() ?? "{}");
-            }
-          }
-          catch (JsonException ex)
-          {
-            _logger.LogWarning(ex, "Failed to deserialize Stripe.Subscription");
-          }
-          catch (NotSupportedException ex)
-          {
-            _logger.LogWarning(ex, "Failed to deserialize Stripe.Subscription");
-          }
+          var sub = DeserializeStripeObject<Stripe.Subscription>(stripeEvent, "Stripe.Subscription");
           if (sub == null)
           {
-            _logger.LogWarning("Received customer.subscription.deleted with null subscription");
             return BadRequest("Invalid subscription payload.");
           }
           if (string.IsNullOrWhiteSpace(sub.CustomerId))
@@ -292,11 +232,11 @@ public class StripeWebhookController : ControllerBase
             _logger.LogWarning("Received customer.subscription.deleted with missing customer ID");
             return BadRequest("Missing customer id.");
           }
+
           var customerId = sub.CustomerId;
           var ent = _entitlementService.GetByStripeCustomerId(customerId);
           if (ent != null)
           {
-            // Remove Discord role if linked
             if (!string.IsNullOrEmpty(ent.DiscordUserId) && !string.IsNullOrEmpty(ent.DiscordRole))
             {
               try
@@ -307,24 +247,42 @@ public class StripeWebhookController : ControllerBase
               catch (HttpRequestException ex)
               {
                 _logger.LogError(ex, "Failed to revoke Discord role {DiscordRole} for user {DiscordUserId}", ent.DiscordRole, ent.DiscordUserId);
-                return StatusCode(502, "Failed to revoke Discord role.");
+                return StatusCode(StatusCodes.Status502BadGateway, "Failed to revoke Discord role.");
               }
               catch (TaskCanceledException ex)
               {
                 _logger.LogError(ex, "Failed to revoke Discord role {DiscordRole} for user {DiscordUserId}", ent.DiscordRole, ent.DiscordUserId);
-                return StatusCode(502, "Failed to revoke Discord role.");
+                return StatusCode(StatusCodes.Status502BadGateway, "Failed to revoke Discord role.");
               }
             }
+
             _entitlementService.RemoveByStripeCustomerId(customerId);
             _logger.LogWarning("Subscription deleted for customer {CustomerId}, entitlement revoked", customerId);
-            handledSuccessfully = true;
           }
+
           auditCustomerId = sub.CustomerId;
           auditSubscriptionId = sub.Id;
           auditStatus = "canceled";
+          handledSuccessfully = true;
           break;
         }
+
+      case "customer.subscription.created":
+        {
+          var sub = DeserializeStripeObject<Stripe.Subscription>(stripeEvent, "Stripe.Subscription");
+          auditCustomerId = sub?.CustomerId;
+          auditSubscriptionId = sub?.Id;
+          auditStatus = sub?.Status;
+          handledSuccessfully = true;
+          break;
+        }
+
+      default:
+        _logger.LogInformation("Stripe webhook event acknowledged without state mutation: {EventType}", stripeEvent.Type);
+        handledSuccessfully = true;
+        break;
     }
+
     _auditStore.Append(new StripeSubscriptionState
     {
       EventId = stripeEvent.Id,
@@ -350,10 +308,88 @@ public class StripeWebhookController : ControllerBase
     });
   }
 
+  private T? DeserializeStripeObject<T>(Event stripeEvent, string label) where T : class
+  {
+    try
+    {
+      if (stripeEvent.Data.Object is T typed)
+      {
+        return typed;
+      }
+
+      return JsonSerializer.Deserialize<T>(stripeEvent.Data.Object.ToString() ?? "{}");
+    }
+    catch (JsonException ex)
+    {
+      _logger.LogWarning(ex, "Failed to deserialize {StripeObjectLabel}", label);
+    }
+    catch (InvalidCastException ex)
+    {
+      _logger.LogWarning(ex, "Failed to deserialize {StripeObjectLabel}", label);
+    }
+    catch (FormatException ex)
+    {
+      _logger.LogWarning(ex, "Failed to deserialize {StripeObjectLabel}", label);
+    }
+    catch (NotSupportedException ex)
+    {
+      _logger.LogWarning(ex, "Failed to deserialize {StripeObjectLabel}", label);
+    }
+
+    return null;
+  }
+
+  private static bool TryValidateCanonicalCheckoutMetadata(
+    IDictionary<string, string>? metadata,
+    out string lookupKey,
+    out string packageKey,
+    out string interval,
+    out string error)
+  {
+    lookupKey = "";
+    packageKey = "";
+    interval = "";
+    error = "";
+
+    if (metadata is null)
+    {
+      error = "metadata_missing";
+      return false;
+    }
+
+    if (!metadata.TryGetValue("pricing_authority", out var authority) ||
+        !string.Equals(authority, StripePricingLoader.CanonicalPricingAuthority, StringComparison.Ordinal))
+    {
+      error = "pricing_authority_mismatch";
+      return false;
+    }
+
+    if (!metadata.TryGetValue("lookup_key", out lookupKey) ||
+        !CanonicalEntitlements.TryGetValue(lookupKey, out var expected))
+    {
+      error = "lookup_key_invalid";
+      return false;
+    }
+
+    if (!metadata.TryGetValue("package_key", out packageKey) ||
+        !string.Equals(packageKey, expected.PackageKey, StringComparison.Ordinal))
+    {
+      error = "package_key_mismatch";
+      return false;
+    }
+
+    if (!metadata.TryGetValue("interval", out interval) ||
+        !string.Equals(interval, expected.Interval, StringComparison.Ordinal))
+    {
+      error = "billing_interval_mismatch";
+      return false;
+    }
+
+    return true;
+  }
+
   private DateTime? GetCurrentPeriodEnd(Subscription sub)
   {
-    // Handle version compatibility for Stripe.net API
-    // CurrentPeriodEnd property may have different names/types across versions
     var prop = sub.GetType().GetProperty("CurrentPeriodEnd");
     if (prop != null && prop.GetValue(sub) is DateTime dt)
     {
@@ -369,5 +405,3 @@ public class StripeWebhookController : ControllerBase
     return null;
   }
 }
-
-
