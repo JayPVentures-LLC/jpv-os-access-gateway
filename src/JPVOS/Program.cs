@@ -2,6 +2,7 @@ using Stripe;
 
 using JPVOS.Components;
 using JPVOS.Services;
+using JPVOS.Infrastructure.Stripe;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,16 +28,14 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<DiscordService>();
 builder.Services.AddSingleton<WixCheckoutConfig>();
 
+// Governed Stripe checkout path. Pricing loader fails closed on any map that
+// does not match the active JPV-OS canonical pricing authority.
+builder.Services.AddSingleton<StripePricingLoader>();
+builder.Services.AddSingleton<StripeCheckoutService>();
 
-
-builder.Services.AddSingleton<
-    JPVOS.Infrastructure.Stripe.StripeWebhookEventStore>();
-
-builder.Services.AddSingleton<
-    JPVOS.Infrastructure.Stripe.StripeSubscriptionAuditStore>();
-
-builder.Services.AddSingleton<
-    JPVOS.Infrastructure.Discord.DiscordRoleSyncAuditStore>();
+builder.Services.AddSingleton<StripeWebhookEventStore>();
+builder.Services.AddSingleton<StripeSubscriptionAuditStore>();
+builder.Services.AddSingleton<JPVOS.Infrastructure.Discord.DiscordRoleSyncAuditStore>();
 
 var app = builder.Build();
 PeopleProtectionStartupGuard.Verify(app);
@@ -57,7 +56,6 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
@@ -68,8 +66,3 @@ app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 app.Run();
-
-
-
-
-
