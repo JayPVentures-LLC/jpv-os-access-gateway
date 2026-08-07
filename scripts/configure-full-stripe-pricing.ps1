@@ -18,9 +18,14 @@ $JsonPath = Join-Path $GeneratedDir "stripe-pricing.$Mode.json"
 $ReportPath = Join-Path $GeneratedDir "stripe-pricing.$Mode.$Stamp.md"
 $EnvTemplatePath = Join-Path $GeneratedDir "stripe-env.$Mode.template"
 
-$StripeCmd = Join-Path $RepoRoot "stripe.exe"
-if (!(Test-Path $StripeCmd)) {
-    throw "Local stripe.exe not found at $StripeCmd"
+$RepoStripeCmd = Join-Path $RepoRoot "stripe.exe"
+$PathStripeCmd = Get-Command stripe -ErrorAction SilentlyContinue
+if (Test-Path -LiteralPath $RepoStripeCmd -PathType Leaf) {
+    $StripeCmd = $RepoStripeCmd
+} elseif ($PathStripeCmd) {
+    $StripeCmd = $PathStripeCmd.Source
+} else {
+    throw "Stripe CLI is not available from PATH or repository root."
 }
 
 function Invoke-StripeJson {
