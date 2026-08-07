@@ -4,7 +4,7 @@ namespace JPVOS.Infrastructure.Stripe;
 
 public sealed class StripePricingLoader
 {
-    private const string CanonicalPricingAuthority = "JPV-OS-v2.1.0";
+    public const string CanonicalPricingAuthority = "JPV-OS-v2.1.0";
 
     private static readonly IReadOnlyDictionary<string, (int Amount, string Interval)> CanonicalPrices =
         new Dictionary<string, (int Amount, string Interval)>(StringComparer.Ordinal)
@@ -47,28 +47,19 @@ public sealed class StripePricingLoader
             return _cache;
         }
 
-        var root = Directory.GetParent(_env.ContentRootPath)?.Parent?.Parent?.FullName;
-
-        if (root is null)
+        var environmentMap = TryLoadFromEnvironment();
+        if (environmentMap is not null)
         {
-            throw new InvalidOperationException("Unable to resolve repo root.");
+            ValidateCanonicalPricing(environmentMap, "environment");
+            _cache = environmentMap;
+            _logger.LogInformation(
+                "Stripe pricing loaded from environment under {PricingAuthority}",
+                CanonicalPricingAuthority);
+            return environmentMap;
         }
 
         var mode = Environment.GetEnvironmentVariable("STRIPE_MODE") ?? "test";
-
-        var path = Path.Combine(
-            root,
-            "infrastructure",
-            "stripe",
-            "generated",
-            $"stripe-pricing.{mode}.json");
-
-        if (!File.Exists(path))
-        {
-            throw new FileNotFoundException(
-                $"Stripe pricing map missing: {path}");
-        }
-
+        var path = ResolvePricingMapPath(mode);
         var json = File.ReadAllText(path);
 
         var result = JsonSerializer.Deserialize<StripePricingMap>(
@@ -85,11 +76,11 @@ public sealed class StripePricingLoader
         }
 
         ValidateCanonicalPricing(result, path);
-
         _cache = result;
 
         _logger.LogInformation(
-            "Stripe pricing map loaded for mode {Mode} under {PricingAuthority}",
+            "Stripe pricing map loaded from {Path} for mode {Mode} under {PricingAuthority}",
+            path,
             mode,
             CanonicalPricingAuthority);
 
@@ -98,12 +89,7 @@ public sealed class StripePricingLoader
 
     public StripePriceDefinition Resolve(string lookupKey)
     {
-        if (!CanonicalPrices.ContainsKey(lookupKey))
-        {
-            throw new KeyNotFoundException(
-                $"Checkout lookup key is not governed by {CanonicalPricingAuthority}: {lookupKey}");
-        }
-
+        _ = ResolveExpected(lookupKey);
         var map = Load();
 
         if (!map.Prices.TryGetValue(lookupKey, out var result))
@@ -115,12 +101,123 @@ public sealed class StripePricingLoader
         return result;
     }
 
-    private static void ValidateCanonicalPricing(StripePricingMap map, string path)
+    public (int Amount, string Interval, string Currency) ResolveExpected(string lookupKey)
+    {
+        if (!CanonicalPrices.TryGetValue(lookupKey, out var expected))
+        {
+            throw new KeyNotFoundException(
+                $"Checkout lookup key is not governed by {CanonicalPricingAuthority}: {lookupKey}");
+        }
+
+        return (expected.Amount, expected.Interval, "usd");
+    }
+
+    private StripePricingMap? TryLoadFromEnvironment()
+    {
+        var configured = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var lookupKey in CanonicalPrices.Keys)
+        {
+            var variable = "STRIPE_PRICE_" + lookupKey.ToUpperInvariant();
+            var value = Environment.GetEnvironmentVariable(variable);
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                configured[lookupKey] = value.Trim();
+            }
+        }
+
+        if (configured.Count == 0)
+        {
+            return null;
+        }
+
+        if (configured.Count != CanonicalPrices.Count)
+        {
+            var missing = CanonicalPrices.Keys.Where(key => !configured.ContainsKey(key));
+            throw new InvalidOperationException(
+                $"Partial canonical Stripe environment configuration is prohibited. Missing: {string.Join(", ", missing)}");
+        }
+
+        var authority = Environment.GetEnvironmentVariable("JPV_PRICING_AUTHORITY");
+        if (!string.Equals(authority, CanonicalPricingAuthority, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"Environment pricing authority mismatch. Expected {CanonicalPricingAuthority}; found {authority ?? "<missing>"}.");
+        }
+
+        var map = new StripePricingMap
+        {
+            Mode = Environment.GetEnvironmentVariable("STRIPE_MODE") ?? "live",
+            Pricing_Authority = CanonicalPricingAuthority
+        };
+
+        foreach (var expected in CanonicalPrices)
+        {
+            var priceId = configured[expected.Key];
+            if (!priceId.StartsWith("price_", StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException(
+                    $"Invalid Stripe price identifier configured for {expected.Key}.");
+            }
+
+            map.Prices[expected.Key] = new StripePriceDefinition
+            {
+                Name = expected.Key,
+                Amount = expected.Value.Amount,
+                Currency = "usd",
+                Interval = expected.Value.Interval,
+                Price_Id = priceId,
+                Lookup_Key = expected.Key,
+                Pricing_Authority = CanonicalPricingAuthority
+            };
+        }
+
+        return map;
+    }
+
+    private string ResolvePricingMapPath(string mode)
+    {
+        var explicitPath = Environment.GetEnvironmentVariable("JPV_STRIPE_PRICING_MAP_PATH");
+        if (!string.IsNullOrWhiteSpace(explicitPath))
+        {
+            if (!File.Exists(explicitPath))
+            {
+                throw new FileNotFoundException(
+                    $"Explicit Stripe pricing map missing: {explicitPath}");
+            }
+            return explicitPath;
+        }
+
+        var relative = Path.Combine(
+            "infrastructure",
+            "stripe",
+            "generated",
+            $"stripe-pricing.{mode}.json");
+
+        foreach (var origin in new[] { _env.ContentRootPath, AppContext.BaseDirectory })
+        {
+            var current = new DirectoryInfo(origin);
+            while (current is not null)
+            {
+                var candidate = Path.Combine(current.FullName, relative);
+                if (File.Exists(candidate))
+                {
+                    return candidate;
+                }
+                current = current.Parent;
+            }
+        }
+
+        throw new FileNotFoundException(
+            $"Canonical Stripe pricing map not found for mode {mode}, and no complete governed STRIPE_PRICE_* environment configuration is present.");
+    }
+
+    private static void ValidateCanonicalPricing(StripePricingMap map, string source)
     {
         if (!string.Equals(map.Pricing_Authority, CanonicalPricingAuthority, StringComparison.Ordinal))
         {
             throw new InvalidOperationException(
-                $"Stripe pricing map is stale or unauthoritative: {path}. Expected pricing_authority={CanonicalPricingAuthority}; found {map.Pricing_Authority ?? "<missing>"}.");
+                $"Stripe pricing map is stale or unauthoritative: {source}. Expected pricing_authority={CanonicalPricingAuthority}; found {map.Pricing_Authority ?? "<missing>"}.");
         }
 
         foreach (var legacyKey in LegacyLookupKeys)
@@ -164,10 +261,10 @@ public sealed class StripePricingLoader
                     $"Price entry is missing canonical authority for {expected.Key}.");
             }
 
-            if (string.IsNullOrWhiteSpace(price.Price_Id) || string.IsNullOrWhiteSpace(price.Product_Id))
+            if (string.IsNullOrWhiteSpace(price.Price_Id))
             {
                 throw new InvalidOperationException(
-                    $"Canonical Stripe identifiers missing for {expected.Key}.");
+                    $"Canonical Stripe price ID missing for {expected.Key}.");
             }
         }
     }
