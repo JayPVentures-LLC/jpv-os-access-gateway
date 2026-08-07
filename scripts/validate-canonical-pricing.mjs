@@ -24,7 +24,8 @@ const obsoleteActivePaths = [
   'scripts/configure-live-stripe-full-integration.ps1',
   'scripts/auto-create-stripe-products-and-configure-azure.ps1',
   'src/JPVOS/Services/WixCheckoutConfig.cs',
-  'docs/WIX-CHECKOUT-ROUTING.md'
+  'docs/WIX-CHECKOUT-ROUTING.md',
+  'scripts/archive'
 ];
 
 function fail(message) {
@@ -58,8 +59,8 @@ const gitignore = read(gitignorePath);
 
 requireText(pricingPage, '/api/checkout/start?lookupKey=', 'Pricing page');
 requireText(pricingLoader, manifest.authorityVersion, 'Stripe pricing loader');
-requireText(stripeConfig, manifest.authorityVersion, 'Stripe provisioning');
-requireText(stripeConfig, 'JPV_PRICING_AUTHORITY=JPV-OS-v2.1.0', 'Stripe environment template');
+requireText(stripeConfig, `$PricingAuthority = "${manifest.authorityVersion}"`, 'Stripe pricing authority');
+requireText(stripeConfig, '"JPV_PRICING_AUTHORITY=$PricingAuthority"', 'Stripe environment template');
 requireText(stripeConvergence, manifest.authorityVersion, 'Stripe/Azure convergence');
 requireText(stripeConvergence, 'JPV_PRICING_AUTHORITY', 'Stripe/Azure convergence');
 requireText(program, 'AddSingleton<StripePricingLoader>()', 'Program service registration');
