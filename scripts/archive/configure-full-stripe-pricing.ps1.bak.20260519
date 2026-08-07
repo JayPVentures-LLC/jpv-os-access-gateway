@@ -1,4 +1,0 @@
-# TIMESTAMPED BACKUP - PATCH FOR DYNAMIC ENV VARS
-# Backup of configure-full-stripe-pricing.ps1 before $env:$Name → ${env:$Name} patch
-# Date: 2026-05-19T
-
