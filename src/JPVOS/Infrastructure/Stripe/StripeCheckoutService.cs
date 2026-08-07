@@ -59,7 +59,8 @@ public sealed class StripeCheckoutService
                 $"Stripe lookup-key mismatch: expected {lookupKey}, found {stripePrice.LookupKey ?? "<missing>"}.");
         }
 
-        if (!stripePrice.Metadata.TryGetValue("pricing_authority", out var authority) ||
+        if (stripePrice.Metadata is null ||
+            !stripePrice.Metadata.TryGetValue("pricing_authority", out var authority) ||
             !string.Equals(authority, StripePricingLoader.CanonicalPricingAuthority, StringComparison.Ordinal))
         {
             throw new InvalidOperationException(
