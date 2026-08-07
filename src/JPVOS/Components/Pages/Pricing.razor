@@ -8,7 +8,7 @@
             <p class="public-eyebrow">Pricing</p>
             <h1 class="public-title" style="font-size: clamp(2.2rem, 5vw, 3.5rem);">Packages built around outcomes</h1>
             <p class="public-subtitle">
-                Choose the access path that fits what you are trying to activate: member entry, creator launch, partner routing, enterprise infrastructure, or a custom implementation.
+                Choose the access path that fits what you are trying to activate: member entry, creator infrastructure, partner infrastructure, enterprise infrastructure, or a scoped implementation.
             </p>
         </div>
     </section>
@@ -16,7 +16,7 @@
     <section class="public-section">
         <div class="public-toggle pricing-toggle">
             <button class="toggle-btn @(annual ? "" : "active")" @onclick="() => annual = false">Monthly</button>
-            <button class="toggle-btn @(annual ? "active" : "")" @onclick="() => annual = true">Annual <span class="toggle-save">(2 months free)</span></button>
+            <button class="toggle-btn @(annual ? "active" : "")" @onclick="() => annual = true">Annual <span class="toggle-save">(2 months included)</span></button>
         </div>
 
         <div class="public-pricing-grid pricing-grid">
@@ -68,6 +68,8 @@
 
     private bool annual = false;
 
+    // Values mirror JPV-OS canonical pricing authority v2.1.0.
+    // This gateway is a consumer, not pricing authority.
     private record Package(
         string Key,
         string Eyebrow,
@@ -94,24 +96,24 @@
             "community"
         ),
         new Package(
-            "creator_launch",
+            "creator_infrastructure",
             "Creator",
-            "Creator Launch",
-            "Launch creator-facing projects with access routing, resource packaging, venture support, and community activation.",
-            new[] { "Creator role", "Launch resources", "Venture support", "Community access" },
-            99,
-            990,
+            "Creator Infrastructure",
+            "Creator and venture infrastructure with launch routing, resource packaging, operational enablement, and ecosystem access.",
+            new[] { "Creator role", "Launch resources", "Venture support", "Operational routing" },
+            500,
+            5000,
             "/access",
             "vip"
         ),
         new Package(
-            "partner_package",
+            "partner_infrastructure",
             "Partner",
-            "Partner Package",
-            "Coordinate partnership visibility, implementation review, and operational delivery through the JayPVentures LLC infrastructure pathway.",
+            "Partner Infrastructure",
+            "Partnership routing, implementation alignment, partner infrastructure, and governed operational coordination.",
             new[] { "Partner role", "Partner portal", "Implementation review", "Operational alignment" },
-            199,
-            1990,
+            2500,
+            25000,
             "/partners",
             "partner"
         ),
@@ -119,10 +121,10 @@
             "enterprise_infrastructure",
             "Enterprise",
             "Enterprise Infrastructure",
-            "Private infrastructure alignment for larger implementation needs, enterprise access paths, and structured operational review.",
+            "Private infrastructure access, implementation intake, architecture review, and governed operational alignment.",
             new[] { "Enterprise role", "Private access", "Implementation intake", "Infrastructure review" },
-            999,
-            9990,
+            10000,
+            100000,
             "/access",
             "enterprise"
         ),
@@ -130,9 +132,9 @@
             "custom_implementation",
             "Custom",
             "Custom Implementation",
-            "Scoped buildout for tailored workflows, access systems, integrations, deployment support, and operational launch requirements.",
-            new[] { "Manual quote", "Scoped delivery", "Workflow design", "Deployment support" },
-            4999,
+            "Scoped workflow, integration, deployment, governance, and operational implementation.",
+            new[] { "Scoped quote", "Governed delivery", "Workflow design", "Deployment support" },
+            25000,
             0,
             "/contact",
             "custom"
@@ -140,19 +142,19 @@
     };
 
     private string GetPrice(Package pkg) => pkg.Key == "custom_implementation"
-        ? annual ? "Custom" : "$4,999+"
-        : annual ? $"${pkg.Annual}" : $"${pkg.Monthly}";
+        ? annual ? "Scoped" : "$25,000+"
+        : annual ? $"${pkg.Annual:N0}" : $"${pkg.Monthly:N0}";
 
     private string GetTerm(Package pkg) => pkg.Key == "custom_implementation"
-        ? annual ? "custom" : "one-time"
+        ? annual ? "engagement" : "minimum"
         : annual ? "annual" : "monthly";
 
     private string GetPackageKey(Package pkg)
     {
         return pkg.Key switch
         {
-            "member_access" => "community",
-            "creator_launch" => "vip",
+            "member_access" => "member_access",
+            "creator_infrastructure" => "creator_infrastructure",
             _ => pkg.Key
         };
     }
@@ -169,17 +171,17 @@
         return pkg.Key switch
         {
             "member_access" => "Get init",
-            "creator_launch" => "Get init",
-            "partner_package" => "Request partner access",
+            "creator_infrastructure" => "Get creator infrastructure",
+            "partner_infrastructure" => "Request partner access",
             "enterprise_infrastructure" => "Request enterprise package",
-            "custom_implementation" => "Contact for quote",
+            "custom_implementation" => "Request scoped implementation",
             _ => "Get init"
         };
     }
 
     private bool IsDisabled(Package pkg)
     {
-        return pkg.Key == "partner_package"
+        return pkg.Key == "partner_infrastructure"
             || pkg.Key == "enterprise_infrastructure"
             || pkg.Key == "custom_implementation";
     }
