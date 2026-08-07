@@ -18,19 +18,12 @@ $GeneratedMap = Join-Path $RepoRoot "infrastructure\stripe\generated\stripe-pric
 $ReceiptDirectory = Join-Path $RepoRoot 'artifacts\commercial\stripe'
 $ReceiptPath = Join-Path $ReceiptDirectory "canonical-stripe-$Mode-convergence.json"
 
-foreach ($command in @('az')) {
-    if (-not (Get-Command $command -ErrorAction SilentlyContinue)) {
-        throw "Required command not available: $command"
-    }
+if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
+    throw 'Required command not available: az'
 }
 
 if (-not (Test-Path -LiteralPath $Provisioner -PathType Leaf)) {
     throw "Canonical Stripe provisioner missing: $Provisioner"
-}
-
-$StripeExecutable = Join-Path $RepoRoot 'stripe.exe'
-if (-not (Test-Path -LiteralPath $StripeExecutable -PathType Leaf)) {
-    throw "Canonical Stripe CLI not available at $StripeExecutable"
 }
 
 Push-Location $RepoRoot
@@ -116,6 +109,14 @@ if ($health.StatusCode -ne 200) {
     throw "Post-convergence health check failed with HTTP $($health.StatusCode)"
 }
 
+$checkoutStatus = Invoke-RestMethod "$BaseUrl/api/checkout/status" -ErrorAction Stop
+if (-not $checkoutStatus.environmentHealthy -or -not $checkoutStatus.pricingAuthorityHealthy) {
+    throw 'Post-convergence checkout pricing health verification failed.'
+}
+if ([string]$checkoutStatus.canonicalPricingAuthority -ne $PricingAuthority) {
+    throw "Runtime canonical pricing authority mismatch: $($checkoutStatus.canonicalPricingAuthority)"
+}
+
 New-Item -ItemType Directory -Path $ReceiptDirectory -Force | Out-Null
 $receipt = [ordered]@{
     schema_version = 'jpv.canonical-stripe-convergence.v1'
@@ -127,6 +128,8 @@ $receipt = [ordered]@{
     configured_setting_names = @('STRIPE_MODE','JPV_PRICING_AUTHORITY') + @($expected.Keys | ForEach-Object { 'STRIPE_PRICE_' + $_.ToUpperInvariant() })
     health_url = "$BaseUrl/health"
     health_status = [int]$health.StatusCode
+    checkout_status_url = "$BaseUrl/api/checkout/status"
+    checkout_pricing_authority_healthy = [bool]$checkoutStatus.pricingAuthorityHealthy
     state = 'VERIFIED_COMPLETE'
     verified_at = [DateTimeOffset]::UtcNow.ToString('o')
 }
