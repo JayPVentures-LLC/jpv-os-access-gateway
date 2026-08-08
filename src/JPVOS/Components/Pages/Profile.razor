@@ -1,0 +1,53 @@
+@page "/profile"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Policy = "FounderOnly")]
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>JPV Profile</PageTitle>
+
+<div class="page-stack">
+    <PageHero Kicker="Founder Profile"
+              Title="JPV operating identity."
+              Description="Your authenticated entry point into the JPV-OS ecosystem."
+              Image="@AssetPaths.JpvOs.Brand"
+              ImageAlt="JPV-OS profile interface" />
+
+    <section class="content-section">
+        <div class="feature-grid">
+            <article class="glass-card">
+                <p class="public-eyebrow">Identity</p>
+                <h3>@_email</h3>
+                <p>Role: Founder</p>
+                <p>Authority: enterprise infrastructure authority</p>
+            </article>
+            <article class="glass-card">
+                <p class="public-eyebrow">Workspace</p>
+                <h3>Founder operating surface</h3>
+                <p>Route into operational state, governance, evidence, access, and ecosystem execution.</p>
+                <a class="public-btn public-btn-primary" href="/workspace">Open workspace</a>
+            </article>
+            <article class="glass-card">
+                <p class="public-eyebrow">Nexus</p>
+                <h3>Live operating state</h3>
+                <p>Open the canonical Nexus operating interface.</p>
+                <a class="public-btn public-btn-secondary" href="https://nexus.jaypventuresllc.com">Open Nexus</a>
+            </article>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <form method="post" action="/api/auth/logout">
+            <button class="public-btn public-btn-secondary" type="submit">Sign out</button>
+        </form>
+    </section>
+</div>
+
+@code {
+    private string _email = "Founder";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _email = state.User.Identity?.Name ?? "Founder";
+    }
+}
