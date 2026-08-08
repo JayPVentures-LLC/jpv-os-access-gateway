@@ -1,0 +1,23 @@
+@page "/workspace"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Policy = "FounderOnly")]
+
+<PageTitle>JPV Workspace</PageTitle>
+
+<div class="page-stack">
+    <PageHero Kicker="JPV-OS"
+              Title="Founder workspace."
+              Description="One authenticated operating surface for ecosystem state, execution, evidence, and infrastructure routing."
+              Image="@AssetPaths.JpvOs.Topology"
+              ImageAlt="JPV-OS operating topology" />
+
+    <section class="content-section">
+        <div class="feature-grid">
+            <article class="glass-card"><h3>Nexus</h3><p>Live objectives, blockers, evidence, and next action.</p><a class="public-btn public-btn-primary" href="https://nexus.jaypventuresllc.com/nexus/state">Open live state</a></article>
+            <article class="glass-card"><h3>Enterprise</h3><p>JayPVentures LLC infrastructure, commercial, and delivery lane.</p><a class="public-btn public-btn-secondary" href="/jaypventures-llc">Open enterprise</a></article>
+            <article class="glass-card"><h3>Creator</h3><p>jaypventures creator-facing ecosystem and market lane.</p><a class="public-btn public-btn-secondary" href="/jaypventures">Open creator</a></article>
+            <article class="glass-card"><h3>Labs</h3><p>jaypVLabs research, validation, and experimentation lane.</p><a class="public-btn public-btn-secondary" href="/jaypvlabs">Open Labs</a></article>
+            <article class="glass-card"><h3>Records</h3><p>Public evidence, accountability, and proof releases.</p><a class="public-btn public-btn-secondary" href="https://records.jaypventuresllc.com">Open records</a></article>
+            <article class="glass-card"><h3>Operations</h3><p>Protected operational review and infrastructure workflows.</p><a class="public-btn public-btn-secondary" href="/admin">Open operations</a></article>
+        </div>
+    </section>
+</div>

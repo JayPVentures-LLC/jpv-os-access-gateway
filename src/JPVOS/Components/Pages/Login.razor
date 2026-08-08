@@ -4,49 +4,35 @@
 <div class="public-page page-stack">
     <section class="public-hero" style="min-height: auto; padding: clamp(60px, 8vh, 100px) clamp(24px, 5vw, 80px);">
         <div class="public-hero-content">
-            <p class="public-eyebrow">Login</p>
-            <h1 class="public-title" style="font-size: clamp(2.2rem, 5vw, 3.5rem);">Identity handoff and access routing</h1>
-            <p class="public-subtitle">
-                Use the login surface to route identity into the right operational environment while preserving governance and infrastructure authority standards.
-            </p>
+            <p class="public-eyebrow">JPV Identity</p>
+            <h1 class="public-title" style="font-size: clamp(2.2rem, 5vw, 3.5rem);">Sign in to JPV-OS</h1>
+            <p class="public-subtitle">Authenticated access to your JPV profile, founder workspace, and governed operating surfaces.</p>
+        </div>
+    </section>
+
+    <section class="public-section">
+        <div class="glass-card" style="max-width: 620px; margin: 0 auto;">
+            <form method="post" action="/api/auth/login" class="page-stack" autocomplete="on">
+                <input type="hidden" name="returnUrl" value="/profile" />
+                <label>
+                    <span>Email</span>
+                    <input name="email" type="email" autocomplete="username" required class="form-control" />
+                </label>
+                <label>
+                    <span>Founder access key</span>
+                    <input name="accessKey" type="password" autocomplete="current-password" required class="form-control" />
+                </label>
+                <button class="public-btn public-btn-primary" type="submit">Sign in</button>
+            </form>
+            <p class="public-subtitle" style="margin-top: 20px;">Founder identity is independent from customer payment entitlement and Discord community routing.</p>
         </div>
     </section>
 
     <section class="public-section">
         <div class="public-access-grid">
-            <a class="public-access-card" href="/access">
-                <span>Member</span>
-                <strong>Member login</strong>
-                <p>Authentication pathway for updates, resources, and guided ecosystem routing.</p>
-            </a>
-            <a class="public-access-card" href="/partners">
-                <span>Partner</span>
-                <strong>Partner login</strong>
-                <p>Identity handoff for partner governance workflows and collaboration routing.</p>
-            </a>
-            <a class="public-access-card" href="/jaypventures-llc">
-                <span>Enterprise</span>
-                <strong>Enterprise login</strong>
-                <p>Secure route for architecture governance and infrastructure authority workflows.</p>
-            </a>
-            <a class="public-access-card" href="/admin">
-                <span>Operations</span>
-                <strong>Operator login</strong>
-                <p>Protected entry for operational integrity reviews and release coordination.</p>
-            </a>
-        </div>
-    </section>
-
-    <section class="public-section" style="text-align: center;">
-        <div class="public-section-header">
-            <h2 class="public-title" style="font-size: clamp(1.8rem, 4vw, 2.5rem);">Need immediate routing?</h2>
-            <p class="public-subtitle" style="margin: 0 auto 32px;">
-                Start from access routing to identify your environment and continue through the right operational path.
-            </p>
-        </div>
-        <div class="public-hero-actions">
-            <a href="/access" class="public-btn public-btn-primary">Open access</a>
-            <a href="/pricing" class="public-btn public-btn-secondary">View pricing</a>
+            <a class="public-access-card" href="/access"><span>Member</span><strong>Member access</strong><p>Customer entitlement and ecosystem routing.</p></a>
+            <a class="public-access-card" href="/partners"><span>Partner</span><strong>Partner access</strong><p>Partner governance and collaboration routing.</p></a>
+            <a class="public-access-card" href="/jaypventures-llc"><span>Enterprise</span><strong>Enterprise access</strong><p>Enterprise qualification and infrastructure workflows.</p></a>
         </div>
     </section>
 </div>
