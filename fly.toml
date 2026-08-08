@@ -5,11 +5,13 @@ app = "jpv-os"
 primary_region = "iad"
 
 [build]
-  image = "ghcr.io/jaypventures-llc/jpv-os:85cb6fc6b85d3d7b2a8fb7799a283a4094016794"
+  image = "ghcr.io/jaypventures-llc/jpv-os:f2e8c23a03d314f14b55af432fafcffaa1a7f525"
 
 [env]
   ASPNETCORE_ENVIRONMENT = "Production"
   JPV_DEPLOYMENT_AUTHORITY = "production"
+  JPV_FOUNDER_ID = "founder"
+  JPV_FOUNDER_ACCESS_KEY_SHA256 = "7096CFC6B9595863203F31A33F574B572B7EDD87B0ACBF0A4205A5EA5984817B"
 
 [http_service]
   internal_port = 8080
