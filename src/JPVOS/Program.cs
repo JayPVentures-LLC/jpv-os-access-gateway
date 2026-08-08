@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Stripe;
 
 using JPVOS.Components;
@@ -7,11 +8,29 @@ using JPVOS.Infrastructure.Stripe;
 var builder = WebApplication.CreateBuilder(args);
 
 // Stripe
-Stripe.StripeConfiguration.ApiKey = builder.Configuration["STRIPE_SECRET_KEY"];
+StripeConfiguration.ApiKey = builder.Configuration["STRIPE_SECRET_KEY"];
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "__Host-JPV.Auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.SlidingExpiration = true;
+        options.ExpireTimeSpan = TimeSpan.FromHours(12);
+        options.LoginPath = "/login";
+        options.AccessDeniedPath = "/login?denied=1";
+    });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("FounderOnly", policy => policy.RequireRole("Founder"));
+});
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddControllers();
 if (builder.Environment.IsDevelopment())
 {
@@ -38,7 +57,6 @@ builder.Services.AddSingleton<JPVOS.Infrastructure.Discord.DiscordRoleSyncAuditS
 var app = builder.Build();
 PeopleProtectionStartupGuard.Verify(app);
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
@@ -51,6 +69,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
