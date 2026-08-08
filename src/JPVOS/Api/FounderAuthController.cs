@@ -21,24 +21,24 @@ public sealed class FounderAuthController : ControllerBase
 
     [HttpPost("login")]
     [EnableRateLimiting("FounderLogin")]
-    public async Task<IActionResult> Login([FromForm] string email, [FromForm] string accessKey, [FromForm] string? returnUrl = null)
+    public async Task<IActionResult> Login([FromForm] string identity, [FromForm] string accessKey, [FromForm] string? returnUrl = null)
     {
         if (!IsSameOriginRequest())
         {
             return Forbid();
         }
 
-        var founderEmail = _config["JPV_FOUNDER_EMAIL"];
+        var founderId = _config["JPV_FOUNDER_ID"];
         var expectedHash = _config["JPV_FOUNDER_ACCESS_KEY_SHA256"];
-        if (string.IsNullOrWhiteSpace(founderEmail) || string.IsNullOrWhiteSpace(expectedHash))
+        if (string.IsNullOrWhiteSpace(founderId) || string.IsNullOrWhiteSpace(expectedHash))
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable, "Founder identity is not provisioned.");
         }
 
         var providedHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(accessKey ?? string.Empty)));
-        var emailMatches = string.Equals(email?.Trim(), founderEmail.Trim(), StringComparison.OrdinalIgnoreCase);
+        var identityMatches = string.Equals(identity?.Trim(), founderId.Trim(), StringComparison.OrdinalIgnoreCase);
         var keyMatches = FixedTimeHexEquals(providedHash, expectedHash.Trim());
-        if (!emailMatches || !keyMatches)
+        if (!identityMatches || !keyMatches)
         {
             return Redirect("/login?error=1");
         }
@@ -46,8 +46,7 @@ public sealed class FounderAuthController : ControllerBase
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, "founder"),
-            new Claim(ClaimTypes.Name, founderEmail),
-            new Claim(ClaimTypes.Email, founderEmail),
+            new Claim(ClaimTypes.Name, founderId),
             new Claim(ClaimTypes.Role, "Founder"),
             new Claim("jpv_identity_tier", "founder"),
             new Claim("jpv_authority", "enterprise-infrastructure-authority")
