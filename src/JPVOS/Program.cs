@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Threading.RateLimiting;
 using Stripe;
 
 using JPVOS.Components;
@@ -7,7 +8,6 @@ using JPVOS.Infrastructure.Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Stripe
 StripeConfiguration.ApiKey = builder.Configuration["STRIPE_SECRET_KEY"];
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -26,10 +26,21 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("FounderOnly", policy => policy.RequireRole("Founder"));
 });
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("FounderLogin", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+});
 
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddControllers();
 if (builder.Environment.IsDevelopment())
@@ -44,12 +55,8 @@ else
 }
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<DiscordService>();
-
-// Governed Stripe checkout path. Pricing loader fails closed on any map that
-// does not match the active JPV-OS canonical pricing authority.
 builder.Services.AddSingleton<StripePricingLoader>();
 builder.Services.AddSingleton<StripeCheckoutService>();
-
 builder.Services.AddSingleton<StripeWebhookEventStore>();
 builder.Services.AddSingleton<StripeSubscriptionAuditStore>();
 builder.Services.AddSingleton<JPVOS.Infrastructure.Discord.DiscordRoleSyncAuditStore>();
@@ -61,21 +68,16 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
-}
-
-if (!app.Environment.IsDevelopment())
-{
     app.UseHttpsRedirection();
 }
 
 app.UseStaticFiles();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
