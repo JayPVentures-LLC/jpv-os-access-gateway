@@ -5,7 +5,7 @@ app = "jpv-os"
 primary_region = "iad"
 
 [build]
-  image = "ghcr.io/jaypventures-llc/jpv-os:85cb6fc6b85d3d7b2a8fb7799a283a4094016794"
+  image = "ghcr.io/jaypventures-llc/jpv-os@sha256:a6d96dd1926375ace04a5cc2966b0a0e6c408415c22aa8c431185bcc4f039e33"
 
 [env]
   ASPNETCORE_ENVIRONMENT = "Production"
