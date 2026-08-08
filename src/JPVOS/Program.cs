@@ -79,6 +79,18 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapControllers();
-app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
+app.MapGet("/health", (IConfiguration config) => Results.Ok(new
+{
+    status = "healthy",
+    identity = new
+    {
+        founderProvisioned = !string.IsNullOrWhiteSpace(config["JPV_FOUNDER_EMAIL"]) &&
+                             !string.IsNullOrWhiteSpace(config["JPV_FOUNDER_ACCESS_KEY_SHA256"]),
+        session = "cookie",
+        founderProfile = "/profile",
+        founderWorkspace = "/workspace"
+    },
+    timestamp = DateTime.UtcNow
+}));
 
 app.Run();
