@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "standard_id": "JPV-GOV-LITERAL-LANGUAGE-FIDELITY-001",
+  "version": "1.0.0",
+  "status": "ACTIVE",
+  "authority": "JayPVentures LLC / Founder",
+  "principle": "Explicit wording is authoritative. Interpretation may resolve genuine ambiguity but may not add, replace, soften, future-frame, psychologize, or otherwise alter a clear statement.",
+  "ingress_precedence": ["explicit_current_instruction","binding_current_correction","literal_current_wording","settled_user_specific_semantics","established_project_context","necessary_inference_only_when_ambiguity_remains","generic_conversational_prior"],
+  "gateway_requirements": ["preserve literal semantic scope","reject unstated premise insertion","propagate binding corrections","preserve settled user-specific semantics","resolve material ambiguity from context before clarification","route action requests to authorized execution surfaces"],
+  "block_code": "SEMANTIC_FIDELITY_BLOCK",
+  "prohibited": ["UNSTATED_FUTURE_PREMISE","HIDDEN_REQUEST_INVENTION","GENERIC_PRIOR_OVERRIDES_EXPLICIT_WORDING","CORRECTION_NON_PROPAGATION","USER_CORRECTION_BURDEN_TRANSFER","EXECUTION_REPLACED_BY_EXPLANATION"]
+}
