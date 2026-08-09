@@ -1,12 +1,47 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "standard_id": "JPV-GOV-LITERAL-LANGUAGE-FIDELITY-001",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "status": "ACTIVE",
   "authority": "JayPVentures LLC / Founder",
-  "principle": "Explicit wording is authoritative. Interpretation may resolve genuine ambiguity but may not add, replace, soften, future-frame, psychologize, or otherwise alter a clear statement.",
-  "ingress_precedence": ["explicit_current_instruction","binding_current_correction","literal_current_wording","settled_user_specific_semantics","established_project_context","necessary_inference_only_when_ambiguity_remains","generic_conversational_prior"],
-  "gateway_requirements": ["preserve literal semantic scope","reject unstated premise insertion","propagate binding corrections","preserve settled user-specific semantics","resolve material ambiguity from context before clarification","route action requests to authorized execution surfaces"],
-  "block_code": "SEMANTIC_FIDELITY_BLOCK",
-  "prohibited": ["UNSTATED_FUTURE_PREMISE","HIDDEN_REQUEST_INVENTION","GENERIC_PRIOR_OVERRIDES_EXPLICIT_WORDING","CORRECTION_NON_PROPAGATION","USER_CORRECTION_BURDEN_TRANSFER","EXECUTION_REPLACED_BY_EXPLANATION"]
+  "principle": "Ingress interpretation must preserve explicit meaning and explicit authorization. Inference may resolve ambiguity inside scope but may not create authority or change action class.",
+  "ingress_precedence": [
+    "explicit_current_authorization",
+    "explicit_current_instruction",
+    "binding_current_correction",
+    "literal_current_wording",
+    "settled_user_specific_semantics_and_constraints",
+    "current_canonical_artifact_or_state",
+    "established_project_context",
+    "minimum_necessary_inference_inside_authorized_scope",
+    "generic_conversational_or_helpfulness_prior"
+  ],
+  "authorization_envelope": ["objective","action_class","target","artifact_type","mutation_scope","external_effects","constraints","stop_condition"],
+  "gateway_requirements": [
+    "preserve literal semantic scope",
+    "identify authorization envelope before routing mutating or external-effect actions",
+    "reject unstated premise or consent insertion",
+    "reject capability or access being treated as authorization",
+    "reject prior permission overgeneralization",
+    "reject tool/action-class mismatch",
+    "reject artifact-type substitution without explicit authorization",
+    "classify assumptions before operational use",
+    "propagate binding corrections and invalidate conflicting downstream plans",
+    "resolve material ambiguity from authoritative context or one minimal clarification",
+    "resolve nonmaterial ambiguity using the narrowest reversible interpretation within scope",
+    "route action requests only to authorized execution surfaces",
+    "enforce stop condition when objective is satisfied"
+  ],
+  "routing_rule": {
+    "match": "candidate_tool_action_class must equal or be a strict subset of authorized_action_class",
+    "on_mismatch": "REJECT",
+    "block_code": "TOOL_CLASS_MISMATCH_BLOCK"
+  },
+  "block_codes": ["SEMANTIC_FIDELITY_BLOCK","CONSENT_SCOPE_BLOCK","UNAUTHORIZED_INFERENCE_BLOCK","TOOL_CLASS_MISMATCH_BLOCK","MATERIAL_ASSUMPTION_BLOCK"],
+  "prohibited": [
+    "UNSTATED_FUTURE_PREMISE","HIDDEN_REQUEST_INVENTION","CONSENT_INVENTION","CAPABILITY_TREATED_AS_AUTHORIZATION","ACCESS_TREATED_AS_AUTHORIZATION",
+    "PRIOR_PERMISSION_OVERGENERALIZATION","GENERIC_PRIOR_OVERRIDES_EXPLICIT_WORDING","CORRECTION_NON_PROPAGATION","SEMANTIC_SCOPE_EXPANSION",
+    "ACTION_CLASS_EXPANSION","TOOL_CLASS_MISMATCH","ARTIFACT_TYPE_SUBSTITUTION","OPTIONAL_ASSUMPTION_OPERATIONALIZATION",
+    "MATERIAL_AMBIGUITY_GUESSING","UNSOLICITED_VERSION_PROLIFERATION","USER_CORRECTION_BURDEN_TRANSFER","EXECUTION_REPLACED_BY_EXPLANATION"
+  ]
 }
