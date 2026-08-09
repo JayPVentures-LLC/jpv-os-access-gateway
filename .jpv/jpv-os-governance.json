@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.1",
+  "schemaVersion": "1.2",
   "authorityRepository": "jaypVLabs/JPV-OS",
   "authorityRef": "main",
   "requiredStandards": [
@@ -11,7 +11,8 @@
     "governance/contracts/governing-intent-equilibrium.v1.json",
     "governance/contracts/system-consistency-integrity.v1.json",
     "governance/contracts/artifact-success-gate.v1.json",
-    "governance/contracts/founder-authority-continuity.v1.json"
+    "governance/contracts/founder-authority-continuity.v1.json",
+    "governance/contracts/root-continuity-invariant.v1.json"
   ],
   "rules": {
     "governingOutcomeOverridesLocalOptimization": true,
@@ -28,8 +29,21 @@
     "softwareMayNotInferSuccession": true,
     "repeatedMaterialDecisionFailureRequiresAuthorityReview": true,
     "externalLegalAndBindingConstraintsRemainEffective": true,
+    "authorizedIntentProducesAutonomousVerifiedOutcome": true,
+    "deviceIndependentContinuity": true,
+    "sessionIndependentContinuity": true,
+    "transportIndependentAfterAdmission": true,
+    "checkoutIndependentContinuity": true,
+    "actuatorIndependentContinuity": true,
+    "hostedPrimaryForCloud": true,
+    "acceptedOperationSurvivesIngressExpiration": true,
+    "windowsOnlyForExplicitWindowsCapabilities": true,
+    "automaticRetryAndEligibleRerouting": true,
+    "routineRecoveryRequiresFounderAttention": false,
+    "githubIsFallbackAdmissionAndRecoveryOnly": true,
     "repeatedFailureEscalatesToPathBlock": true,
     "mutationSuccessIsNotCompletion": true,
+    "terminalReceiptRequiredForCompletion": true,
     "founderRediscoveryRequired": false,
     "downstreamRulesMayNotWeakenAuthority": true
   },
