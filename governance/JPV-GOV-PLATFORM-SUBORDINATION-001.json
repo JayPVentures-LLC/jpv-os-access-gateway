@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "standard_id": "JPV-GOV-PLATFORM-SUBORDINATION-001",
+  "version": "1.0.0",
+  "status": "ACTIVE",
+  "authority": "JayPVentures LLC / Founder",
+  "principle": "Ingress and execution routing must treat platform rules as enforcement constraints subordinate to canonical JPV governance, never as a source of ownership or organizational authority.",
+  "gateway_requirements": [
+    "load canonical JPV authority before platform-specific constraints",
+    "detect unsatisfiable approval or review gates before routing work into them",
+    "require a governed recovery path for any blocking platform rule",
+    "preserve security, CI, provenance, and signature evidence during recovery",
+    "reject platform configuration that has no operable satisfaction path",
+    "emit REVIEW_GATE_UNSATISFIABLE instead of assigning impossible manual work to the founder"
+  ],
+  "block_codes": ["REVIEW_GATE_UNSATISFIABLE","PLATFORM_AUTHORITY_ESCALATION","RECOVERY_PATH_MISSING"]
+}
