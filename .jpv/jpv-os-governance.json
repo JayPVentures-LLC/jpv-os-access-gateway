@@ -1,9 +1,37 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "authorityRepository": "jaypVLabs/JPV-OS",
   "authorityRef": "main",
-  "requiredStandards": ["governance/GOVERNING-INTENT-EQUILIBRIUM-STANDARD.md","governance/SYSTEM-CONSISTENCY-INTEGRITY-STANDARD.md","governance/ARTIFACT-CONTEXT-CURATION-STANDARD.md"],
-  "requiredContracts": ["governance/contracts/governing-intent-equilibrium.v1.json","governance/contracts/system-consistency-integrity.v1.json","governance/contracts/artifact-success-gate.v1.json"],
-  "rules": {"governingOutcomeOverridesLocalOptimization":true,"semanticIntentDeterminesToolRouting":true,"establishedCorrectionsApplyBeforeExecution":true,"repeatedFailureEscalatesToPathBlock":true,"mutationSuccessIsNotCompletion":true,"founderRediscoveryRequired":false,"downstreamRulesMayNotWeakenAuthority":true},
+  "requiredStandards": [
+    "governance/GOVERNING-INTENT-EQUILIBRIUM-STANDARD.md",
+    "governance/SYSTEM-CONSISTENCY-INTEGRITY-STANDARD.md",
+    "governance/ARTIFACT-CONTEXT-CURATION-STANDARD.md"
+  ],
+  "requiredContracts": [
+    "governance/contracts/governing-intent-equilibrium.v1.json",
+    "governance/contracts/system-consistency-integrity.v1.json",
+    "governance/contracts/artifact-success-gate.v1.json",
+    "governance/contracts/founder-authority-continuity.v1.json"
+  ],
+  "rules": {
+    "governingOutcomeOverridesLocalOptimization": true,
+    "semanticIntentDeterminesToolRouting": true,
+    "establishedCorrectionsApplyBeforeExecution": true,
+    "settledFounderDecisionsAreAuthoritative": true,
+    "founderIsFinalInternalAuthority": true,
+    "delegationTransfersExecutionNotOwnership": true,
+    "delegatedAuthorityMustBeScopedAuditableAndRevocable": true,
+    "delegatesMayNotExpandOwnAuthority": true,
+    "founderRecoveryAuthorityMustBePreserved": true,
+    "automationHasNoInherentGovernanceAuthority": true,
+    "temporaryContinuityAuthorityIsCustodialOnly": true,
+    "softwareMayNotInferSuccession": true,
+    "repeatedMaterialDecisionFailureRequiresAuthorityReview": true,
+    "externalLegalAndBindingConstraintsRemainEffective": true,
+    "repeatedFailureEscalatesToPathBlock": true,
+    "mutationSuccessIsNotCompletion": true,
+    "founderRediscoveryRequired": false,
+    "downstreamRulesMayNotWeakenAuthority": true
+  },
   "enforcement": "fail_closed"
 }
