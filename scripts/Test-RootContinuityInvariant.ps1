@@ -33,8 +33,9 @@ $required = [ordered]@{
 $failures = @()
 foreach ($entry in $required.GetEnumerator()) {
     $property = $manifest.rules.PSObject.Properties[$entry.Key]
-    if ($null -eq $property -or [bool]$property.Value -ne [bool]$entry.Value) {
-        $failures += "$($entry.Key) must equal $($entry.Value)"
+    if ($null -eq $property -or -not ($property.Value -is [bool]) -or $property.Value -ne $entry.Value) {
+        $actual = if ($null -eq $property) { '<missing>' } else { "[$($property.Value.GetType().Name)] $($property.Value)" }
+        $failures += "$($entry.Key) must be Boolean $($entry.Value); actual=$actual"
     }
 }
 if ([string]$manifest.enforcement -ne 'fail_closed') { $failures += 'enforcement must remain fail_closed' }
