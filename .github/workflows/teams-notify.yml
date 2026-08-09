@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Teams notification
-        uses: skitionek/notify-microsoft-teams@v1.3.0
+        uses: skitionek/notify-microsoft-teams@216b8b28967e7e89b0b64b81dc94aeae90e642ab # v1.3.0
         with:
           webhook_url: ${{ secrets.MSTEAMS_WEBHOOK_URL }}
           status: ${{ github.event.workflow_run.conclusion }}
