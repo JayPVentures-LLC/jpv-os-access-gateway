@@ -1,0 +1,12 @@
+# Canonical JPV repository ownership
+* @jaypventures
+
+# Security-sensitive surfaces
+/.github/ @jaypventures
+/SECURITY.md @jaypventures
+/wrangler.jsonc @jaypventures
+/wrangler.toml @jaypventures
+/src/ @jaypventures
+/worker/ @jaypventures
+/functions/ @jaypventures
+/scripts/ @jaypventures
