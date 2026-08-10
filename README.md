@@ -13,10 +13,6 @@ It provides the structured interface for identity-aware entry, entitlement routi
 - Role-aware routing
 - Governance-aware app layer
 
-## Repository Status
-
-This repository replaces the temporary Visual Studio project name WebApplication1. The repository slug remains `jpv-os-access-gateway` for history and deployment continuity; the canonical product identity is **JPV Nexus**.
-
 ## Governance Alignment
 
 This repo must preserve:
@@ -63,7 +59,7 @@ See [docs/CONTAINER-DEPLOYMENT.md](docs/CONTAINER-DEPLOYMENT.md) for detailed de
 
 ### Azure App Service
 
-Azure App Service deployment is now provisioned using automated scripts. To get started:
+Azure App Service deployment is provisioned using automated scripts.
 
 **Windows (PowerShell):**
 ```powershell
@@ -75,4 +71,4 @@ Azure App Service deployment is now provisioned using automated scripts. To get 
 ./scripts/provision-azure-appservice.sh -Path A -SubscriptionId "YOUR-SUBSCRIPTION-ID"
 ```
 
-See [docs/AZURE-PROVISIONING-GUIDE.md](docs/AZURE-PROVISIONING-GUIDE.md) for complete provisioning instructions and alternative deployment paths.
+See [docs/AZURE-PROVISIONING-GUIDE.md](docs/AZURE-PROVISIONING-GUIDE.md) for deployment details and alternative paths.
