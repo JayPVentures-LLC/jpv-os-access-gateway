@@ -4,7 +4,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const CONTRACT_FILE = path.join(ROOT, "authority", "access-gateway-authority.json");
+const CONTRACT_RELATIVE = "authority/nexus-authority.json";
+const CONTRACT_FILE = path.join(ROOT, ...CONTRACT_RELATIVE.split("/"));
 const DOC_FILE = path.join(ROOT, "docs", "COMMERCIAL-ACCESS-SETUP.md");
 const REQUIRED_ACCESS_STATES = ["requested", "checkout_started", "payment_confirmed", "active", "past_due", "cancelled", "revoked", "manual_review"];
 const REQUIRED_ROLES = ["Free Access", "Member Access", "VIP Venture", "Creator Lane", "Operator Access", "Enterprise", "Sovereign Review"];
@@ -16,7 +17,7 @@ const BLOCKED_PRICE_PATTERNS = [
 ];
 
 function fail(message) {
-  console.error(`ACCESS GATEWAY AUTHORITY FAIL: ${message}`);
+  console.error(`JPV NEXUS AUTHORITY FAIL: ${message}`);
   process.exitCode = 1;
 }
 
@@ -53,7 +54,8 @@ function main() {
   const contract = readJson(CONTRACT_FILE);
   if (!contract) return;
 
-  if (contract.system !== "access-gateway") fail("contract.system must be access-gateway.");
+  if (contract.system !== "jpv-nexus") fail("contract.system must be jpv-nexus.");
+  if (contract.product !== "JPV Nexus") fail("contract.product must be JPV Nexus.");
   if (contract.authorityLane !== "access") fail("authorityLane must be access.");
 
   requireItems(contract.accessStates, REQUIRED_ACCESS_STATES, "accessStates");
@@ -66,14 +68,14 @@ function main() {
     fail("mustNotOwn must include pricing authority.");
   }
 
-  if (!String(contract.pricingAuthority || "").includes("must not define final prices")) fail("pricingAuthority must state gateway must not define final prices.");
+  if (!String(contract.pricingAuthority || "").includes("must not define final prices")) fail("pricingAuthority must state JPV Nexus must not define final prices.");
 
   const commercialAccessDoc = read(DOC_FILE);
   for (const pattern of BLOCKED_PRICE_PATTERNS) {
-    if (pattern.test(commercialAccessDoc)) fail(`commercial access setup still contains gateway-owned pricing pattern: ${pattern}`);
+    if (pattern.test(commercialAccessDoc)) fail(`commercial access setup still contains application-owned pricing pattern: ${pattern}`);
   }
 
-  if (!process.exitCode) console.log("ACCESS GATEWAY AUTHORITY PASS: access authority validated.");
+  if (!process.exitCode) console.log("JPV NEXUS AUTHORITY PASS: Nexus authority validated.");
 }
 
 main();
