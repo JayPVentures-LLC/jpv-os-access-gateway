@@ -12,7 +12,7 @@ public class HealthController : ControllerBase
         return Ok(new
         {
             status = "healthy",
-            app = "JPV-OS Access Gateway",
+            app = "JPV Nexus",
             runtime = ".NET",
             utc = DateTime.UtcNow
         });

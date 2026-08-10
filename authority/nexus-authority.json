@@ -1,10 +1,11 @@
 {
   "schemaVersion": "1.0.0",
-  "system": "access-gateway",
+  "system": "jpv-nexus",
+  "product": "JPV Nexus",
   "repo": "JayPVentures-LLC/jpv-os-access-gateway",
   "authorityLane": "access",
   "owns": [
-    "access gateway",
+    "application entry",
     "entitlement routing",
     "role mapping",
     "access state transitions",
@@ -46,5 +47,5 @@
     "entitlement_revoked",
     "manual_review_required"
   ],
-  "pricingAuthority": "JayPVentures-LLC/jpv-governance and public-site pricing standard; gateway may reference lookup keys but must not define final prices."
+  "pricingAuthority": "JayPVentures-LLC/jpv-governance and public-site pricing standard; JPV Nexus may reference lookup keys but must not define final prices."
 }

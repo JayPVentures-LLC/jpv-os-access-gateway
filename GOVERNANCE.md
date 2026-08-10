@@ -1,6 +1,6 @@
 # Governance
 
-This repository is part of the JPV-OS access gateway layer.
+This repository hosts **JPV Nexus**, the application-facing entry layer for the JPV ecosystem.
 
 Required operating standard:
 - human review for production-impacting changes
