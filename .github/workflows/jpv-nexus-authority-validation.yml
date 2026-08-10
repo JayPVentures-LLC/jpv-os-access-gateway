@@ -1,0 +1,29 @@
+name: JPV Nexus Authority Validation
+
+on:
+  pull_request:
+    paths:
+      - 'authority/**'
+      - 'docs/COMMERCIAL-ACCESS-SETUP.md'
+      - 'docs/governance/jpv-nexus-authority-validation.md'
+      - 'scripts/validate-jpv-nexus-authority.mjs'
+      - 'tests/Test-JPVNexusIdentity.ps1'
+      - '.github/workflows/jpv-nexus-authority-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-jpv-nexus-authority:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Validate JPV Nexus authority
+        run: node scripts/validate-jpv-nexus-authority.mjs
+
+      - name: Validate JPV Nexus identity
+        shell: pwsh
+        run: ./tests/Test-JPVNexusIdentity.ps1
