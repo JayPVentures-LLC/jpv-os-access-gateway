@@ -1,10 +1,10 @@
-# JPV-OS Commercial Access Setup
+# JPV Nexus Commercial Access Setup
 
 ## 1. Access Package Lookup Keys
 
-The access gateway does not own final pricing authority.
+JPV Nexus does not own final pricing authority.
 
-Use governance-approved lookup keys and resolve payment processor price IDs server-side. Final prices come from the active JPV-OS canonical pricing authority. The gateway must fail closed when processor configuration is stale, incomplete, or lacks the active authority marker.
+Use governance-approved lookup keys and resolve payment processor price IDs server-side. Final prices come from the active JPV-OS canonical pricing authority. JPV Nexus must fail closed when processor configuration is stale, incomplete, or lacks the active authority marker.
 
 | Package Key | Access Path | Billing Interval |
 |---|---|---|
@@ -94,7 +94,7 @@ Assign the role IDs to the corresponding environment variables above.
 
 ## 5. Entitlement States
 
-The access gateway recognizes these entitlement states:
+JPV Nexus recognizes these entitlement states:
 
 - requested
 - checkout_started
