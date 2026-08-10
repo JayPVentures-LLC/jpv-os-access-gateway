@@ -9,7 +9,7 @@ $required = @(
     'src/JPVOS/Components/Pages/Home.razor',
     'src/JPVOS/Pages/AccessRouting.razor',
     'src/JPVOS/Api/HealthController.cs',
-    'scripts/validate-access-gateway-authority.mjs',
+    'scripts/validate-jpv-nexus-authority.mjs',
     'authority/nexus-authority.json'
 )
 
@@ -27,7 +27,7 @@ if ($failures.Count -eq 0) {
     $home = Get-Content -LiteralPath (Join-Path $repoRoot 'src/JPVOS/Components/Pages/Home.razor') -Raw
     $routing = Get-Content -LiteralPath (Join-Path $repoRoot 'src/JPVOS/Pages/AccessRouting.razor') -Raw
     $health = Get-Content -LiteralPath (Join-Path $repoRoot 'src/JPVOS/Api/HealthController.cs') -Raw
-    $validator = Get-Content -LiteralPath (Join-Path $repoRoot 'scripts/validate-access-gateway-authority.mjs') -Raw
+    $validator = Get-Content -LiteralPath (Join-Path $repoRoot 'scripts/validate-jpv-nexus-authority.mjs') -Raw
     $authority = Get-Content -LiteralPath (Join-Path $repoRoot 'authority/nexus-authority.json') -Raw | ConvertFrom-Json
 
     foreach ($surface in @{
