@@ -11,7 +11,7 @@ Organization: JayPVentures-LLC
 |---|---|---|
 | automation-core | Shared automation and reusable operational services. | INTERNAL |
 | jayventures-labs | Research, prototypes, validation, and controlled experiments. | PUBLIC |
-| jpv-os-access-gateway | Primary JPV-OS app and access gateway surface. | PUBLIC |
+| jpv-os-access-gateway | JPV Nexus application repository for identity-aware entry, entitlement routing, role mapping, and governed application access. | PUBLIC |
 | jpv-public-records | Private evidence, records, and governance material before approved publication. | PRIVATE |
 
 ### Archived Repositories
@@ -82,9 +82,7 @@ Total count: 6
 - jpv-os-access-gateway [PUBLIC] https://github.com/JayPVentures-LLC/jpv-os-access-gateway
 - jpv-public-records [PRIVATE] https://github.com/JayPVentures-LLC/jpv-public-records
 
-
 ### Archived
 
 - jpv-discussions [PUBLIC] https://github.com/JayPVentures-LLC/jpv-discussions
 - SOS [PRIVATE] https://github.com/JayPVentures-LLC/SOS
-

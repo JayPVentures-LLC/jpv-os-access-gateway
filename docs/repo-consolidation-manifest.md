@@ -1,8 +1,9 @@
 # JPV Repo Consolidation Manifest
 
-Primary repository: jpv-os-access-gateway
+Canonical application: **JPV Nexus**  
+GitHub repository: `JayPVentures-LLC/jpv-os-access-gateway`
 
-Merged locally into primary repo:
+Merged locally into the JPV Nexus repository:
 - jayventures-labs -> src/labs/jayventures-labs
 - automation-core -> src/automation-core/automation-core
 - website-design -> docs/brand/website-design
@@ -20,4 +21,4 @@ Kept separate:
 - jpv-discussions
 
 Next required action:
-Archive or delete superseded GitHub repos after confirming the consolidated repo builds and no secrets were copied.
+Archive or delete superseded GitHub repos after confirming the consolidated JPV Nexus application builds and no secrets were copied.
