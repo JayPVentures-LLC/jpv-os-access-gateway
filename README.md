@@ -1,21 +1,21 @@
-# JPV-OS Access Gateway
+# JPV Nexus
 
-JPV-OS Access Gateway is the application-facing gateway for the JPV ecosystem.
+JPV Nexus is the application-facing entry layer for the JPV ecosystem.
 
-It provides the structured interface for access routing, dashboard entry, role-aware experience design, and future entitlement alignment across the JayPVentures LLC infrastructure and creator-facing systems.
+It provides the structured interface for identity-aware entry, entitlement routing, dashboard access, role-aware experience design, and governed application routing across the JayPVentures LLC infrastructure and creator-facing systems.
 
 ## Operational Purpose
 
 - Application interface
-- Access gateway
+- Identity-aware entry
 - Dashboard shell
+- Entitlement routing
 - Role-aware routing
 - Governance-aware app layer
-- Future entitlement integration
 
 ## Repository Status
 
-This repository replaces the temporary Visual Studio project name WebApplication1.
+This repository replaces the temporary Visual Studio project name WebApplication1. The repository slug remains `jpv-os-access-gateway` for history and deployment continuity; the canonical product identity is **JPV Nexus**.
 
 ## Governance Alignment
 
@@ -76,4 +76,3 @@ Azure App Service deployment is now provisioned using automated scripts. To get 
 ```
 
 See [docs/AZURE-PROVISIONING-GUIDE.md](docs/AZURE-PROVISIONING-GUIDE.md) for complete provisioning instructions and alternative deployment paths.
-
