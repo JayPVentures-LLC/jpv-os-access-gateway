@@ -7,6 +7,9 @@ public sealed class SystemicAccessPolicy
     [JsonPropertyName("id")]
     public string Id { get; init; } = string.Empty;
 
+    [JsonPropertyName("canonical_source")]
+    public SystemicAccessCanonicalSource CanonicalSource { get; init; } = new();
+
     [JsonPropertyName("actions")]
     public string[] Actions { get; init; } = [];
 
@@ -21,6 +24,18 @@ public sealed class SystemicAccessPolicy
 
     [JsonPropertyName("interpretation")]
     public SystemicAccessInterpretation Interpretation { get; init; } = new();
+}
+
+public sealed class SystemicAccessCanonicalSource
+{
+    [JsonPropertyName("repository")]
+    public string Repository { get; init; } = string.Empty;
+
+    [JsonPropertyName("path")]
+    public string Path { get; init; } = string.Empty;
+
+    [JsonPropertyName("baseline_commit")]
+    public string BaselineCommit { get; init; } = string.Empty;
 }
 
 public sealed class SystemicAccessInterpretation
