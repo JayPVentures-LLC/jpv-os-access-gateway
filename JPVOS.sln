@@ -5,7 +5,11 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5B8DA46A-C7CE-4808-9E8A-C4E90BD551B8}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JPVOS", "src\JPVOS\JPVOS.csproj", "{275EDBAD-1314-499B-8049-3850BE5AACA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JPVOS.Tests", "tests\JPVOS.Tests\JPVOS.Tests.csproj", "{C0A4BDBE-DAD1-4AB5-9E8D-36F6E4B22730}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,11 +33,16 @@ Global
 		{275EDBAD-1314-499B-8049-3850BE5AACA5}.Release|x64.Build.0 = Release|Any CPU
 		{275EDBAD-1314-499B-8049-3850BE5AACA5}.Release|x86.ActiveCfg = Release|Any CPU
 		{275EDBAD-1314-499B-8049-3850BE5AACA5}.Release|x86.Build.0 = Release|Any CPU
+		{C0A4BDBE-DAD1-4AB5-9E8D-36F6E4B22730}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0A4BDBE-DAD1-4AB5-9E8D-36F6E4B22730}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0A4BDBE-DAD1-4AB5-9E8D-36F6E4B22730}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0A4BDBE-DAD1-4AB5-9E8D-36F6E4B22730}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{275EDBAD-1314-499B-8049-3850BE5AACA5} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{C0A4BDBE-DAD1-4AB5-9E8D-36F6E4B22730} = {5B8DA46A-C7CE-4808-9E8A-C4E90BD551B8}
 	EndGlobalSection
 EndGlobal
