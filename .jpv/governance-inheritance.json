@@ -7,6 +7,18 @@
     "policies/DETECTION-ATTRIBUTION-EVIDENCE-INVARIANT.md",
     "policies/detection-attribution-evidence-invariant.v1.json"
   ],
+  "canonical_correction_state": {
+    "correction_id": "JPV-CORRECTION-2026-08-12-PATCH-ACCUMULATION",
+    "design": "docs/superpowers/specs/2026-08-12-canonical-correction-state-design.md",
+    "inheritance": "TRANSITIVE",
+    "inheritance_mode": "REFERENCE_NOT_REDEFINITION",
+    "binding_from_canonical_authority": true,
+    "local_receipt_required_for_binding": false,
+    "downstream_write_access_required_for_binding": false,
+    "execution_on_stale_dependency": "block",
+    "local_patch_accumulation": "prohibited",
+    "new_local_mechanism_requires_irreducible_semantics": true
+  },
   "runtime_authority_repository": "jaypVLabs/JPV-OS",
   "runtime_authority_commit": "128319f98e064ea160f309e8decca0a7ab19c941",
   "runtime_policies": [
@@ -27,7 +39,11 @@
     "entity_resolution_precedes_association": true,
     "inference_distinct_from_fact": true,
     "uncertain_or_high_materiality_requires_review": true,
-    "investigative_records_append_only": true
+    "investigative_records_append_only": true,
+    "validated_correction_mutates_canonical_state": true,
+    "superseded_assumptions_cannot_remain_active": true,
+    "stale_dependencies_block_execution": true,
+    "local_patch_accumulation_prohibited": true
   },
   "inherited_at": "2026-08-14T15:05:00Z"
 }
