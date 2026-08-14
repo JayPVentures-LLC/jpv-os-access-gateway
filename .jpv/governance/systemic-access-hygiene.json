@@ -1,0 +1,17 @@
+{
+  "id": "JPV-GOV-SYSTEMIC-ACCESS-HYGIENE-001",
+  "effective": "2026-08-14",
+  "scope": ["identity","agent","integration","session","credential","entitlement","route","dependency"],
+  "invalid_states": ["unauthorized","noncompliant","stale","duplicate","compromised","orphaned","unowned","misrouted"],
+  "actions": ["VALID","QUARANTINE","REVOKE","ROTATE","DEDUPLICATE","EXPIRE","REVIEW"],
+  "default_uncertain_action": "QUARANTINE",
+  "re_enable_requires": "explicit_current_authorization",
+  "least_privilege": true,
+  "preserve_audit_receipt": true,
+  "regression_requirements": ["authentication","authorization","routing","dependency_health","founder_access"],
+  "interpretation": {
+    "systemic_only": true,
+    "person_targeting": false
+  },
+  "completion": "zero_invalid_access_or_owned_review_state"
+}
