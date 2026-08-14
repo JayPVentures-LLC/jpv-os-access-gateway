@@ -1,3 +1,5 @@
+using Microsoft.Data.Sqlite;
+
 namespace JPVOS.Services.SystemicAccess;
 
 public sealed class SystemicAccessRuntimeState
@@ -38,7 +40,19 @@ public sealed class SystemicAccessReconciliationService : BackgroundService
             {
                 break;
             }
-            catch (Exception ex)
+            catch (SqliteException ex)
+            {
+                _state.Fail(ex);
+            }
+            catch (IOException ex)
+            {
+                _state.Fail(ex);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _state.Fail(ex);
+            }
+            catch (InvalidOperationException ex)
             {
                 _state.Fail(ex);
             }
