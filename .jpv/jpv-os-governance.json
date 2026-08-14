@@ -1,18 +1,20 @@
 {
-  "schemaVersion": "1.2",
+  "schemaVersion": "1.3",
   "authorityRepository": "jaypVLabs/JPV-OS",
   "authorityRef": "main",
   "requiredStandards": [
     "governance/GOVERNING-INTENT-EQUILIBRIUM-STANDARD.md",
     "governance/SYSTEM-CONSISTENCY-INTEGRITY-STANDARD.md",
-    "governance/ARTIFACT-CONTEXT-CURATION-STANDARD.md"
+    "governance/ARTIFACT-CONTEXT-CURATION-STANDARD.md",
+    "governance/standards/INVESTIGATIVE-EVIDENCE-PIPELINE-INVARIANT.md"
   ],
   "requiredContracts": [
     "governance/contracts/governing-intent-equilibrium.v1.json",
     "governance/contracts/system-consistency-integrity.v1.json",
     "governance/contracts/artifact-success-gate.v1.json",
     "governance/contracts/founder-authority-continuity.v1.json",
-    "governance/contracts/root-continuity-invariant.v1.json"
+    "governance/contracts/root-continuity-invariant.v1.json",
+    "governance/contracts/investigative-evidence-pipeline.v1.json"
   ],
   "rules": {
     "governingOutcomeOverridesLocalOptimization": true,
@@ -45,7 +47,12 @@
     "mutationSuccessIsNotCompletion": true,
     "terminalReceiptRequiredForCompletion": true,
     "founderRediscoveryRequired": false,
-    "downstreamRulesMayNotWeakenAuthority": true
+    "downstreamRulesMayNotWeakenAuthority": true,
+    "investigativeEvidencePipelineRequired": true,
+    "entityResolutionPrecedesAssociation": true,
+    "inferenceMustRemainDistinctFromFact": true,
+    "uncertainOrHighMaterialityRequiresReview": true,
+    "investigativeRecordsAreAppendOnly": true
   },
   "enforcement": "fail_closed"
 }
