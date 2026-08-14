@@ -1,6 +1,11 @@
 {
   "id": "JPV-GOV-SYSTEMIC-ACCESS-HYGIENE-001",
   "effective": "2026-08-14",
+  "canonical_source": {
+    "repository": "jaypVLabs/JPV-OS",
+    "path": "governance/policies/systemic-access-hygiene.v1.json",
+    "baseline_commit": "6212c25165285812051ff601d6385facb898bf71"
+  },
   "scope": ["identity","agent","integration","session","credential","entitlement","route","dependency"],
   "invalid_states": ["unauthorized","noncompliant","stale","duplicate","compromised","orphaned","unowned","misrouted"],
   "actions": ["VALID","QUARANTINE","REVOKE","ROTATE","DEDUPLICATE","EXPIRE","REVIEW"],
