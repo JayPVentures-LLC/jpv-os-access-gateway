@@ -4,9 +4,17 @@ using Stripe;
 
 using JPVOS.Components;
 using JPVOS.Services;
+using JPVOS.Services.SystemicAccess;
 using JPVOS.Infrastructure.Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var systemicAccessPolicyPath = Path.Combine(
+    builder.Environment.ContentRootPath,
+    ".jpv",
+    "governance",
+    "systemic-access-hygiene.json");
+var systemicAccessPolicy = SystemicAccessPolicyLoader.LoadAndValidate(systemicAccessPolicyPath);
 
 StripeConfiguration.ApiKey = builder.Configuration["STRIPE_SECRET_KEY"];
 
@@ -52,6 +60,9 @@ else
     var dbPath = Path.Combine(AppContext.BaseDirectory, "entitlements.db");
     builder.Services.AddSingleton<IEntitlementRepository>(new SqliteEntitlementRepository(dbPath));
     builder.Services.AddSingleton<IEntitlementService, PersistentEntitlementService>();
+    builder.Services.AddSingleton<EntitlementAccessProvider>();
+    builder.Services.AddSingleton<ISystemicAccessInventorySource>(sp => sp.GetRequiredService<EntitlementAccessProvider>());
+    builder.Services.AddSingleton<ISystemicAccessActionProvider>(sp => sp.GetRequiredService<EntitlementAccessProvider>());
 }
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<DiscordService>();
@@ -61,8 +72,17 @@ builder.Services.AddSingleton<StripeWebhookEventStore>();
 builder.Services.AddSingleton<StripeSubscriptionAuditStore>();
 builder.Services.AddSingleton<JPVOS.Infrastructure.Discord.DiscordRoleSyncAuditStore>();
 
+builder.Services.AddSingleton(systemicAccessPolicy);
+builder.Services.AddSingleton<SystemicAccessClassifier>();
+builder.Services.AddSingleton<SystemicAccessRuntimeState>();
+builder.Services.AddSingleton(sp => new SystemicAccessAuditStore(
+    Path.Combine(AppContext.BaseDirectory, "audit", "systemic-access-receipts.jsonl")));
+builder.Services.AddSingleton<SystemicAccessReconciler>();
+builder.Services.AddHostedService<SystemicAccessReconciliationService>();
+
 var app = builder.Build();
 PeopleProtectionStartupGuard.Verify(app);
+app.Services.GetRequiredService<SystemicAccessRuntimeState>().MarkPolicyLoaded();
 
 if (!app.Environment.IsDevelopment())
 {
@@ -79,9 +99,9 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapControllers();
-app.MapGet("/health", (IConfiguration config) => Results.Ok(new
+app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemicState) => Results.Ok(new
 {
-    status = "healthy",
+    status = systemicState.LastError is null ? "healthy" : "degraded",
     identity = new
     {
         founderProvisioned = !string.IsNullOrWhiteSpace(config["JPV_FOUNDER_ID"]) &&
@@ -89,6 +109,15 @@ app.MapGet("/health", (IConfiguration config) => Results.Ok(new
         session = "cookie",
         founderProfile = "/profile",
         founderWorkspace = "/workspace"
+    },
+    systemicAccess = new
+    {
+        policyLoaded = systemicState.PolicyLoaded,
+        lastEvaluated = systemicState.LastSummary?.Evaluated,
+        lastActionsApplied = systemicState.LastSummary?.ActionsApplied,
+        lastFailures = systemicState.LastSummary?.Failures,
+        lastCompletedAtUtc = systemicState.LastSummary?.CompletedAtUtc,
+        lastError = systemicState.LastError
     },
     timestamp = DateTime.UtcNow
 }));
