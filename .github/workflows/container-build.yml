@@ -7,15 +7,16 @@ on:
       - main
     paths:
       - 'src/JPVOS/**'
+      - '.jpv/governance/systemic-access-hygiene.json'
       - '.github/workflows/container-build.yml'
   push:
     branches:
       - main
     paths:
       - 'src/JPVOS/**'
+      - '.jpv/governance/systemic-access-hygiene.json'
       - '.github/workflows/container-build.yml'
 
-# Prevent concurrent runs from overwriting latest tag out of order
 concurrency:
   group: container-build-${{ github.ref }}
   cancel-in-progress: true
@@ -26,7 +27,6 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  # Use lowercase for GHCR compatibility
   IMAGE_NAME: jaypventures-llc/jpv-os
 
 jobs:
@@ -62,7 +62,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
-          context: src/JPVOS
+          context: .
           file: src/JPVOS/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -99,3 +99,4 @@ jobs:
           echo "- **Render**: Use \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}\` as the image source" >> $GITHUB_STEP_SUMMARY
           echo "- **Railway**: Connect this repo or use the image URL" >> $GITHUB_STEP_SUMMARY
           echo "- **Fly.io**: \`fly deploy --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
