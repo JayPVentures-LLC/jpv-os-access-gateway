@@ -1,3 +1,5 @@
+using Microsoft.Data.Sqlite;
+
 namespace JPVOS.Services.SystemicAccess;
 
 public sealed class SystemicAccessReconciler
@@ -46,14 +48,41 @@ public sealed class SystemicAccessReconciler
                     if (result.Applied) applied++;
                     await _audit.AppendAsync(record, decision, result.Applied, result.Result, cancellationToken);
                 }
-                catch (Exception ex)
+                catch (SqliteException ex)
                 {
                     failures++;
-                    await _audit.AppendAsync(record, decision, false, "provider_failure:" + ex.GetType().Name, cancellationToken);
+                    await AuditProviderFailureAsync(record, decision, ex, cancellationToken);
+                }
+                catch (IOException ex)
+                {
+                    failures++;
+                    await AuditProviderFailureAsync(record, decision, ex, cancellationToken);
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    failures++;
+                    await AuditProviderFailureAsync(record, decision, ex, cancellationToken);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    failures++;
+                    await AuditProviderFailureAsync(record, decision, ex, cancellationToken);
                 }
             }
         }
 
         return new SystemicAccessReconciliationSummary(evaluated, applied, failures, DateTimeOffset.UtcNow);
     }
+
+    private Task AuditProviderFailureAsync(
+        SystemicAccessRecord record,
+        SystemicAccessDecision decision,
+        Exception exception,
+        CancellationToken cancellationToken) =>
+        _audit.AppendAsync(
+            record,
+            decision,
+            false,
+            "provider_failure:" + exception.GetType().Name,
+            cancellationToken);
 }
