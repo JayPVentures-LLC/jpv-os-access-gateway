@@ -7,7 +7,7 @@ public sealed class SystemicAccessPolicyTests
     [Fact]
     public void LoadAndValidate_RejectsMissingFile()
     {
-        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
+        var path = Path.Join(Path.GetTempPath(), Guid.NewGuid() + ".json");
         Assert.Throws<InvalidOperationException>(() => SystemicAccessPolicyLoader.LoadAndValidate(path));
     }
 
@@ -56,7 +56,7 @@ public sealed class SystemicAccessPolicyTests
 
     private static string WritePolicy(string content)
     {
-        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
+        var path = Path.Join(Path.GetTempPath(), Guid.NewGuid() + ".json");
         File.WriteAllText(path, content);
         return path;
     }
