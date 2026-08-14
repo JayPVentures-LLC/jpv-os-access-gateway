@@ -15,7 +15,7 @@ public sealed class SystemicAccessReconcilerTests
         };
         var source = new FakeSource(records);
         var provider = new FakeProvider();
-        var auditPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".jsonl");
+        var auditPath = Path.Join(Path.GetTempPath(), Guid.NewGuid() + ".jsonl");
         var audit = new SystemicAccessAuditStore(auditPath);
         var reconciler = new SystemicAccessReconciler(new[] { source }, new[] { provider }, new SystemicAccessClassifier(), audit);
 
