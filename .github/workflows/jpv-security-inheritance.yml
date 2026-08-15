@@ -12,8 +12,11 @@ permissions:
 jobs:
   security:
     runs-on: windows-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
       - name: Validate security inheritance and scan tracked secrets
         shell: pwsh
         run: ./scripts/Test-JPVSecurityInheritance.ps1
