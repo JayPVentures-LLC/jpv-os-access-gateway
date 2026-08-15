@@ -11,8 +11,11 @@ permissions:
 jobs:
   validate-inheritance:
     runs-on: windows-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
       - name: Validate canonical governance inheritance
         shell: pwsh
         run: |
