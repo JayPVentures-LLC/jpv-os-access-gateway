@@ -80,16 +80,34 @@ public sealed class GitHubOrgMutationReceiptStore
         var directory = Path.GetDirectoryName(_path);
         if (!string.IsNullOrWhiteSpace(directory)) Directory.CreateDirectory(directory);
 
+        var health = GitHubHealthEvidence.FromReconciliation(result, topologyVersion);
         var record = new
         {
             receipt_id = result.ReceiptId,
-            canonical_authority = "jaypVLabs/JPV-OS",
+            topology_authority = health.TopologyAuthority,
+            health_authority = health.HealthAuthority,
+            provider_role = health.ProviderRole,
             topology_version = topologyVersion,
             organization = result.Organization,
             state = result.State.ToString().ToUpperInvariant(),
             applied_mutations = result.AppliedMutations,
             remaining_mutations = result.RemainingMutations,
-            completed_at_utc = result.CompletedAtUtc
+            completed_at_utc = result.CompletedAtUtc,
+            health = new
+            {
+                health_class = health.HealthClass,
+                subject = health.Subject,
+                status = health.Status,
+                reason_code = health.ReasonCode,
+                dependency_fingerprint = health.DependencyFingerprint,
+                deduplication_key = health.DeduplicationKey,
+                evidence_references = health.EvidenceReferences,
+                first_observed_at = health.FirstObservedAt,
+                last_observed_at = health.LastObservedAt,
+                accountable_route = health.AccountableRoute,
+                release_blocking = health.ReleaseBlocking,
+                next_reevaluation_trigger = health.NextReevaluationTrigger
+            }
         };
         var line = JsonSerializer.Serialize(record, JsonOptions) + Environment.NewLine;
         await File.AppendAllTextAsync(_path, line, cancellationToken);
