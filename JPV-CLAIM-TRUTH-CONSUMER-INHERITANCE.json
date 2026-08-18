@@ -1,0 +1,18 @@
+{
+  "contract_id": "JPV-CLAIM-TRUTH-PROVENANCE-GATE-V1",
+  "contract_version": "1.0.0",
+  "consumer_repository": "JayPVentures-LLC/jpv-os-access-gateway",
+  "governance_authority": "JayPVentures-LLC/jpv-governance",
+  "implementation_authority": "jaypVLabs/JPV-OS",
+  "consumer_role": "ACCESS_AND_ROUTING_GATEWAY",
+  "preserve_status": true,
+  "preserve_provenance": true,
+  "preserve_contradictions": true,
+  "preserve_corrections": true,
+  "may_promote_status": false,
+  "enforceable_statuses": ["KNOWN"],
+  "routable_statuses": ["UNKNOWN", "INFERRED", "DISPUTED", "KNOWN"],
+  "consumer_gate": "governance/claim-truth-consumer.mjs",
+  "regression_test": "tests/claim-truth-consumer.test.mjs",
+  "fail_mode": "CLOSED"
+}
