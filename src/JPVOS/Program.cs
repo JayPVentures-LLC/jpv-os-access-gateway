@@ -5,6 +5,7 @@ using Stripe;
 using JPVOS.Components;
 using JPVOS.Services;
 using JPVOS.Services.SystemicAccess;
+using JPVOS.Services.GitHubOrgMutation;
 using JPVOS.Infrastructure.Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,7 @@ var systemicAccessPolicyPath = Path.Combine(
     "governance",
     "systemic-access-hygiene.json");
 var systemicAccessPolicy = SystemicAccessPolicyLoader.LoadAndValidate(systemicAccessPolicyPath);
+var githubAppOptions = GitHubAppAuthenticationOptions.FromConfiguration(builder.Configuration);
 
 StripeConfiguration.ApiKey = builder.Configuration["STRIPE_SECRET_KEY"];
 
@@ -80,6 +82,16 @@ builder.Services.AddSingleton(sp => new SystemicAccessAuditStore(
 builder.Services.AddSingleton<SystemicAccessReconciler>();
 builder.Services.AddHostedService<SystemicAccessReconciliationService>();
 
+builder.Services.AddSingleton(githubAppOptions);
+builder.Services.AddHttpClient<IGitHubAppTokenProvider, GitHubAppTokenProvider>();
+builder.Services.AddHttpClient<IGitHubOrganizationClient, GitHubOrganizationClient>();
+builder.Services.AddHttpClient<IGitHubCanonicalTopologySource, GitHubCanonicalTopologyLoader>();
+builder.Services.AddSingleton(sp => new GitHubOrgMutationReceiptStore(
+    Path.Combine(AppContext.BaseDirectory, "audit", "github-org-mutation-receipts.jsonl")));
+builder.Services.AddSingleton<GitHubOrganizationReconciler>();
+builder.Services.AddSingleton<GitHubOrgMutationRuntimeState>();
+builder.Services.AddHostedService<GitHubOrgMutationHostedService>();
+
 var app = builder.Build();
 PeopleProtectionStartupGuard.Verify(app);
 app.Services.GetRequiredService<SystemicAccessRuntimeState>().MarkPolicyLoaded();
@@ -99,9 +111,9 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapControllers();
-app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemicState) => Results.Ok(new
+app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemicState, GitHubOrgMutationRuntimeState githubState) => Results.Ok(new
 {
-    status = systemicState.LastError is null ? "healthy" : "degraded",
+    status = systemicState.LastError is null && githubState.LastError is null ? "healthy" : "degraded",
     identity = new
     {
         founderProvisioned = !string.IsNullOrWhiteSpace(config["JPV_FOUNDER_ID"]) &&
@@ -118,6 +130,14 @@ app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemi
         lastFailures = systemicState.LastSummary?.Failures,
         lastCompletedAtUtc = systemicState.LastSummary?.CompletedAtUtc,
         lastError = systemicState.LastError
+    },
+    githubOrganizationMutation = new
+    {
+        configured = githubState.Configured,
+        canonicalPolicyLoaded = githubState.CanonicalPolicyLoaded,
+        lastReconciliationState = githubState.LastReconciliationState?.ToString(),
+        lastReceiptId = githubState.LastReceiptId,
+        lastError = githubState.LastError
     },
     timestamp = DateTime.UtcNow
 }));
