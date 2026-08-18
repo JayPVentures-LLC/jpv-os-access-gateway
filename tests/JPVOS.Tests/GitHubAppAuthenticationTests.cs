@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using JPVOS.Services.GitHubOrgMutation;
 
@@ -41,7 +40,7 @@ public sealed class GitHubAppAuthenticationTests
     private static byte[] Decode(string value)
     {
         var normalized = value.Replace('-', '+').Replace('_', '/');
-        normalized += normalized.Length % 4 switch { 2 => "==", 3 => "=", _ => string.Empty };
+        normalized += (normalized.Length % 4) switch { 2 => "==", 3 => "=", _ => string.Empty };
         return Convert.FromBase64String(normalized);
     }
 }
