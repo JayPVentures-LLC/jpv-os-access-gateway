@@ -130,7 +130,9 @@ $receipt = [ordered]@{
     health_status = [int]$health.StatusCode
     checkout_status_url = "$BaseUrl/api/checkout/status"
     checkout_pricing_authority_healthy = [bool]$checkoutStatus.pricingAuthorityHealthy
-    state = 'VERIFIED_COMPLETE'
+    state = 'LOCAL_VERIFIED'
+    terminal_authority = $false
+    completion_authority = 'jaypVLabs/JPV-OS'
     verified_at = [DateTimeOffset]::UtcNow.ToString('o')
 }
 $receipt | ConvertTo-Json -Depth 30 | Set-Content -LiteralPath $ReceiptPath -Encoding utf8NoBOM
