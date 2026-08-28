@@ -17,46 +17,50 @@ public sealed class PrivilegedActionAuthorizer
         BreakGlassGrant? breakGlassGrant = null)
     {
         if (!authentication.IdentityVerified)
-            return Deny(request, "IDENTITY_NOT_VERIFIED");
-
-        if (request.EntitlementAmbiguous)
-            return new(PrivilegedDecisionKind.Review, "ENTITLEMENT_AMBIGUOUS", request.RiskClass);
-
-        if (!request.EntitlementValid)
-            return Deny(request, "ENTITLEMENT_INVALID");
-
-        if (request.RiskClass == PrivilegedRiskClass.Routine)
-            return new(PrivilegedDecisionKind.Allow, "ROUTINE_AUTHORIZED", request.RiskClass);
+            return Deny(request.RiskClass, "IDENTITY_NOT_VERIFIED");
 
         var privilegedByAction = _policy.PrivilegedActions.Contains(request.Action, StringComparer.OrdinalIgnoreCase);
-        var requiresPhishingResistant = privilegedByAction || request.RiskClass is PrivilegedRiskClass.Privileged or PrivilegedRiskClass.BreakGlass;
+        var effectiveRiskClass = privilegedByAction && request.RiskClass is PrivilegedRiskClass.Routine or PrivilegedRiskClass.Elevated
+            ? PrivilegedRiskClass.Privileged
+            : request.RiskClass;
 
-        var allowedAge = request.RiskClass is PrivilegedRiskClass.Privileged or PrivilegedRiskClass.BreakGlass
+        if (request.EntitlementAmbiguous)
+            return new(PrivilegedDecisionKind.Review, "ENTITLEMENT_AMBIGUOUS", effectiveRiskClass);
+
+        if (!request.EntitlementValid)
+            return Deny(effectiveRiskClass, "ENTITLEMENT_INVALID");
+
+        if (effectiveRiskClass == PrivilegedRiskClass.Routine)
+            return new(PrivilegedDecisionKind.Allow, "ROUTINE_AUTHORIZED", effectiveRiskClass);
+
+        var requiresPhishingResistant = privilegedByAction || effectiveRiskClass is PrivilegedRiskClass.Privileged or PrivilegedRiskClass.BreakGlass;
+
+        var allowedAge = effectiveRiskClass is PrivilegedRiskClass.Privileged or PrivilegedRiskClass.BreakGlass
             ? TimeSpan.FromTicks(Math.Min(authentication.MaxAge.Ticks, DefaultPrivilegedMaxAge.Ticks))
             : authentication.MaxAge;
 
         if (nowUtc - authentication.AuthenticatedAtUtc > allowedAge)
-            return Deny(request, "STEP_UP_EXPIRED");
+            return Deny(effectiveRiskClass, "STEP_UP_EXPIRED");
 
         if (requiresPhishingResistant && !authentication.PhishingResistant)
-            return Deny(request, authentication.VoiceSignalPresent ? "VOICE_ONLY_INSUFFICIENT" : "PHISHING_RESISTANT_STEP_UP_REQUIRED");
+            return Deny(effectiveRiskClass, authentication.VoiceSignalPresent ? "VOICE_ONLY_INSUFFICIENT" : "PHISHING_RESISTANT_STEP_UP_REQUIRED");
 
-        if (request.RiskClass == PrivilegedRiskClass.BreakGlass)
+        if (effectiveRiskClass == PrivilegedRiskClass.BreakGlass)
         {
             if (breakGlassGrant is null)
-                return new(PrivilegedDecisionKind.BreakGlassRequired, "BREAK_GLASS_GRANT_REQUIRED", request.RiskClass);
+                return new(PrivilegedDecisionKind.BreakGlassRequired, "BREAK_GLASS_GRANT_REQUIRED", effectiveRiskClass);
 
             if (!breakGlassGrant.IsActive(nowUtc) ||
                 !string.Equals(breakGlassGrant.ActorSubject, request.ActorSubject, StringComparison.Ordinal) ||
                 !string.Equals(breakGlassGrant.Scope, request.Resource, StringComparison.Ordinal))
-                return Deny(request, "BREAK_GLASS_GRANT_INVALID");
+                return Deny(effectiveRiskClass, "BREAK_GLASS_GRANT_INVALID");
         }
 
-        return new(PrivilegedDecisionKind.Allow, "AUTHORIZED", request.RiskClass);
+        return new(PrivilegedDecisionKind.Allow, "AUTHORIZED", effectiveRiskClass);
     }
 
-    private static PrivilegedActionDecision Deny(PrivilegedActionRequest request, string reason) =>
-        new(PrivilegedDecisionKind.Deny, reason, request.RiskClass);
+    private static PrivilegedActionDecision Deny(PrivilegedRiskClass riskClass, string reason) =>
+        new(PrivilegedDecisionKind.Deny, reason, riskClass);
 }
 
 public sealed class BreakGlassAuthorizationService
