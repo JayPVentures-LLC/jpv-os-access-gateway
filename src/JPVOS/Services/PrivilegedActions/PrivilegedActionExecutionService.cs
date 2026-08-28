@@ -22,6 +22,7 @@ public sealed class PrivilegedActionAuditStore
     {
         _path = path;
         Directory.CreateDirectory(Path.GetDirectoryName(path) ?? ".");
+        _previousReceiptHash = LoadExistingChainHead(path);
     }
 
     public async Task AppendAsync(PrivilegedActionReceipt receipt, CancellationToken cancellationToken)
@@ -32,13 +33,23 @@ public sealed class PrivilegedActionAuditStore
             var linked = receipt with { PreviousReceiptHash = _previousReceiptHash };
             var json = JsonSerializer.Serialize(linked);
             await File.AppendAllTextAsync(_path, json + Environment.NewLine, cancellationToken);
-            _previousReceiptHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(json)));
+            _previousReceiptHash = Hash(json);
         }
         finally
         {
             _mutex.Release();
         }
     }
+
+    private static string? LoadExistingChainHead(string path)
+    {
+        if (!File.Exists(path)) return null;
+        var last = File.ReadLines(path).LastOrDefault(line => !string.IsNullOrWhiteSpace(line));
+        return last is null ? null : Hash(last);
+    }
+
+    private static string Hash(string value) =>
+        Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(value)));
 }
 
 public sealed record PrivilegedExecutionOutcome(string TerminalStatus, string ReasonCode, PrivilegedActionReceipt? Receipt);
@@ -68,32 +79,103 @@ public sealed class PrivilegedActionExecutionService
         if (decision.Decision != PrivilegedDecisionKind.Allow)
             return new PrivilegedExecutionOutcome("DENIED", decision.ReasonCode, null);
 
-        var execution = await provider.ExecuteAsync(request, cancellationToken);
-        var observed = execution.Success
-            ? await provider.ReadBackAsync(request, cancellationToken)
-            : new PrivilegedProviderResult(false, "EXECUTION_FAILED", string.Empty);
+        if (string.IsNullOrWhiteSpace(request.DesiredState))
+        {
+            var missingDesired = BuildReceipt(
+                request,
+                decision.RiskClass,
+                authentication,
+                nowUtc,
+                desiredState: string.Empty,
+                providerExecutionResult: "NOT_EXECUTED",
+                observedState: string.Empty,
+                terminalStatus: "DEGRADED");
+            await _auditStore.AppendAsync(missingDesired, cancellationToken);
+            return new PrivilegedExecutionOutcome("DEGRADED", "DESIRED_STATE_REQUIRED", missingDesired);
+        }
+
+        PrivilegedProviderResult execution;
+        PrivilegedProviderResult observed;
+        try
+        {
+            execution = await provider.ExecuteAsync(request, cancellationToken);
+            observed = execution.Success
+                ? await provider.ReadBackAsync(request, cancellationToken)
+                : new PrivilegedProviderResult(false, "EXECUTION_FAILED", string.Empty);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch
+        {
+            var failed = BuildReceipt(
+                request,
+                decision.RiskClass,
+                authentication,
+                nowUtc,
+                request.DesiredState,
+                "PROVIDER_EXCEPTION",
+                string.Empty,
+                "FAILED");
+            await _auditStore.AppendAsync(failed, CancellationToken.None);
+            return new PrivilegedExecutionOutcome("FAILED", "PROVIDER_EXCEPTION", failed);
+        }
 
         var terminal = !execution.Success
             ? "FAILED"
-            : !observed.Success || !string.Equals(observed.State, request.DesiredState ?? observed.State, StringComparison.Ordinal)
+            : !observed.Success || !string.Equals(observed.State, request.DesiredState, StringComparison.Ordinal)
                 ? "DEGRADED"
                 : "PASS";
 
-        var receipt = new PrivilegedActionReceipt(
+        var reasonCode = terminal switch
+        {
+            "PASS" => "PASS",
+            "FAILED" => execution.ResultCode,
+            _ => !observed.Success ? observed.ResultCode : "READBACK_MISMATCH"
+        };
+
+        var receipt = BuildReceipt(
+            request,
+            decision.RiskClass,
+            authentication,
+            nowUtc,
+            request.DesiredState,
+            execution.ResultCode,
+            observed.State,
+            terminal);
+
+        await _auditStore.AppendAsync(receipt, cancellationToken);
+        return new PrivilegedExecutionOutcome(terminal, reasonCode, receipt);
+    }
+
+    private static PrivilegedActionReceipt BuildReceipt(
+        PrivilegedActionRequest request,
+        PrivilegedRiskClass effectiveRiskClass,
+        AuthenticationEvidence authentication,
+        DateTimeOffset nowUtc,
+        string desiredState,
+        string providerExecutionResult,
+        string observedState,
+        string terminalStatus) =>
+        new(
             Guid.NewGuid().ToString("N"),
             request.ActorSubject,
             request.Action,
             request.Resource,
-            request.RiskClass,
+            effectiveRiskClass,
             authentication.PhishingResistant ? "PHISHING_RESISTANT" : "SESSION",
             nowUtc,
-            request.DesiredState ?? string.Empty,
-            execution.ResultCode,
-            observed.State,
-            terminal,
+            FingerprintState(desiredState),
+            providerExecutionResult,
+            FingerprintState(observedState),
+            terminalStatus,
             null);
 
-        await _auditStore.AppendAsync(receipt, cancellationToken);
-        return new PrivilegedExecutionOutcome(terminal, terminal, receipt);
+    private static string FingerprintState(string? state)
+    {
+        if (string.IsNullOrEmpty(state)) return string.Empty;
+        var digest = SHA256.HashData(Encoding.UTF8.GetBytes(state));
+        return $"SHA256:{Convert.ToHexString(digest)}";
     }
 }
