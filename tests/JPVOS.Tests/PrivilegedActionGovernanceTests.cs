@@ -1,3 +1,4 @@
+using System.Text.Json;
 using JPVOS.Services.PrivilegedActions;
 
 namespace JPVOS.Tests;
@@ -54,6 +55,21 @@ public sealed class PrivilegedActionGovernanceTests
         var decision = authorizer.Authorize(request, authentication, now);
 
         Assert.Equal(PrivilegedDecisionKind.Deny, decision.Decision);
+        Assert.Equal("PHISHING_RESISTANT_STEP_UP_REQUIRED", decision.ReasonCode);
+    }
+
+    [Fact]
+    public void Policy_listed_action_cannot_self_classify_as_routine()
+    {
+        var authorizer = new PrivilegedActionAuthorizer(Policy());
+        var now = DateTimeOffset.UtcNow;
+        var request = new PrivilegedActionRequest("founder", "credential_change", "secret-store", PrivilegedRiskClass.Routine, true);
+        var authentication = new AuthenticationEvidence(true, false, false, now, TimeSpan.FromMinutes(5));
+
+        var decision = authorizer.Authorize(request, authentication, now);
+
+        Assert.Equal(PrivilegedDecisionKind.Deny, decision.Decision);
+        Assert.Equal(PrivilegedRiskClass.Privileged, decision.RiskClass);
         Assert.Equal("PHISHING_RESISTANT_STEP_UP_REQUIRED", decision.ReasonCode);
     }
 
@@ -117,7 +133,7 @@ public sealed class PrivilegedActionGovernanceTests
     public async Task Provider_readback_mismatch_never_returns_pass()
     {
         var policy = Policy();
-        var auditPath = Path.Combine(Path.GetTempPath(), $"jpv-privileged-{Guid.NewGuid():N}.jsonl");
+        var auditPath = Path.Join(Path.GetTempPath(), $"jpv-privileged-{Guid.NewGuid():N}.jsonl");
         var execution = new PrivilegedActionExecutionService(
             new PrivilegedActionAuthorizer(policy),
             new PrivilegedActionAuditStore(auditPath));
@@ -132,6 +148,121 @@ public sealed class PrivilegedActionGovernanceTests
         File.Delete(auditPath);
     }
 
+    [Fact]
+    public async Task Missing_desired_state_fails_closed()
+    {
+        var auditPath = Path.Join(Path.GetTempPath(), $"jpv-privileged-{Guid.NewGuid():N}.jsonl");
+        try
+        {
+            var execution = new PrivilegedActionExecutionService(
+                new PrivilegedActionAuthorizer(Policy()),
+                new PrivilegedActionAuditStore(auditPath));
+            var now = DateTimeOffset.UtcNow;
+            var request = new PrivilegedActionRequest("founder", "credential_change", "secret-store", PrivilegedRiskClass.Privileged, true);
+            var authentication = new AuthenticationEvidence(true, true, false, now, TimeSpan.FromMinutes(5));
+
+            var outcome = await execution.ExecuteAsync(request, authentication, new MatchProvider("anything"), now);
+
+            Assert.Equal("DEGRADED", outcome.TerminalStatus);
+            Assert.Equal("DESIRED_STATE_REQUIRED", outcome.ReasonCode);
+        }
+        finally
+        {
+            if (File.Exists(auditPath)) File.Delete(auditPath);
+        }
+    }
+
+    [Fact]
+    public async Task Provider_exception_emits_durable_failed_receipt()
+    {
+        var auditPath = Path.Join(Path.GetTempPath(), $"jpv-privileged-{Guid.NewGuid():N}.jsonl");
+        try
+        {
+            var execution = new PrivilegedActionExecutionService(
+                new PrivilegedActionAuthorizer(Policy()),
+                new PrivilegedActionAuditStore(auditPath));
+            var now = DateTimeOffset.UtcNow;
+            var request = new PrivilegedActionRequest("founder", "credential_change", "secret-store", PrivilegedRiskClass.Privileged, true, false, "expected");
+            var authentication = new AuthenticationEvidence(true, true, false, now, TimeSpan.FromMinutes(5));
+
+            var outcome = await execution.ExecuteAsync(request, authentication, new ThrowingProvider(), now);
+
+            Assert.Equal("FAILED", outcome.TerminalStatus);
+            Assert.Equal("PROVIDER_EXCEPTION", outcome.ReasonCode);
+            Assert.NotNull(outcome.Receipt);
+            Assert.Single(File.ReadAllLines(auditPath));
+        }
+        finally
+        {
+            if (File.Exists(auditPath)) File.Delete(auditPath);
+        }
+    }
+
+    [Fact]
+    public async Task Audit_receipt_never_persists_raw_state_values()
+    {
+        const string secret = "super-secret-credential-value";
+        var auditPath = Path.Join(Path.GetTempPath(), $"jpv-privileged-{Guid.NewGuid():N}.jsonl");
+        try
+        {
+            var execution = new PrivilegedActionExecutionService(
+                new PrivilegedActionAuthorizer(Policy()),
+                new PrivilegedActionAuditStore(auditPath));
+            var now = DateTimeOffset.UtcNow;
+            var request = new PrivilegedActionRequest("founder", "credential_change", "secret-store", PrivilegedRiskClass.Privileged, true, false, secret);
+            var authentication = new AuthenticationEvidence(true, true, false, now, TimeSpan.FromMinutes(5));
+
+            var outcome = await execution.ExecuteAsync(request, authentication, new MatchProvider(secret), now);
+            var persisted = await File.ReadAllTextAsync(auditPath);
+
+            Assert.Equal("PASS", outcome.TerminalStatus);
+            Assert.DoesNotContain(secret, persisted, StringComparison.Ordinal);
+            Assert.Contains("SHA256:", persisted, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (File.Exists(auditPath)) File.Delete(auditPath);
+        }
+    }
+
+    [Fact]
+    public async Task Audit_hash_chain_resumes_after_restart()
+    {
+        var auditPath = Path.Join(Path.GetTempPath(), $"jpv-privileged-{Guid.NewGuid():N}.jsonl");
+        try
+        {
+            var first = new PrivilegedActionAuditStore(auditPath);
+            await first.AppendAsync(TestReceipt("one"), CancellationToken.None);
+
+            var second = new PrivilegedActionAuditStore(auditPath);
+            await second.AppendAsync(TestReceipt("two"), CancellationToken.None);
+
+            var lines = File.ReadAllLines(auditPath);
+            Assert.Equal(2, lines.Length);
+            using var document = JsonDocument.Parse(lines[1]);
+            var previous = document.RootElement.GetProperty("PreviousReceiptHash").GetString();
+            Assert.False(string.IsNullOrWhiteSpace(previous));
+        }
+        finally
+        {
+            if (File.Exists(auditPath)) File.Delete(auditPath);
+        }
+    }
+
+    private static PrivilegedActionReceipt TestReceipt(string id) => new(
+        id,
+        "system",
+        "test_action",
+        "test/resource",
+        PrivilegedRiskClass.Privileged,
+        "PHISHING_RESISTANT",
+        DateTimeOffset.UtcNow,
+        "SHA256:DESIRED",
+        "OK",
+        "SHA256:OBSERVED",
+        "PASS",
+        null);
+
     private sealed class MismatchProvider : IPrivilegedActionProvider
     {
         public Task<PrivilegedProviderResult> ExecuteAsync(PrivilegedActionRequest request, CancellationToken cancellationToken) =>
@@ -139,5 +270,23 @@ public sealed class PrivilegedActionGovernanceTests
 
         public Task<PrivilegedProviderResult> ReadBackAsync(PrivilegedActionRequest request, CancellationToken cancellationToken) =>
             Task.FromResult(new PrivilegedProviderResult(true, "OBSERVED", "stale"));
+    }
+
+    private sealed class MatchProvider(string state) : IPrivilegedActionProvider
+    {
+        public Task<PrivilegedProviderResult> ExecuteAsync(PrivilegedActionRequest request, CancellationToken cancellationToken) =>
+            Task.FromResult(new PrivilegedProviderResult(true, "ACCEPTED", state));
+
+        public Task<PrivilegedProviderResult> ReadBackAsync(PrivilegedActionRequest request, CancellationToken cancellationToken) =>
+            Task.FromResult(new PrivilegedProviderResult(true, "OBSERVED", state));
+    }
+
+    private sealed class ThrowingProvider : IPrivilegedActionProvider
+    {
+        public Task<PrivilegedProviderResult> ExecuteAsync(PrivilegedActionRequest request, CancellationToken cancellationToken) =>
+            throw new InvalidOperationException("provider unavailable");
+
+        public Task<PrivilegedProviderResult> ReadBackAsync(PrivilegedActionRequest request, CancellationToken cancellationToken) =>
+            Task.FromResult(new PrivilegedProviderResult(false, "UNREACHABLE", string.Empty));
     }
 }
