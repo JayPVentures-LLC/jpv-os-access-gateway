@@ -1,4 +1,5 @@
 using JPVOS.Services.GitHubOrgMutation;
+using JPVOS.Services.PrivilegedActions;
 
 namespace JPVOS.Tests;
 
@@ -24,8 +25,9 @@ public sealed class GitHubOrganizationReconcilerTests
         });
         var client = new StatefulFakeClient();
         var receiptPath = Path.Join(Path.GetTempPath(), Guid.NewGuid() + ".jsonl");
+        var privilegedReceiptPath = Path.Join(Path.GetTempPath(), Guid.NewGuid() + ".privileged.jsonl");
         var receipts = new GitHubOrgMutationReceiptStore(receiptPath);
-        var reconciler = new GitHubOrganizationReconciler(source, client, receipts);
+        var reconciler = new GitHubOrganizationReconciler(source, client, receipts, PrivilegedExecution(privilegedReceiptPath));
 
         try
         {
@@ -35,10 +37,12 @@ public sealed class GitHubOrganizationReconcilerTests
             Assert.Equal(2, result.AppliedMutations);
             Assert.Equal(2, client.Teams.Count);
             Assert.Single(File.ReadAllLines(receiptPath));
+            Assert.Equal(2, File.ReadAllLines(privilegedReceiptPath).Length);
         }
         finally
         {
             if (File.Exists(receiptPath)) File.Delete(receiptPath);
+            if (File.Exists(privilegedReceiptPath)) File.Delete(privilegedReceiptPath);
         }
     }
 
@@ -62,7 +66,8 @@ public sealed class GitHubOrganizationReconcilerTests
         });
         var client = new NonPersistingFakeClient();
         var receiptPath = Path.Join(Path.GetTempPath(), Guid.NewGuid() + ".jsonl");
-        var reconciler = new GitHubOrganizationReconciler(source, client, new GitHubOrgMutationReceiptStore(receiptPath));
+        var privilegedReceiptPath = Path.Join(Path.GetTempPath(), Guid.NewGuid() + ".privileged.jsonl");
+        var reconciler = new GitHubOrganizationReconciler(source, client, new GitHubOrgMutationReceiptStore(receiptPath), PrivilegedExecution(privilegedReceiptPath));
 
         try
         {
@@ -74,7 +79,30 @@ public sealed class GitHubOrganizationReconcilerTests
         finally
         {
             if (File.Exists(receiptPath)) File.Delete(receiptPath);
+            if (File.Exists(privilegedReceiptPath)) File.Delete(privilegedReceiptPath);
         }
+    }
+
+    private static PrivilegedActionExecutionService PrivilegedExecution(string auditPath)
+    {
+        var policy = new PrivilegedActionPolicy
+        {
+            Id = "JPV-GOV-PRIVILEGED-ACTION-001",
+            RiskClasses = ["ROUTINE", "ELEVATED", "PRIVILEGED", "BREAK_GLASS"],
+            PrivilegedActions = ["entitlement_grant"],
+            Invariants = new PrivilegedActionInvariants
+            {
+                PhishingResistantStepUpRequired = true,
+                VoiceOnlyPermitted = false,
+                ProviderReadbackRequired = true,
+                UnknownStateDecision = "BLOCK",
+                BreakGlassMaxTtlMinutes = 30,
+                DurableReceiptRequired = true
+            }
+        };
+        return new PrivilegedActionExecutionService(
+            new PrivilegedActionAuthorizer(policy),
+            new PrivilegedActionAuditStore(auditPath));
     }
 
     private sealed class FakeTopologySource(GitHubTopology topology) : IGitHubCanonicalTopologySource
