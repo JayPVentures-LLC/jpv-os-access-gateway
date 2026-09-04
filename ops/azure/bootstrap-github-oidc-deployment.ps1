@@ -93,7 +93,10 @@ if ([string]::IsNullOrWhiteSpace($clientId) -or [string]::IsNullOrWhiteSpace($ap
 }
 
 $servicePrincipalObjectId = Invoke-Native -FilePath 'az' -ArgumentList @(
-    'ad', 'sp', 'show', '--id', $clientId, '--query', 'id', '--output', 'tsv'
+    'ad', 'sp', 'list',
+    '--filter', "appId eq '$clientId'",
+    '--query', '[0].id',
+    '--output', 'tsv'
 )
 if ([string]::IsNullOrWhiteSpace($servicePrincipalObjectId)) {
     $servicePrincipalObjectId = Invoke-Native -FilePath 'az' -ArgumentList @(
