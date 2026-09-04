@@ -6,6 +6,7 @@ using JPVOS.Components;
 using JPVOS.Services;
 using JPVOS.Services.SystemicAccess;
 using JPVOS.Services.GitHubOrgMutation;
+using JPVOS.Services.Attention;
 using JPVOS.Infrastructure.Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,6 +74,7 @@ builder.Services.AddSingleton<StripeCheckoutService>();
 builder.Services.AddSingleton<StripeWebhookEventStore>();
 builder.Services.AddSingleton<StripeSubscriptionAuditStore>();
 builder.Services.AddSingleton<JPVOS.Infrastructure.Discord.DiscordRoleSyncAuditStore>();
+builder.Services.AddSingleton<ProductionAttentionAdmissionService>();
 
 builder.Services.AddSingleton(systemicAccessPolicy);
 builder.Services.AddSingleton<SystemicAccessClassifier>();
@@ -95,6 +97,7 @@ builder.Services.AddHostedService<GitHubOrgMutationHostedService>();
 var app = builder.Build();
 PeopleProtectionStartupGuard.Verify(app);
 app.Services.GetRequiredService<SystemicAccessRuntimeState>().MarkPolicyLoaded();
+_ = app.Services.GetRequiredService<ProductionAttentionAdmissionService>();
 
 if (!app.Environment.IsDevelopment())
 {
@@ -111,7 +114,7 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapControllers();
-app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemicState, GitHubOrgMutationRuntimeState githubState) => Results.Ok(new
+app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemicState, GitHubOrgMutationRuntimeState githubState, ProductionAttentionAdmissionService attentionGate) => Results.Ok(new
 {
     status = systemicState.LastError is null && githubState.LastError is null ? "healthy" : "degraded",
     identity = new
@@ -138,6 +141,11 @@ app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemi
         lastReconciliationState = githubState.LastReconciliationState?.ToString(),
         lastReceiptId = githubState.LastReceiptId,
         lastError = githubState.LastError
+    },
+    productionAttentionAdmission = new
+    {
+        registered = attentionGate is not null,
+        mode = "fail-closed"
     },
     timestamp = DateTime.UtcNow
 }));
