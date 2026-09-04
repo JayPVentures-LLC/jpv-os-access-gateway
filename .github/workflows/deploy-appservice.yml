@@ -1,10 +1,17 @@
 name: deploy-appservice
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: production-appservice
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
@@ -60,12 +67,13 @@ jobs:
       - name: Wait for startup
         run: sleep 20
 
-      - name: Post-deploy health check
+      - name: Post-deploy health and attention-gate verification
         run: |
           set -euo pipefail
-          curl -sSf \
-            https://jpv-os-access-gateway.azurewebsites.net/api/health \
-            | jq -e '.status == "healthy"'
+          health=$(curl -sSf https://jpv-os-access-gateway.azurewebsites.net/health)
+          printf '%s' "$health" | jq -e '.status == "healthy"'
+          printf '%s' "$health" | jq -e '.productionAttentionAdmission.registered == true'
+          printf '%s' "$health" | jq -e '.productionAttentionAdmission.mode == "fail-closed"'
 
       - name: Verify homepage
         run: |
