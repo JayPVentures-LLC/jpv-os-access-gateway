@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 25
 
     env:
-      AZURE_WEBAPP_NAME: jpv-os-access-gateway
+      AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
 
     steps:
       - name: Checkout
@@ -54,7 +54,7 @@ jobs:
       - name: Post-deploy health and attention-gate verification
         run: |
           set -euo pipefail
-          health=$(curl -sSf https://jpv-os-access-gateway.azurewebsites.net/health)
+          health=$(curl -sSf "https://${AZURE_WEBAPP_NAME}.azurewebsites.net/health")
           printf '%s' "$health" | jq -e '.status == "healthy"'
           printf '%s' "$health" | jq -e '.productionAttentionAdmission.registered == true'
           printf '%s' "$health" | jq -e '.productionAttentionAdmission.mode == "fail-closed"'
@@ -62,7 +62,7 @@ jobs:
       - name: Verify homepage
         run: |
           set -euo pipefail
-          homepage=$(curl -sSf https://jpv-os-access-gateway.azurewebsites.net/)
+          homepage=$(curl -sSf "https://${AZURE_WEBAPP_NAME}.azurewebsites.net/")
           printf '%s' "$homepage" | grep -Fq "init-home.css"
           printf '%s' "$homepage" | grep -Fq "Welcome to the Venture"
           printf '%s' "$homepage" | grep -Fq "Enter the Ecosystem"
