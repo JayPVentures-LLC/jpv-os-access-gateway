@@ -36,3 +36,7 @@ jobs:
 
       - name: Test
         run: dotnet test JPVOS.sln -c Release --no-build --verbosity normal
+
+      - name: Validate Azure OIDC bootstrap contract
+        shell: pwsh
+        run: ./tests/validate-azure-oidc-bootstrap.ps1
