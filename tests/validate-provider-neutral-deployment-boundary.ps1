@@ -1,0 +1,49 @@
+$ErrorActionPreference = 'Stop'
+
+$repoRoot = Split-Path -Parent $PSScriptRoot
+$prohibitedPaths = @(
+    '.github/workflows/deploy-appservice.yml',
+    '.github/workflows/azure-deploy.yml',
+    'ops/azure/bootstrap-github-oidc-deployment.ps1'
+)
+
+foreach ($relative in $prohibitedPaths) {
+    $path = Join-Path $repoRoot $relative
+    if (Test-Path $path) {
+        throw "Retired Azure production path is present: $relative"
+    }
+}
+
+$workflowRoot = Join-Path $repoRoot '.github/workflows'
+$workflowFiles = Get-ChildItem $workflowRoot -File -Include *.yml,*.yaml
+$prohibitedMarkers = @(
+    'azure/login@',
+    'azure/webapps-deploy@',
+    'AZURE_CLIENT_ID',
+    'AZURE_TENANT_ID',
+    'AZURE_SUBSCRIPTION_ID',
+    'AZURE_WEBAPP_PUBLISH_PROFILE'
+)
+
+foreach ($workflow in $workflowFiles) {
+    $content = Get-Content $workflow.FullName -Raw
+    foreach ($marker in $prohibitedMarkers) {
+        if ($content -match [regex]::Escape($marker)) {
+            throw "Retired Azure production dependency '$marker' found in workflow $($workflow.Name)"
+        }
+    }
+}
+
+$boundaryDoc = Join-Path $repoRoot 'governance/PROVIDER-NEUTRAL-DEPLOYMENT-BOUNDARY.md'
+if (-not (Test-Path $boundaryDoc)) {
+    throw 'Missing provider-neutral deployment boundary documentation.'
+}
+
+$boundary = Get-Content $boundaryDoc -Raw
+foreach ($required in @('PROVIDER_NEUTRAL', 'JPV_OS', 'NO_ADMITTED_EXECUTION_CAPACITY', 'fail closed')) {
+    if ($boundary -notmatch [regex]::Escape($required)) {
+        throw "Provider-neutral boundary is missing required marker: $required"
+    }
+}
+
+Write-Host 'Provider-neutral deployment boundary validated.'
