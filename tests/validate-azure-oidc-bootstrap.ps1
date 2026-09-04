@@ -11,7 +11,8 @@ $tokens = $null
 $errors = $null
 [System.Management.Automation.Language.Parser]::ParseFile($scriptPath, [ref]$tokens, [ref]$errors) | Out-Null
 if ($errors.Count -gt 0) {
-    throw "Bootstrap script has PowerShell parse errors: $($errors | ForEach-Object Message -join '; ')"
+    $messages = @($errors | ForEach-Object { $_.Message }) -join '; '
+    throw "Bootstrap script has PowerShell parse errors: $messages"
 }
 
 $content = Get-Content $scriptPath -Raw
@@ -20,9 +21,14 @@ $requiredSnippets = @(
     'az ad app',
     'az ad app federated-credential',
     'az role assignment create',
+    'Website Contributor',
+    'repo:$Repository`:ref:refs/heads/$Branch',
+    'https://token.actions.githubusercontent.com',
+    'api://AzureADTokenExchange',
     'gh secret set AZURE_CLIENT_ID',
     'gh secret set AZURE_TENANT_ID',
     'gh secret set AZURE_SUBSCRIPTION_ID',
+    'gh secret set AZURE_WEBAPP_NAME',
     'gh workflow run deploy-appservice.yml',
     'gh run watch',
     '/health',
