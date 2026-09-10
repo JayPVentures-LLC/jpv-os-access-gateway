@@ -38,6 +38,10 @@ if (string.IsNullOrWhiteSpace(outboundDataDir))
 }
 Directory.CreateDirectory(outboundDataDir);
 
+var reciprocityLedgerPath = builder.Configuration["JPV_RECIPROCITY_LEDGER_PATH"];
+if (string.IsNullOrWhiteSpace(reciprocityLedgerPath))
+    reciprocityLedgerPath = Path.Combine(AppContext.BaseDirectory, "data", "reciprocity-ledger.json");
+
 StripeConfiguration.ApiKey = builder.Configuration["STRIPE_SECRET_KEY"];
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
@@ -70,7 +74,7 @@ builder.Services.AddSingleton<StripeWebhookEventStore>();
 builder.Services.AddSingleton<StripeSubscriptionAuditStore>();
 builder.Services.AddSingleton<JPVOS.Infrastructure.Discord.DiscordRoleSyncAuditStore>();
 builder.Services.AddSingleton<ProductionAttentionAdmissionService>();
-builder.Services.AddJpvReciprocityGate(Path.Combine(AppContext.BaseDirectory, "audit", "reciprocity-access-receipts.jsonl"));
+builder.Services.AddJpvReciprocityGate(reciprocityLedgerPath, Path.Combine(AppContext.BaseDirectory, "audit", "reciprocity-access-receipts.jsonl"));
 
 builder.Services.AddSingleton(systemicAccessPolicy);
 builder.Services.AddSingleton<SystemicAccessClassifier>();
@@ -113,7 +117,7 @@ builder.Services.AddHttpClient<IGitHubExactHeadReader, GitHubExactHeadReader>();
 
 var app = builder.Build(); PeopleProtectionStartupGuard.Verify(app); app.Services.GetRequiredService<SystemicAccessRuntimeState>().MarkPolicyLoaded(); _ = app.Services.GetRequiredService<ProductionAttentionAdmissionService>();
 if (!app.Environment.IsDevelopment()) { app.UseExceptionHandler("/Error", createScopeForErrors: true); app.UseHsts(); app.UseHttpsRedirection(); }
-app.UseStaticFiles(); app.UseRateLimiter(); app.UseAuthentication(); app.UseAuthorization(); app.UseAntiforgery();
+app.UseStaticFiles(); app.UseRateLimiter(); app.UseAuthentication(); app.UseMiddleware<ReciprocityAccessMiddleware>(); app.UseAuthorization(); app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(); app.MapControllers();
 app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemicState, GitHubOrgMutationRuntimeState githubState, ProductionAttentionAdmissionService attentionGate) => Results.Ok(new
 {
@@ -156,6 +160,12 @@ app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemi
     {
         registered = attentionGate is not null,
         mode = "fail-closed"
+    },
+    reciprocity = new
+    {
+        registered = true,
+        mode = "synchronous-access-admission",
+        watcher = false
     },
     timestamp = DateTime.UtcNow
 }));
