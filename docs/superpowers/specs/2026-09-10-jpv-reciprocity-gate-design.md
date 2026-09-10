@@ -15,10 +15,10 @@ Each subject has a value-exchange record containing JPV value delivered, recipro
 A single adverse observation cannot produce `RESTRICTED` or `REVOKED`. Restriction requires persistent verified imbalance and an opportunity for remediation unless an existing contract or security rule independently authorizes immediate restriction. Revocation requires continued verified imbalance after remediation and restriction. Verified fulfillment restores `HEALTHY` automatically.
 
 ## Runtime
-The decision is evaluated synchronously at protected-access admission. No polling or watcher is introduced. The evaluator returns an access decision, reason code, evidence references, and whether the subject is exempt. `HEALTHY`, `IMBALANCED`, and `REMEDIATION` continue access; `RESTRICTED` denies value-increasing discretionary operations while preserving remediation/settlement paths; `REVOKED` denies discretionary JPV access.
+The decision is evaluated synchronously at a protected JPV resource grant. No polling or watcher is introduced. The evaluator returns an access decision and reason code from evidence-backed ledger state. `HEALTHY`, `IMBALANCED`, and `REMEDIATION` continue access; `RESTRICTED` denies value-increasing discretionary operations while preserving remediation/settlement paths; `REVOKED` denies discretionary JPV access. The first concrete enforcement integration is the JPV-managed Discord entitlement-role grant/removal path.
 
 ## Auditability
-Every enforcement decision is deterministic, reversible, and auditable. Records contain subject ID, requested resource, prior state, resulting state, reason code, evidence references, timestamp, and decision source. Unknown or materially uncertain evidence fails to `REMEDIATION`, not automatic revocation.
+Every enforcement decision is deterministic, reversible, and auditable. Receipts contain subject ID, requested resource, resulting state, decision, reason code, evidence references, and timestamp. The persisted ledger preserves the evidence and progression fields needed to reevaluate and restore access. Unknown or materially uncertain evidence routes to `REMEDIATION`, not automatic revocation.
 
 ## Governance
 Canonical policy lives in `JayPVentures-LLC/jpv-governance`; JPV-OS inherits and evaluates it; the access gateway enforces it. Runtime enforcement is autonomous after deployment. Production-impacting code still follows repository review and validation requirements.
