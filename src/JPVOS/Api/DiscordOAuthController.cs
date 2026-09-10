@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using JPVOS.Services.Reciprocity;
 
 [ApiController]
 [Route("api/discord/oauth")]
@@ -12,12 +13,23 @@ public class DiscordOAuthController : ControllerBase
   private readonly IHttpClientFactory _httpFactory;
   private readonly IEntitlementService _entitlementService;
   private readonly DiscordService _discordService;
-  public DiscordOAuthController(IConfiguration config, IHttpClientFactory httpFactory, IEntitlementService entitlementService, DiscordService discordService)
+  private readonly ReciprocityLedgerStore _reciprocityLedger;
+  private readonly ReciprocityEnforcementService _reciprocityEnforcement;
+
+  public DiscordOAuthController(
+    IConfiguration config,
+    IHttpClientFactory httpFactory,
+    IEntitlementService entitlementService,
+    DiscordService discordService,
+    ReciprocityLedgerStore reciprocityLedger,
+    ReciprocityEnforcementService reciprocityEnforcement)
   {
     _config = config;
     _httpFactory = httpFactory;
     _entitlementService = entitlementService;
     _discordService = discordService;
+    _reciprocityLedger = reciprocityLedger;
+    _reciprocityEnforcement = reciprocityEnforcement;
   }
 
   [HttpGet("connect")]
@@ -37,7 +49,6 @@ public class DiscordOAuthController : ControllerBase
   [HttpGet("callback")]
   public async Task<IActionResult> Callback(string code, string state)
   {
-    // Validate config
     var clientId = _config["DISCORD_CLIENT_ID"];
     var clientSecret = _config["DISCORD_CLIENT_SECRET"];
     var redirectUri = _config["DISCORD_REDIRECT_URI"];
@@ -52,7 +63,6 @@ public class DiscordOAuthController : ControllerBase
     var http = _httpFactory.CreateClient();
     try
     {
-      // Exchange code for token
       using var tokenReq = new HttpRequestMessage(HttpMethod.Post, "https://discord.com/api/oauth2/token")
       {
         Content = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -81,7 +91,6 @@ public class DiscordOAuthController : ControllerBase
         return BadRequest("Discord access_token is null or empty.");
       }
 
-      // Fetch Discord user info
       using var userReq = new HttpRequestMessage(HttpMethod.Get, "https://discord.com/api/v10/users/@me");
       userReq.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
       var userRes = await http.SendAsync(userReq);
@@ -101,14 +110,12 @@ public class DiscordOAuthController : ControllerBase
         return BadRequest("Discord user id is null or empty.");
       }
 
-      // Link Discord user to entitlement (by state = Stripe customer ID)
       var ent = _entitlementService.GetByStripeCustomerId(state);
       if (ent == null)
       {
         return BadRequest("No entitlement found for this state/Stripe customer ID.");
       }
       ent.DiscordUserId = discordUserId;
-      // Assign Discord role based on package
       var roleKey = ent.PackageKey?.ToUpperInvariant();
       if (string.IsNullOrWhiteSpace(roleKey))
       {
@@ -119,6 +126,39 @@ public class DiscordOAuthController : ControllerBase
       {
         return BadRequest($"No Discord role configured for package: {roleKey}");
       }
+
+      var reciprocityEvidence = _reciprocityLedger.GetEvidence(state);
+      if (reciprocityEvidence is not null)
+      {
+        var reciprocityDecision = await _reciprocityEnforcement.EvaluateAsync(
+          reciprocityEvidence,
+          new ReciprocityAdmissionRequest(
+            state,
+            $"discord-role:{roleId}",
+            IsJpvOwnedOrAdministered: true,
+            IsDiscretionary: true,
+            IsRemediationPath: false),
+          HttpContext.RequestAborted);
+
+        if (!reciprocityDecision.Allowed)
+        {
+          try
+          {
+            await _discordService.RemoveRoleAsync(discordUserId, roleId);
+          }
+          catch (HttpRequestException)
+          {
+            return StatusCode(502, "JPV access is denied, but role revocation requires retry.");
+          }
+          catch (TaskCanceledException)
+          {
+            return StatusCode(502, "JPV access is denied, but role revocation requires retry.");
+          }
+
+          return StatusCode(StatusCodes.Status403Forbidden, "JPV discretionary access is not currently available.");
+        }
+      }
+
       ent.DiscordRole = roleId;
       try
       {
@@ -137,7 +177,6 @@ public class DiscordOAuthController : ControllerBase
     }
     catch (Exception)
     {
-      // Fail closed: do not leak details, but log if needed
       return StatusCode(500, "Discord OAuth processing failed.");
     }
   }
