@@ -117,7 +117,7 @@ builder.Services.AddHttpClient<IGitHubExactHeadReader, GitHubExactHeadReader>();
 
 var app = builder.Build(); PeopleProtectionStartupGuard.Verify(app); app.Services.GetRequiredService<SystemicAccessRuntimeState>().MarkPolicyLoaded(); _ = app.Services.GetRequiredService<ProductionAttentionAdmissionService>();
 if (!app.Environment.IsDevelopment()) { app.UseExceptionHandler("/Error", createScopeForErrors: true); app.UseHsts(); app.UseHttpsRedirection(); }
-app.UseStaticFiles(); app.UseRateLimiter(); app.UseAuthentication(); app.UseMiddleware<ReciprocityAccessMiddleware>(); app.UseAuthorization(); app.UseAntiforgery();
+app.UseStaticFiles(); app.UseRateLimiter(); app.UseAuthentication(); app.UseAuthorization(); app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(); app.MapControllers();
 app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemicState, GitHubOrgMutationRuntimeState githubState, ProductionAttentionAdmissionService attentionGate) => Results.Ok(new
 {
@@ -164,7 +164,7 @@ app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemi
     reciprocity = new
     {
         registered = true,
-        mode = "synchronous-access-admission",
+        mode = "synchronous-resource-admission",
         watcher = false
     },
     timestamp = DateTime.UtcNow
