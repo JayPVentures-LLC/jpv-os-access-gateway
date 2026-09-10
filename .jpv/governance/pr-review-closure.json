@@ -1,0 +1,21 @@
+{
+  "id": "JPV-GATEWAY-PR-REVIEW-CLOSURE-001",
+  "version": "1.0.0",
+  "effective": "2026-09-10",
+  "canonical_source": {
+    "repository": "JayPVentures-LLC/jpv-governance",
+    "path": "governance/standards/pr-review-closure.v1.json"
+  },
+  "required": {
+    "latest_head_query": true,
+    "live_thread_query_after_fix_push": true,
+    "zero_current_unresolved_threads_before_merge": true,
+    "zero_outdated_unresolved_threads_before_merge": true,
+    "resolve_outdated_only_after_superseding_change_verified": true,
+    "do_not_auto_resolve_current_findings": true,
+    "do_not_rely_on_mergeable_flag_alone": true,
+    "protected_merge_endpoint_authoritative": true,
+    "signed_main_commit_verification_after_merge": true
+  },
+  "github_actions_dependency": false
+}
