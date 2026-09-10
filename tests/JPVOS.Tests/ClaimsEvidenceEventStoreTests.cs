@@ -81,11 +81,6 @@ public sealed class ClaimsEvidenceEventStoreTests : IDisposable
 
     public void Dispose()
     {
-        try
-        {
-            if (Directory.Exists(_directory)) Directory.Delete(_directory, true);
-        }
-        catch (IOException) { }
-        catch (UnauthorizedAccessException) { }
+        if (Directory.Exists(_directory)) Directory.Delete(_directory, true);
     }
 }
