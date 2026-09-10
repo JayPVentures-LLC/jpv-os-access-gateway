@@ -9,7 +9,7 @@ namespace JPVOS.Tests;
 
 public sealed class ClaimsEvidenceControllerTests : IDisposable
 {
-    private readonly string _directory = Path.Combine(Path.GetTempPath(), $"jpv-claims-controller-{Guid.NewGuid():N}");
+    private readonly string _directory = Path.Join(Path.GetTempPath(), $"jpv-claims-controller-{Guid.NewGuid():N}");
 
     [Fact]
     public async Task CreateCase_MissingIdempotencyKey_ReturnsBadRequest()
@@ -82,8 +82,8 @@ public sealed class ClaimsEvidenceControllerTests : IDisposable
     private ClaimsEvidenceController CreateController()
     {
         Directory.CreateDirectory(_directory);
-        var provider = DataProtectionProvider.Create(new DirectoryInfo(Path.Combine(_directory, "keys")));
-        var store = new SqliteClaimsEvidenceEventStore(Path.Combine(_directory, "claims.db"), provider);
+        var provider = DataProtectionProvider.Create(new DirectoryInfo(Path.Join(_directory, "keys")));
+        var store = new SqliteClaimsEvidenceEventStore(Path.Join(_directory, "claims.db"), provider);
         var service = new ClaimsEvidenceService(store, new TrackingCredentialService(), new DisabledEvidenceBlobStore(), new ClaimsEvidenceProjector());
         var controller = new ClaimsEvidenceController(service)
         {
@@ -106,6 +106,11 @@ public sealed class ClaimsEvidenceControllerTests : IDisposable
 
     public void Dispose()
     {
-        try { if (Directory.Exists(_directory)) Directory.Delete(_directory, true); } catch { }
+        try
+        {
+            if (Directory.Exists(_directory)) Directory.Delete(_directory, true);
+        }
+        catch (IOException) { }
+        catch (UnauthorizedAccessException) { }
     }
 }
