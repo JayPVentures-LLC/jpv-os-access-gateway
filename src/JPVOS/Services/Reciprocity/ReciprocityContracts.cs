@@ -20,6 +20,7 @@ public sealed record ReciprocityEvidence(
     bool IsExempt,
     bool IsMateriallyUncertain)
 {
+    public bool NonImpositionGateSatisfied { get; init; }
     public IReadOnlyList<string> EvidenceReferences { get; init; } = Array.Empty<string>();
 }
 
