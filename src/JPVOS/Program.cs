@@ -38,9 +38,21 @@ if (string.IsNullOrWhiteSpace(outboundDataDir))
 }
 Directory.CreateDirectory(outboundDataDir);
 
+var reciprocityDataDir = builder.Configuration["JPV_RECIPROCITY_DATA_DIR"];
+if (string.IsNullOrWhiteSpace(reciprocityDataDir))
+    reciprocityDataDir = builder.Configuration["JPV_OUTBOUND_DATA_DIR"];
+if (string.IsNullOrWhiteSpace(reciprocityDataDir))
+{
+    if (!builder.Environment.IsDevelopment())
+        throw new InvalidOperationException("JPV_RECIPROCITY_DATA_DIR or JPV_OUTBOUND_DATA_DIR must point to writable persistent storage in production.");
+    reciprocityDataDir = Path.Combine(Path.GetTempPath(), "jpv-os-reciprocity");
+}
+Directory.CreateDirectory(reciprocityDataDir);
+
 var reciprocityLedgerPath = builder.Configuration["JPV_RECIPROCITY_LEDGER_PATH"];
 if (string.IsNullOrWhiteSpace(reciprocityLedgerPath))
-    reciprocityLedgerPath = Path.Combine(AppContext.BaseDirectory, "data", "reciprocity-ledger.json");
+    reciprocityLedgerPath = Path.Combine(reciprocityDataDir, "reciprocity-ledger.json");
+var reciprocityAuditPath = Path.Combine(reciprocityDataDir, "reciprocity-access-receipts.jsonl");
 
 StripeConfiguration.ApiKey = builder.Configuration["STRIPE_SECRET_KEY"];
 
@@ -74,7 +86,7 @@ builder.Services.AddSingleton<StripeWebhookEventStore>();
 builder.Services.AddSingleton<StripeSubscriptionAuditStore>();
 builder.Services.AddSingleton<JPVOS.Infrastructure.Discord.DiscordRoleSyncAuditStore>();
 builder.Services.AddSingleton<ProductionAttentionAdmissionService>();
-builder.Services.AddJpvReciprocityGate(reciprocityLedgerPath, Path.Combine(AppContext.BaseDirectory, "audit", "reciprocity-access-receipts.jsonl"));
+builder.Services.AddJpvReciprocityGate(reciprocityLedgerPath, reciprocityAuditPath);
 
 builder.Services.AddSingleton(systemicAccessPolicy);
 builder.Services.AddSingleton<SystemicAccessClassifier>();
@@ -115,7 +127,7 @@ if (outboundEnabled) builder.Services.AddTransient<ISmsTransport>(sp => sp.GetRe
 else builder.Services.AddTransient<ISmsTransport, DisabledSmsTransport>();
 builder.Services.AddHttpClient<IGitHubExactHeadReader, GitHubExactHeadReader>(); builder.Services.AddTransient<OutboundTransportService>(); builder.Services.AddTransient<DirectConversationService>(); builder.Services.AddTransient<ReviewAcknowledgmentService>();
 
-var app = builder.Build(); PeopleProtectionStartupGuard.Verify(app); app.Services.GetRequiredService<SystemicAccessRuntimeState>().MarkPolicyLoaded(); _ = app.Services.GetRequiredService<ProductionAttentionAdmissionService>();
+var app = builder.Build(); PeopleProtectionStartupGuard.Verify(app); app.Services.GetRequiredService<SystemicAccessRuntimeState>().MarkPolicyLoaded(); _ = app.Services.GetRequiredService<ProductionAttentionAdmissionService>(); _ = app.Services.GetRequiredService<ReciprocityLedgerStore>();
 if (!app.Environment.IsDevelopment()) { app.UseExceptionHandler("/Error", createScopeForErrors: true); app.UseHsts(); app.UseHttpsRedirection(); }
 app.UseStaticFiles(); app.UseRateLimiter(); app.UseAuthentication(); app.UseAuthorization(); app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(); app.MapControllers();
@@ -165,7 +177,8 @@ app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemi
     {
         registered = true,
         mode = "synchronous-resource-admission",
-        watcher = false
+        watcher = false,
+        persistentData = !builder.Environment.IsDevelopment()
     },
     timestamp = DateTime.UtcNow
 }));
