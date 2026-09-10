@@ -19,6 +19,9 @@ public sealed class ReciprocityEvaluator
         if (!evidence.RemediationOffered)
             return new(ReciprocityState.Remediation, "persistent_imbalance_requires_remediation");
 
+        if (!evidence.NonImpositionGateSatisfied)
+            return new(ReciprocityState.Remediation, "non_imposition_gate_required");
+
         if (!evidence.RestrictionPreviouslyApplied || evidence.VerifiedImbalanceObservations < 3)
             return new(ReciprocityState.Restricted, "persistent_imbalance_after_remediation");
 
