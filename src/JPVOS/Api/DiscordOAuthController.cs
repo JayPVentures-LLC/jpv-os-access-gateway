@@ -15,6 +15,7 @@ public class DiscordOAuthController : ControllerBase
   private readonly DiscordService _discordService;
   private readonly ReciprocityLedgerStore _reciprocityLedger;
   private readonly ReciprocityEnforcementService _reciprocityEnforcement;
+  private readonly ReciprocityRoleRevocationPlanner _roleRevocationPlanner;
 
   public DiscordOAuthController(
     IConfiguration config,
@@ -22,7 +23,8 @@ public class DiscordOAuthController : ControllerBase
     IEntitlementService entitlementService,
     DiscordService discordService,
     ReciprocityLedgerStore reciprocityLedger,
-    ReciprocityEnforcementService reciprocityEnforcement)
+    ReciprocityEnforcementService reciprocityEnforcement,
+    ReciprocityRoleRevocationPlanner roleRevocationPlanner)
   {
     _config = config;
     _httpFactory = httpFactory;
@@ -30,6 +32,7 @@ public class DiscordOAuthController : ControllerBase
     _discordService = discordService;
     _reciprocityLedger = reciprocityLedger;
     _reciprocityEnforcement = reciprocityEnforcement;
+    _roleRevocationPlanner = roleRevocationPlanner;
   }
 
   [HttpGet("connect")]
@@ -115,7 +118,7 @@ public class DiscordOAuthController : ControllerBase
       {
         return BadRequest("No entitlement found for this state/Stripe customer ID.");
       }
-      ent.DiscordUserId = discordUserId;
+
       var roleKey = ent.PackageKey?.ToUpperInvariant();
       if (string.IsNullOrWhiteSpace(roleKey))
       {
@@ -126,6 +129,12 @@ public class DiscordOAuthController : ControllerBase
       {
         return BadRequest($"No Discord role configured for package: {roleKey}");
       }
+
+      var storedAssignment = _roleRevocationPlanner.Plan(
+        ent.DiscordUserId,
+        ent.DiscordRole,
+        discordUserId,
+        roleId);
 
       var reciprocityEvidence = _reciprocityLedger.GetEvidence(state);
       if (reciprocityEvidence is not null)
@@ -142,23 +151,27 @@ public class DiscordOAuthController : ControllerBase
 
         if (!reciprocityDecision.Allowed)
         {
-          try
+          if (storedAssignment.HasStoredAssignment)
           {
-            await _discordService.RemoveRoleAsync(discordUserId, roleId);
-          }
-          catch (HttpRequestException)
-          {
-            return StatusCode(502, "JPV access is denied, but role revocation requires retry.");
-          }
-          catch (TaskCanceledException)
-          {
-            return StatusCode(502, "JPV access is denied, but role revocation requires retry.");
+            try
+            {
+              await _discordService.RemoveRoleAsync(storedAssignment.DiscordUserId!, storedAssignment.RoleId!);
+            }
+            catch (HttpRequestException)
+            {
+              return StatusCode(502, "JPV access is denied, but stored role revocation requires retry.");
+            }
+            catch (TaskCanceledException)
+            {
+              return StatusCode(502, "JPV access is denied, but stored role revocation requires retry.");
+            }
           }
 
           return StatusCode(StatusCodes.Status403Forbidden, "JPV discretionary access is not currently available.");
         }
       }
 
+      ent.DiscordUserId = discordUserId;
       ent.DiscordRole = roleId;
       try
       {
