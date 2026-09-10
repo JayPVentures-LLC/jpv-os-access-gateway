@@ -1,0 +1,23 @@
+{
+  "id": "JPV-GATEWAY-RECIPROCITY-GATE-001",
+  "version": "1.0.0",
+  "effective": "2026-09-10",
+  "canonical_source": {
+    "repository": "JayPVentures-LLC/jpv-governance",
+    "path": "policies/reciprocity-gate.v1.json"
+  },
+  "jpv_os_source": {
+    "repository": "jaypVLabs/JPV-OS",
+    "path": "governance/policies/reciprocity-gate.v1.json"
+  },
+  "runtime": "synchronous_access_admission",
+  "states": ["HEALTHY", "IMBALANCED", "REMEDIATION", "RESTRICTED", "REVOKED"],
+  "polling_or_watcher": false,
+  "authority": "jpv_owned_or_administered_discretionary_access_only",
+  "restricted_effect": "deny_discretionary_value_access_except_remediation_paths",
+  "revoked_effect": "deny_discretionary_jpv_access",
+  "automatic_restoration": true,
+  "audit_required": true,
+  "retaliation_prohibited": true,
+  "contract_and_legal_obligations_preserved": true
+}
