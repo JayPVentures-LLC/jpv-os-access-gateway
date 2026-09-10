@@ -18,6 +18,7 @@ public sealed class ReciprocityLedgerEntry
     public bool ObligationsSatisfied { get; init; }
     public bool IsExempt { get; init; }
     public bool IsMateriallyUncertain { get; init; }
+    public bool NonImpositionGateSatisfied { get; init; }
     public string[] EvidenceReferences { get; init; } = [];
 }
 
@@ -97,6 +98,7 @@ public sealed class ReciprocityLedgerStore
             entry.IsExempt,
             entry.IsMateriallyUncertain)
         {
+            NonImpositionGateSatisfied = entry.NonImpositionGateSatisfied,
             EvidenceReferences = entry.EvidenceReferences
         };
 }
