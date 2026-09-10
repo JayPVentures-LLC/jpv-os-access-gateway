@@ -18,7 +18,10 @@ public sealed record ReciprocityEvidence(
     bool RestrictionPreviouslyApplied,
     bool ObligationsSatisfied,
     bool IsExempt,
-    bool IsMateriallyUncertain);
+    bool IsMateriallyUncertain)
+{
+    public IReadOnlyList<string> EvidenceReferences { get; init; } = Array.Empty<string>();
+}
 
 public sealed record ReciprocityEvaluation(
     ReciprocityState State,
@@ -42,4 +45,7 @@ public sealed record ReciprocityAuditReceipt(
     ReciprocityState State,
     bool Allowed,
     string ReasonCode,
-    DateTimeOffset DecidedAtUtc);
+    DateTimeOffset DecidedAtUtc)
+{
+    public IReadOnlyList<string> EvidenceReferences { get; init; } = Array.Empty<string>();
+}
