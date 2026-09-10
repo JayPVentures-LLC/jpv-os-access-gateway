@@ -48,6 +48,9 @@ public sealed class ReciprocityLedgerStore
             entry.RestrictionPreviouslyApplied,
             entry.ObligationsSatisfied,
             entry.IsExempt,
-            entry.IsMateriallyUncertain);
+            entry.IsMateriallyUncertain)
+        {
+            EvidenceReferences = entry.EvidenceReferences
+        };
     }
 }
