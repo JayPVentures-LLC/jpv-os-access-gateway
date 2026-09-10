@@ -5,7 +5,7 @@ namespace JPVOS.Tests;
 
 public sealed class ClaimsEvidenceServiceTests : IDisposable
 {
-    private readonly string _directory = Path.Combine(Path.GetTempPath(), $"jpv-claims-service-{Guid.NewGuid():N}");
+    private readonly string _directory = Path.Join(Path.GetTempPath(), $"jpv-claims-service-{Guid.NewGuid():N}");
 
     [Fact]
     public void TrackingCredential_IsHighEntropyAndVerifiable()
@@ -119,8 +119,8 @@ public sealed class ClaimsEvidenceServiceTests : IDisposable
     private ClaimsEvidenceService CreateService()
     {
         Directory.CreateDirectory(_directory);
-        var provider = DataProtectionProvider.Create(new DirectoryInfo(Path.Combine(_directory, "keys")));
-        var store = new SqliteClaimsEvidenceEventStore(Path.Combine(_directory, "claims.db"), provider);
+        var provider = DataProtectionProvider.Create(new DirectoryInfo(Path.Join(_directory, "keys")));
+        var store = new SqliteClaimsEvidenceEventStore(Path.Join(_directory, "claims.db"), provider);
         return new ClaimsEvidenceService(store, new TrackingCredentialService(), new DisabledEvidenceBlobStore(), new ClaimsEvidenceProjector());
     }
 
@@ -138,6 +138,11 @@ public sealed class ClaimsEvidenceServiceTests : IDisposable
 
     public void Dispose()
     {
-        try { if (Directory.Exists(_directory)) Directory.Delete(_directory, true); } catch { }
+        try
+        {
+            if (Directory.Exists(_directory)) Directory.Delete(_directory, true);
+        }
+        catch (IOException) { }
+        catch (UnauthorizedAccessException) { }
     }
 }
