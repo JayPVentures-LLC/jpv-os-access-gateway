@@ -6,7 +6,7 @@ namespace JPVOS.Tests;
 
 public sealed class ClaimsEvidenceEventStoreTests : IDisposable
 {
-    private readonly string _directory = Path.Combine(Path.GetTempPath(), $"jpv-claims-tests-{Guid.NewGuid():N}");
+    private readonly string _directory = Path.Join(Path.GetTempPath(), $"jpv-claims-tests-{Guid.NewGuid():N}");
 
     [Fact]
     public async Task CreateCase_IsAtomicAndReplayable()
@@ -64,7 +64,7 @@ public sealed class ClaimsEvidenceEventStoreTests : IDisposable
         const string secret = "plaintext-tracking-credential";
         await store.CreateCaseAtomicallyAsync("create-case", "idem-key-0004", "hash", caseId, "verifier", new[] { Event(caseId, ClaimsEvidenceEventType.CaseReceived) }, $"{{\"trackingCredential\":\"{secret}\"}}", default);
 
-        var databaseBytes = await File.ReadAllBytesAsync(Path.Combine(_directory, "claims.db"));
+        var databaseBytes = await File.ReadAllBytesAsync(Path.Join(_directory, "claims.db"));
         var databaseText = System.Text.Encoding.UTF8.GetString(databaseBytes);
         Assert.DoesNotContain(secret, databaseText, StringComparison.Ordinal);
     }
@@ -72,8 +72,8 @@ public sealed class ClaimsEvidenceEventStoreTests : IDisposable
     private SqliteClaimsEvidenceEventStore CreateStore()
     {
         Directory.CreateDirectory(_directory);
-        var provider = DataProtectionProvider.Create(new DirectoryInfo(Path.Combine(_directory, "keys")));
-        return new SqliteClaimsEvidenceEventStore(Path.Combine(_directory, "claims.db"), provider);
+        var provider = DataProtectionProvider.Create(new DirectoryInfo(Path.Join(_directory, "keys")));
+        return new SqliteClaimsEvidenceEventStore(Path.Join(_directory, "claims.db"), provider);
     }
 
     private static ClaimsEvidenceEvent Event(string caseId, ClaimsEvidenceEventType type) =>
@@ -81,6 +81,11 @@ public sealed class ClaimsEvidenceEventStoreTests : IDisposable
 
     public void Dispose()
     {
-        try { if (Directory.Exists(_directory)) Directory.Delete(_directory, true); } catch { }
+        try
+        {
+            if (Directory.Exists(_directory)) Directory.Delete(_directory, true);
+        }
+        catch (IOException) { }
+        catch (UnauthorizedAccessException) { }
     }
 }
