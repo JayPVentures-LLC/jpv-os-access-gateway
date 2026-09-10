@@ -97,4 +97,49 @@ public sealed class ReciprocityGateTests
         Assert.True(decision.Allowed);
         Assert.Equal("outside_jpv_authority", decision.ReasonCode);
     }
+
+    [Fact]
+    public void LedgerStore_ProvisionsPersistentLedger()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "jpv-reciprocity-" + Guid.NewGuid().ToString("N"));
+        var path = Path.Combine(root, "reciprocity-ledger.json");
+        try
+        {
+            _ = new ReciprocityLedgerStore(path);
+            Assert.True(File.Exists(path));
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, true);
+        }
+    }
+
+    [Fact]
+    public async Task LedgerStore_UpsertPreservesEvidenceReferences()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "jpv-reciprocity-" + Guid.NewGuid().ToString("N"));
+        var path = Path.Combine(root, "reciprocity-ledger.json");
+        try
+        {
+            var store = new ReciprocityLedgerStore(path);
+            await store.UpsertAsync(new ReciprocityLedgerEntry
+            {
+                SubjectId = "cus_123",
+                JpvValueDelivered = 100m,
+                ReciprocalValueReturned = 0m,
+                VerifiedImbalanceObservations = 2,
+                RemediationOffered = true,
+                EvidenceReferences = ["evidence://one", "evidence://two"]
+            });
+
+            var evidence = store.GetEvidence("cus_123");
+            Assert.NotNull(evidence);
+            Assert.Equal(ReciprocityState.Restricted, new ReciprocityEvaluator().Evaluate(evidence!).State);
+            Assert.Equal(["evidence://one", "evidence://two"], evidence.EvidenceReferences);
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, true);
+        }
+    }
 }
