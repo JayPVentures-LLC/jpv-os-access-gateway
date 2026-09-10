@@ -5,6 +5,7 @@ using Stripe;
 using JPVOS.Components;
 using JPVOS.Services;
 using JPVOS.Services.SystemicAccess;
+using JPVOS.Services.Reciprocity;
 using JPVOS.Services.PrivilegedActions;
 using JPVOS.Services.GitHubOrgMutation;
 using JPVOS.Services.Attention;
@@ -69,6 +70,7 @@ builder.Services.AddSingleton<StripeWebhookEventStore>();
 builder.Services.AddSingleton<StripeSubscriptionAuditStore>();
 builder.Services.AddSingleton<JPVOS.Infrastructure.Discord.DiscordRoleSyncAuditStore>();
 builder.Services.AddSingleton<ProductionAttentionAdmissionService>();
+builder.Services.AddJpvReciprocityGate(Path.Combine(AppContext.BaseDirectory, "audit", "reciprocity-access-receipts.jsonl"));
 
 builder.Services.AddSingleton(systemicAccessPolicy);
 builder.Services.AddSingleton<SystemicAccessClassifier>();
