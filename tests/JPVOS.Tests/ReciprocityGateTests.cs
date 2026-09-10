@@ -119,6 +119,34 @@ public sealed class ReciprocityGateTests
     }
 
     [Fact]
+    public void RoleRevocationPlanner_UsesStoredAssignmentInsteadOfCurrentOAuthTarget()
+    {
+        var plan = new ReciprocityRoleRevocationPlanner().Plan(
+            storedDiscordUserId: "stored-user",
+            storedRoleId: "stored-role",
+            currentDiscordUserId: "current-user",
+            currentRoleId: "current-role");
+
+        Assert.True(plan.HasStoredAssignment);
+        Assert.Equal("stored-user", plan.DiscordUserId);
+        Assert.Equal("stored-role", plan.RoleId);
+    }
+
+    [Fact]
+    public void RoleRevocationPlanner_DoesNothingWithoutCompleteStoredAssignment()
+    {
+        var plan = new ReciprocityRoleRevocationPlanner().Plan(
+            storedDiscordUserId: "stored-user",
+            storedRoleId: null,
+            currentDiscordUserId: "current-user",
+            currentRoleId: "current-role");
+
+        Assert.False(plan.HasStoredAssignment);
+        Assert.Null(plan.DiscordUserId);
+        Assert.Null(plan.RoleId);
+    }
+
+    [Fact]
     public void LedgerStore_ProvisionsPersistentLedger()
     {
         var root = Path.Join(Path.GetTempPath(), "jpv-reciprocity-" + Guid.NewGuid().ToString("N"));
