@@ -8,6 +8,7 @@ public static class ReciprocityServiceCollectionExtensions
     {
         services.AddSingleton<ReciprocityEvaluator>();
         services.AddSingleton<ReciprocityAdmissionGate>();
+        services.AddSingleton<ReciprocityRoleRevocationPlanner>();
         services.AddSingleton(new ReciprocityLedgerStore(ledgerPath));
         services.AddSingleton(new ReciprocityAuditStore(auditPath));
         services.AddSingleton<ReciprocityEnforcementService>();
