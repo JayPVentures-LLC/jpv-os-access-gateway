@@ -25,29 +25,49 @@ public sealed class ReciprocityGateTests
     }
 
     [Fact]
-    public void PersistentImbalance_RequiresRemediationOpportunityBeforeRestriction()
+    public void PersistentImbalance_WithoutNonImpositionGate_RemainsRemediation()
+    {
+        var result = new ReciprocityEvaluator().Evaluate(new ReciprocityEvidence(
+            "subject-1", 100m, 0m, 2, true, false, false, false, false));
+
+        Assert.Equal(ReciprocityState.Remediation, result.State);
+        Assert.Equal("non_imposition_gate_required", result.ReasonCode);
+    }
+
+    [Fact]
+    public void PersistentImbalance_RequiresRemediationAndNonImpositionGateBeforeRestriction()
     {
         var evaluator = new ReciprocityEvaluator();
         var remediation = evaluator.Evaluate(new ReciprocityEvidence(
             "subject-1", 100m, 0m, 2, false, false, false, false, false));
-        var restricted = evaluator.Evaluate(new ReciprocityEvidence(
-            "subject-1", 100m, 0m, 2, true, false, false, false, false));
+        var restrictedEvidence = new ReciprocityEvidence(
+            "subject-1", 100m, 0m, 2, true, false, false, false, false)
+        {
+            NonImpositionGateSatisfied = true
+        };
+        var restricted = evaluator.Evaluate(restrictedEvidence);
 
         Assert.Equal(ReciprocityState.Remediation, remediation.State);
         Assert.Equal(ReciprocityState.Restricted, restricted.State);
     }
 
     [Fact]
-    public void Revocation_RequiresContinuedImbalanceAfterRestriction()
+    public void Revocation_RequiresContinuedImbalanceAfterRestrictionAndNonImpositionGate()
     {
         var evaluator = new ReciprocityEvaluator();
-        var restricted = evaluator.Evaluate(new ReciprocityEvidence(
-            "subject-1", 100m, 0m, 2, true, true, false, false, false));
-        var revoked = evaluator.Evaluate(new ReciprocityEvidence(
-            "subject-1", 100m, 0m, 3, true, true, false, false, false));
+        var restrictedEvidence = new ReciprocityEvidence(
+            "subject-1", 100m, 0m, 2, true, true, false, false, false)
+        {
+            NonImpositionGateSatisfied = true
+        };
+        var revokedEvidence = new ReciprocityEvidence(
+            "subject-1", 100m, 0m, 3, true, true, false, false, false)
+        {
+            NonImpositionGateSatisfied = true
+        };
 
-        Assert.Equal(ReciprocityState.Restricted, restricted.State);
-        Assert.Equal(ReciprocityState.Revoked, revoked.State);
+        Assert.Equal(ReciprocityState.Restricted, evaluator.Evaluate(restrictedEvidence).State);
+        Assert.Equal(ReciprocityState.Revoked, evaluator.Evaluate(revokedEvidence).State);
     }
 
     [Fact]
@@ -101,8 +121,8 @@ public sealed class ReciprocityGateTests
     [Fact]
     public void LedgerStore_ProvisionsPersistentLedger()
     {
-        var root = Path.Combine(Path.GetTempPath(), "jpv-reciprocity-" + Guid.NewGuid().ToString("N"));
-        var path = Path.Combine(root, "reciprocity-ledger.json");
+        var root = Path.Join(Path.GetTempPath(), "jpv-reciprocity-" + Guid.NewGuid().ToString("N"));
+        var path = Path.Join(root, "reciprocity-ledger.json");
         try
         {
             _ = new ReciprocityLedgerStore(path);
@@ -115,10 +135,10 @@ public sealed class ReciprocityGateTests
     }
 
     [Fact]
-    public async Task LedgerStore_UpsertPreservesEvidenceReferences()
+    public async Task LedgerStore_UpsertPreservesEvidenceAndNonImpositionGate()
     {
-        var root = Path.Combine(Path.GetTempPath(), "jpv-reciprocity-" + Guid.NewGuid().ToString("N"));
-        var path = Path.Combine(root, "reciprocity-ledger.json");
+        var root = Path.Join(Path.GetTempPath(), "jpv-reciprocity-" + Guid.NewGuid().ToString("N"));
+        var path = Path.Join(root, "reciprocity-ledger.json");
         try
         {
             var store = new ReciprocityLedgerStore(path);
@@ -129,12 +149,14 @@ public sealed class ReciprocityGateTests
                 ReciprocalValueReturned = 0m,
                 VerifiedImbalanceObservations = 2,
                 RemediationOffered = true,
+                NonImpositionGateSatisfied = true,
                 EvidenceReferences = ["evidence://one", "evidence://two"]
             });
 
             var evidence = store.GetEvidence("cus_123");
             Assert.NotNull(evidence);
-            Assert.Equal(ReciprocityState.Restricted, new ReciprocityEvaluator().Evaluate(evidence!).State);
+            Assert.True(evidence!.NonImpositionGateSatisfied);
+            Assert.Equal(ReciprocityState.Restricted, new ReciprocityEvaluator().Evaluate(evidence).State);
             Assert.Equal(["evidence://one", "evidence://two"], evidence.EvidenceReferences);
         }
         finally
