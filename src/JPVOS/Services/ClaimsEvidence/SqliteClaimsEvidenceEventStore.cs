@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Data.Sqlite;
 
@@ -85,11 +86,12 @@ public sealed class SqliteClaimsEvidenceEventStore : IClaimsEvidenceEventStore
             return new IdempotentOperationResult(false, resultJson);
         }
         catch (ClaimsEvidenceIdempotencyConflictException) { transaction.Rollback(); throw; }
-        catch (Exception ex)
-        {
-            transaction.Rollback();
-            throw new ClaimsEvidencePersistenceException("Failed to persist initial case event stream.", ex);
-        }
+        catch (OperationCanceledException) { transaction.Rollback(); throw; }
+        catch (SqliteException ex) { throw WrapPersistenceFailure(transaction, "Failed to persist initial case event stream.", ex); }
+        catch (IOException ex) { throw WrapPersistenceFailure(transaction, "Failed to persist initial case event stream.", ex); }
+        catch (UnauthorizedAccessException ex) { throw WrapPersistenceFailure(transaction, "Failed to persist initial case event stream.", ex); }
+        catch (CryptographicException ex) { throw WrapPersistenceFailure(transaction, "Failed to persist initial case event stream.", ex); }
+        catch (InvalidOperationException ex) { throw WrapPersistenceFailure(transaction, "Failed to persist initial case event stream.", ex); }
     }
 
     public async Task<IdempotentOperationResult> AppendAtomicallyAsync(
@@ -118,11 +120,12 @@ public sealed class SqliteClaimsEvidenceEventStore : IClaimsEvidenceEventStore
         }
         catch (ClaimsEvidenceIdempotencyConflictException) { transaction.Rollback(); throw; }
         catch (ClaimsEvidenceValidationException) { transaction.Rollback(); throw; }
-        catch (Exception ex)
-        {
-            transaction.Rollback();
-            throw new ClaimsEvidencePersistenceException("Failed to append case event.", ex);
-        }
+        catch (OperationCanceledException) { transaction.Rollback(); throw; }
+        catch (SqliteException ex) { throw WrapPersistenceFailure(transaction, "Failed to append case event.", ex); }
+        catch (IOException ex) { throw WrapPersistenceFailure(transaction, "Failed to append case event.", ex); }
+        catch (UnauthorizedAccessException ex) { throw WrapPersistenceFailure(transaction, "Failed to append case event.", ex); }
+        catch (CryptographicException ex) { throw WrapPersistenceFailure(transaction, "Failed to append case event.", ex); }
+        catch (InvalidOperationException ex) { throw WrapPersistenceFailure(transaction, "Failed to append case event.", ex); }
     }
 
     public async Task<IReadOnlyList<ClaimsEvidenceEvent>> ReadStreamAsync(string caseId, CancellationToken cancellationToken)
@@ -193,5 +196,11 @@ public sealed class SqliteClaimsEvidenceEventStore : IClaimsEvidenceEventStore
         command.Parameters.AddWithValue("$sensitivity", @event.Sensitivity);
         command.Parameters.AddWithValue("$payload", @event.PayloadJson);
         await command.ExecuteNonQueryAsync(cancellationToken);
+    }
+
+    private static ClaimsEvidencePersistenceException WrapPersistenceFailure(SqliteTransaction transaction, string message, Exception exception)
+    {
+        transaction.Rollback();
+        return new ClaimsEvidencePersistenceException(message, exception);
     }
 }
