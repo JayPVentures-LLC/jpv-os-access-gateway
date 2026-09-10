@@ -53,13 +53,18 @@ public sealed class ReciprocityEnforcementService
 
         var evaluation = _evaluator.Evaluate(evidence);
         var decision = _gate.Decide(request, evaluation);
-        await _audit.AppendAsync(new ReciprocityAuditReceipt(
+        var receipt = new ReciprocityAuditReceipt(
             request.SubjectId,
             request.ResourceId,
             decision.State,
             decision.Allowed,
             decision.ReasonCode,
-            DateTimeOffset.UtcNow), cancellationToken);
+            DateTimeOffset.UtcNow)
+        {
+            EvidenceReferences = evidence.EvidenceReferences
+        };
+
+        await _audit.AppendAsync(receipt, cancellationToken);
         return decision;
     }
 }
