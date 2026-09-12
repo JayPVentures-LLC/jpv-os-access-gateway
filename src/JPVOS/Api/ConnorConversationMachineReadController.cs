@@ -9,12 +9,12 @@ namespace JPVOS.Api;
 public sealed class ConnorConversationMachineReadController : ControllerBase
 {
     private readonly IConfiguration _configuration;
-    private readonly ConnorConversationProjectionService _projection;
+    private readonly IDirectConversationStore _store;
 
-    public ConnorConversationMachineReadController(IConfiguration configuration, ConnorConversationProjectionService projection)
+    public ConnorConversationMachineReadController(IConfiguration configuration, IDirectConversationStore store)
     {
         _configuration = configuration;
-        _projection = projection;
+        _store = store;
     }
 
     [AllowAnonymous]
@@ -30,6 +30,7 @@ public sealed class ConnorConversationMachineReadController : ControllerBase
 
         Response.Headers.CacheControl = "no-store";
         Response.Headers["X-Content-Type-Options"] = "nosniff";
-        return Ok(await _projection.ReadAsync(cancellationToken));
+        var projection = new ConnorConversationProjectionService(_store);
+        return Ok(await projection.ReadAsync(cancellationToken));
     }
 }
