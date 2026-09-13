@@ -20,6 +20,13 @@ public sealed class ProposalRegistryService(IProposalEventStore store, ProposalL
         return await AppendAndReadAsync(ProposalLifecycleEvent.StatusChanged(proposalId, next, evidenceReference, authorityReference, idempotencyKey), cancellationToken);
     }
 
+    public async Task<ProposalProjection> LinkEvidenceAsync(string proposalId, ClassifiedEvidenceReference evidence, string? idempotencyKey, CancellationToken cancellationToken)
+    {
+        _ = await GetRequiredAsync(proposalId, cancellationToken);
+        if (string.IsNullOrWhiteSpace(evidence.Reference)) throw new ProposalValidationException("Evidence reference is required.");
+        return await AppendAndReadAsync(ProposalLifecycleEvent.EvidenceLinked(proposalId, evidence, idempotencyKey), cancellationToken);
+    }
+
     public async Task<ProposalProjection> MapAuthorityAsync(string proposalId, AuthorityAssignment authority, string? idempotencyKey, CancellationToken cancellationToken)
     {
         _ = await GetRequiredAsync(proposalId, cancellationToken);
@@ -27,11 +34,34 @@ public sealed class ProposalRegistryService(IProposalEventStore store, ProposalL
         return await AppendAndReadAsync(ProposalLifecycleEvent.AuthorityMapped(proposalId, authority, idempotencyKey), cancellationToken);
     }
 
+    public async Task<ProposalProjection> SetAdoptionRouteAsync(string proposalId, AdoptionRoute route, string? idempotencyKey, CancellationToken cancellationToken)
+    {
+        _ = await GetRequiredAsync(proposalId, cancellationToken);
+        if (string.IsNullOrWhiteSpace(route.TargetAuthority) || string.IsNullOrWhiteSpace(route.SubmissionMechanism) || string.IsNullOrWhiteSpace(route.RequiredEvidence))
+            throw new ProposalValidationException("Adoption route requires target authority, submission mechanism, and evidence requirement.");
+        return await AppendAndReadAsync(ProposalLifecycleEvent.AdoptionRouteSet(proposalId, route, idempotencyKey), cancellationToken);
+    }
+
     public async Task<ProposalProjection> AddObligationAsync(string proposalId, ImplementationObligation obligation, string? idempotencyKey, CancellationToken cancellationToken)
     {
         _ = await GetRequiredAsync(proposalId, cancellationToken);
         if (string.IsNullOrWhiteSpace(obligation.ObligationId) || string.IsNullOrWhiteSpace(obligation.CompletionEvidenceRequirement)) throw new ProposalValidationException("Obligation ID and completion evidence requirement are required.");
         return await AppendAndReadAsync(ProposalLifecycleEvent.ObligationAdded(proposalId, obligation, idempotencyKey), cancellationToken);
+    }
+
+    public async Task<ProposalProjection> AddVerificationRequirementAsync(string proposalId, VerificationRequirement requirement, string? idempotencyKey, CancellationToken cancellationToken)
+    {
+        _ = await GetRequiredAsync(proposalId, cancellationToken);
+        if (string.IsNullOrWhiteSpace(requirement.RequirementId) || string.IsNullOrWhiteSpace(requirement.Method) || string.IsNullOrWhiteSpace(requirement.EvidenceRequired))
+            throw new ProposalValidationException("Verification requirement ID, method, and evidence are required.");
+        return await AppendAndReadAsync(ProposalLifecycleEvent.VerificationRequirementAdded(proposalId, requirement, idempotencyKey), cancellationToken);
+    }
+
+    public async Task<ProposalProjection> SetReviewRequirementAsync(string proposalId, ReviewRequirement requirement, string? idempotencyKey, CancellationToken cancellationToken)
+    {
+        _ = await GetRequiredAsync(proposalId, cancellationToken);
+        if (string.IsNullOrWhiteSpace(requirement.Stage) || string.IsNullOrWhiteSpace(requirement.Reason)) throw new ProposalValidationException("Review stage and reason are required.");
+        return await AppendAndReadAsync(ProposalLifecycleEvent.ReviewRequirementSet(proposalId, requirement, idempotencyKey), cancellationToken);
     }
 
     public async Task<ProposalProjection> RecordOutcomeAsync(string proposalId, OutcomeMeasurement outcome, string? idempotencyKey, CancellationToken cancellationToken)
