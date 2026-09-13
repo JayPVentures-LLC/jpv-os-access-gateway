@@ -33,7 +33,13 @@ public sealed record ImplementationObligation(
     string? FailureCondition = null,
     string? RemediationRoute = null);
 public sealed record VerificationRequirement(string RequirementId, string Method, string EvidenceRequired, string? ExpectedRepositoryHead = null);
-public sealed record ReviewRequirement(string Stage, bool IndependentReviewRequired, string Reason, string? ReviewerReference = null);
+public sealed record ReviewRequirement(
+    string Stage,
+    bool IndependentReviewRequired,
+    string Reason,
+    string? ReviewerReference = null,
+    bool Completed = false,
+    string? ReviewEvidenceReference = null);
 public sealed record OutcomeMeasurement(
     string Metric,
     string Disposition,
@@ -118,6 +124,7 @@ public sealed record ProposalProjection(
     public AdoptionRoute? AdoptionRoute { get; init; }
     public IReadOnlyList<VerificationRequirement> VerificationRequirements { get; init; } = [];
     public ReviewRequirement? ReviewRequirement { get; init; }
+    public IReadOnlyList<OutcomeMeasurement> Outcomes { get; init; } = [];
 
     public static ProposalProjection New(string proposalId, string title, ProposalClass @class, ProposalLane lane) =>
         new(proposalId, title, @class, lane, ProposalStatus.Researching, [], [], [], null, [], false, null, DateTime.UtcNow);
