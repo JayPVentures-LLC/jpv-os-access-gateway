@@ -33,9 +33,17 @@ public sealed class ProposalLifecycleValidatorTests
     }
 
     [Fact]
+    public void Researching_cannot_jump_directly_to_verified()
+    {
+        var validator = new ProposalLifecycleValidator();
+        var projection = ProposalProjection.New("JPV-TEST-004", "Test", ProposalClass.OperationalStandard, ProposalLane.Enterprise);
+        Assert.False(validator.ValidateTransition(projection, ProposalStatus.Verified, "verification-1", null).IsValid);
+    }
+
+    [Fact]
     public void Verification_is_distinct_from_outcome_success()
     {
-        var projection = ProposalProjection.New("JPV-TEST-004", "Test", ProposalClass.OperationalStandard, ProposalLane.Enterprise) with { Status = ProposalStatus.Verified };
+        var projection = ProposalProjection.New("JPV-TEST-005", "Test", ProposalClass.OperationalStandard, ProposalLane.Enterprise) with { Status = ProposalStatus.Verified };
         Assert.Null(projection.LatestOutcome);
     }
 }
