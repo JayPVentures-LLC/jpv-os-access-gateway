@@ -21,17 +21,29 @@ public sealed record ProposalLifecycleEvent(
     string? IdempotencyKey,
     string PayloadJson)
 {
+    private static ProposalLifecycleEvent Create<T>(string proposalId, ProposalEventType type, T payload, string? idempotencyKey = null) =>
+        new(Guid.NewGuid().ToString("N"), proposalId, 0, DateTime.UtcNow, type, idempotencyKey, JsonSerializer.Serialize(payload));
+
     public static ProposalLifecycleEvent Registered(string proposalId, string title, ProposalClass @class, ProposalLane lane, string? idempotencyKey = null) =>
-        new(Guid.NewGuid().ToString("N"), proposalId, 0, DateTime.UtcNow, ProposalEventType.Registered, idempotencyKey,
-            JsonSerializer.Serialize(new RegistrationPayload(title, @class, lane)));
+        Create(proposalId, ProposalEventType.Registered, new RegistrationPayload(title, @class, lane), idempotencyKey);
 
     public static ProposalLifecycleEvent StatusChanged(string proposalId, ProposalStatus status, string? evidenceReference, string? authorityReference = null, string? idempotencyKey = null) =>
-        new(Guid.NewGuid().ToString("N"), proposalId, 0, DateTime.UtcNow, ProposalEventType.StatusChanged, idempotencyKey,
-            JsonSerializer.Serialize(new StatusPayload(status, evidenceReference, authorityReference)));
+        Create(proposalId, ProposalEventType.StatusChanged, new StatusPayload(status, evidenceReference, authorityReference), idempotencyKey);
+
+    public static ProposalLifecycleEvent AuthorityMapped(string proposalId, AuthorityAssignment authority, string? idempotencyKey = null) =>
+        Create(proposalId, ProposalEventType.AuthorityMapped, authority, idempotencyKey);
+
+    public static ProposalLifecycleEvent ObligationAdded(string proposalId, ImplementationObligation obligation, string? idempotencyKey = null) =>
+        Create(proposalId, ProposalEventType.ObligationAdded, obligation, idempotencyKey);
+
+    public static ProposalLifecycleEvent OutcomeRecorded(string proposalId, OutcomeMeasurement outcome, string? idempotencyKey = null) =>
+        Create(proposalId, ProposalEventType.OutcomeRecorded, outcome, idempotencyKey);
+
+    public static ProposalLifecycleEvent LineageAdded(string proposalId, ProposalLineage lineage, string? idempotencyKey = null) =>
+        Create(proposalId, ProposalEventType.LineageAdded, lineage, idempotencyKey);
 
     public static ProposalLifecycleEvent PublicationReviewed(string proposalId, bool approved, string? summary, string? idempotencyKey = null) =>
-        new(Guid.NewGuid().ToString("N"), proposalId, 0, DateTime.UtcNow, ProposalEventType.PublicationReviewed, idempotencyKey,
-            JsonSerializer.Serialize(new PublicationPayload(approved, summary)));
+        Create(proposalId, ProposalEventType.PublicationReviewed, new PublicationPayload(approved, summary), idempotencyKey);
 
     public sealed record RegistrationPayload(string Title, ProposalClass Class, ProposalLane Lane);
     public sealed record StatusPayload(ProposalStatus Status, string? EvidenceReference, string? AuthorityReference);
