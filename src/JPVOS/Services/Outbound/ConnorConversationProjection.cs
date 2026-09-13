@@ -42,6 +42,7 @@ public sealed record ConnorConversationReadEnvelope(
 public sealed class ConnorConversationProjectionService
 {
     private const int MaxMessages = 500;
+    private const string ConnorSubjectId = "connor-kruer";
     private readonly IDirectConversationStore _store;
 
     public ConnorConversationProjectionService(IDirectConversationStore store) => _store = store;
@@ -63,7 +64,7 @@ public sealed class ConnorConversationProjectionService
 
         return new ConnorConversationReadEnvelope(
             "jpv.connor-direct-conversation-read.v1",
-            PrincipalSmsBindingResolver.ConnorPrincipalId,
+            ConnorSubjectId,
             DirectConversationService.ConnorConversationId,
             true,
             messages);
