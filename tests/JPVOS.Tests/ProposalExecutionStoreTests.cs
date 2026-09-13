@@ -4,7 +4,7 @@ namespace JPVOS.Tests;
 
 public sealed class ProposalExecutionStoreTests : IDisposable
 {
-    private readonly string _path = Path.Combine(Path.GetTempPath(), $"jpv-proposals-{Guid.NewGuid():N}.db");
+    private readonly string _path = Path.Join(Path.GetTempPath(), $"jpv-proposals-{Guid.NewGuid():N}.db");
 
     [Fact]
     public void Projector_replays_status_changes()
