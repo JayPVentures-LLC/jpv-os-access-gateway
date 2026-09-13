@@ -26,18 +26,6 @@ var privilegedActionPolicyPath = Path.Combine(
 var privilegedActionPolicy = PrivilegedActionPolicyLoader.LoadAndValidate(privilegedActionPolicyPath);
 
 var githubAppOptions = GitHubAppAuthenticationOptions.FromConfiguration(builder.Configuration);
-var outboundProvider = builder.Configuration["JPV_OUTBOUND_SMS_PROVIDER"]?.Trim().ToLowerInvariant() ?? "disabled";
-var outboundEnabled = outboundProvider == "twilio";
-if (outboundProvider is not "disabled" and not "twilio") throw new InvalidOperationException($"Unsupported JPV_OUTBOUND_SMS_PROVIDER: {outboundProvider}");
-
-var outboundDataDir = builder.Configuration["JPV_OUTBOUND_DATA_DIR"];
-if (string.IsNullOrWhiteSpace(outboundDataDir))
-{
-    if (outboundEnabled && !builder.Environment.IsDevelopment()) throw new InvalidOperationException("JPV_OUTBOUND_DATA_DIR is required when outbound SMS is enabled outside Development and must point to writable persistent storage.");
-    outboundDataDir = Path.Combine(Path.GetTempPath(), "jpv-os-outbound");
-}
-Directory.CreateDirectory(outboundDataDir);
-
 var claimsDataDir = builder.Configuration["JPV_CLAIMS_DATA_DIR"];
 if (string.IsNullOrWhiteSpace(claimsDataDir))
 {
@@ -49,8 +37,6 @@ var claimsDataProtectionDir = Path.Combine(claimsDataDir, "data-protection-keys"
 Directory.CreateDirectory(claimsDataProtectionDir);
 
 var reciprocityDataDir = builder.Configuration["JPV_RECIPROCITY_DATA_DIR"];
-if (string.IsNullOrWhiteSpace(reciprocityDataDir))
-    reciprocityDataDir = builder.Configuration["JPV_OUTBOUND_DATA_DIR"];
 if (string.IsNullOrWhiteSpace(reciprocityDataDir))
 {
     if (!builder.Environment.IsDevelopment())
@@ -155,14 +141,6 @@ builder.Services.AddSingleton(sp => new SystemicAccessAuditStore(Path.Combine(Ap
 builder.Services.AddSingleton(githubAppOptions); builder.Services.AddHttpClient<IGitHubAppTokenProvider, GitHubAppTokenProvider>(); builder.Services.AddHttpClient<IGitHubOrganizationClient, GitHubOrganizationClient>(); builder.Services.AddHttpClient<IGitHubCanonicalTopologySource, GitHubCanonicalTopologyLoader>();
 builder.Services.AddSingleton(sp => new GitHubOrgMutationReceiptStore(Path.Combine(AppContext.BaseDirectory, "audit", "github-org-mutation-receipts.jsonl"))); builder.Services.AddSingleton<GitHubOrganizationReconciler>(); builder.Services.AddSingleton<GitHubOrgMutationRuntimeState>(); builder.Services.AddHostedService<GitHubOrgMutationHostedService>();
 
-builder.Services.AddSingleton<IPrincipalSmsBindingResolver, ConfigurationPrincipalSmsBindingResolver>();
-builder.Services.AddSingleton<IOutboundReceiptStore>(_ => new JsonlOutboundReceiptStore(Path.Combine(outboundDataDir, "outbound-message-receipts.jsonl")));
-builder.Services.AddSingleton<IDirectConversationStore>(_ => new JsonlDirectConversationStore(Path.Combine(outboundDataDir, "connor-direct-conversation.jsonl")));
-builder.Services.AddHttpClient<TwilioSmsTransport>();
-if (outboundEnabled) builder.Services.AddTransient<ISmsTransport>(sp => sp.GetRequiredService<TwilioSmsTransport>());
-else builder.Services.AddTransient<ISmsTransport, DisabledSmsTransport>();
-builder.Services.AddHttpClient<IGitHubExactHeadReader, GitHubExactHeadReader>(); builder.Services.AddTransient<OutboundTransportService>(); builder.Services.AddTransient<DirectConversationService>(); builder.Services.AddTransient<ReviewAcknowledgmentService>();
-
 var app = builder.Build(); PeopleProtectionStartupGuard.Verify(app); app.Services.GetRequiredService<SystemicAccessRuntimeState>().MarkPolicyLoaded(); _ = app.Services.GetRequiredService<ProductionAttentionAdmissionService>(); _ = app.Services.GetRequiredService<ReciprocityLedgerStore>();
 if (!app.Environment.IsDevelopment()) { app.UseExceptionHandler("/Error", createScopeForErrors: true); app.UseHsts(); app.UseHttpsRedirection(); }
 app.UseStaticFiles(); app.UseRateLimiter(); app.UseAuthentication(); app.UseAuthorization(); app.UseAntiforgery();
@@ -178,7 +156,6 @@ app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemi
         founderProfile = "/profile",
         founderWorkspace = "/workspace"
     },
-    outbound = new { provider = outboundProvider, enabled = outboundEnabled, persistentStorageRequired = outboundEnabled },
     claimsEvidence = new { registered = true, persistentStorageRequired = !app.Environment.IsDevelopment(), binaryEvidenceEnabled = false },
     privilegedActions = new
     {
