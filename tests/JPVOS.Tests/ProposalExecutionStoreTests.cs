@@ -18,7 +18,7 @@ public sealed class ProposalExecutionStoreTests : IDisposable
     }
 
     [Fact]
-    public async Task Store_assigns_monotonic_sequence_and_deduplicates_key()
+    public async Task Store_assigns_monotonic_sequence_and_deduplicates_equivalent_key()
     {
         var store = new SqliteProposalEventStore(_path);
         var first = ProposalLifecycleEvent.Registered("JPV-002", "Durable", ProposalClass.GovernanceStandard, ProposalLane.Enterprise, "key-1");
@@ -29,6 +29,27 @@ public sealed class ProposalExecutionStoreTests : IDisposable
         var stream = await store.ReadStreamAsync("JPV-002", default);
         Assert.Equal(2, stream.Count);
         Assert.Equal(new long[] { 1, 2 }, stream.Select(x => x.Sequence));
+    }
+
+    [Fact]
+    public async Task Store_rejects_idempotency_key_reuse_with_different_payload()
+    {
+        var store = new SqliteProposalEventStore(_path);
+        await store.AppendAsync(ProposalLifecycleEvent.Registered("JPV-003", "Original", ProposalClass.GovernanceStandard, ProposalLane.Enterprise, "same-key"), default);
+
+        await Assert.ThrowsAsync<ProposalIdempotencyConflictException>(() =>
+            store.AppendAsync(ProposalLifecycleEvent.Registered("JPV-003", "Different", ProposalClass.GovernanceStandard, ProposalLane.Enterprise, "same-key"), default));
+    }
+
+    [Fact]
+    public async Task Store_rejects_stale_expected_version()
+    {
+        var store = new SqliteProposalEventStore(_path);
+        await store.AppendAsync(ProposalLifecycleEvent.Registered("JPV-004", "Versioned", ProposalClass.GovernanceStandard, ProposalLane.Enterprise, "r1"), default);
+        await store.AppendAsync(ProposalLifecycleEvent.StatusChanged("JPV-004", ProposalStatus.Validated, "e1", idempotencyKey: "s1"), expectedVersion: 1, default);
+
+        await Assert.ThrowsAsync<ProposalConcurrencyException>(() =>
+            store.AppendAsync(ProposalLifecycleEvent.StatusChanged("JPV-004", ProposalStatus.ApprovedInternally, "e2", idempotencyKey: "s2"), expectedVersion: 1, default));
     }
 
     public void Dispose()
