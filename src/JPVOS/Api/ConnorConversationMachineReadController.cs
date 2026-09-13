@@ -1,43 +1,36 @@
+using JPVOS.Services.Outbound;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using JPVOS.Services.Outbound;
 
 namespace JPVOS.Api;
 
 [ApiController]
-[Route("api/machine-read/connor-conversation")]
+[Route("api/machine/relationships/connor/conversation")]
 public sealed class ConnorConversationMachineReadController : ControllerBase
 {
-    private readonly IDirectConversationStore _conversationStore;
     private readonly IConfiguration _configuration;
+    private readonly IDirectConversationStore _store;
 
-    public ConnorConversationMachineReadController(IDirectConversationStore conversationStore, IConfiguration configuration)
+    public ConnorConversationMachineReadController(IConfiguration configuration, IDirectConversationStore store)
     {
-        _conversationStore = conversationStore;
         _configuration = configuration;
+        _store = store;
     }
 
     [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
     {
-        if (!MachineReadAuth.IsAuthorized(Request, _configuration))
-            return Unauthorized(new { error = "machine_read_auth_invalid" });
+        var expectedDigest = _configuration["JPV_MCP_CONNOR_READ_TOKEN_SHA256"];
+        if (string.IsNullOrWhiteSpace(expectedDigest))
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new { error = "connor_machine_read_not_provisioned" });
 
-        var messages = await _conversationStore.GetConversationAsync(DirectConversationService.ConnorConversationId, cancellationToken);
+        if (!MachineReadTokenAuthenticator.IsAuthorized(Request.Headers.Authorization.ToString(), expectedDigest))
+            return Unauthorized(new { error = "connor_machine_read_unauthorized" });
+
         Response.Headers.CacheControl = "no-store";
-        return Ok(new
-        {
-            conversation = "connor-direct",
-            principalId = PrincipalSmsBindingResolver.ConnorPrincipalId,
-            messages = messages.Select(message => new
-            {
-                message.MessageId,
-                direction = message.Direction.ToString().ToLowerInvariant(),
-                message.Body,
-                message.CreatedAt,
-                deliveryState = message.DeliveryState?.ToString().ToLowerInvariant()
-            })
-        });
+        Response.Headers["X-Content-Type-Options"] = "nosniff";
+        var projection = new ConnorConversationProjectionService(_store);
+        return Ok(await projection.ReadAsync(cancellationToken));
     }
 }
