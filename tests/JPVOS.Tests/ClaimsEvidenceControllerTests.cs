@@ -2,6 +2,7 @@ using JPVOS.Api;
 using JPVOS.Services.ClaimsEvidence;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -74,9 +75,10 @@ public sealed class ClaimsEvidenceControllerTests : IDisposable
         var type = typeof(ClaimsEvidenceController);
         var rate = type.GetCustomAttributes(typeof(EnableRateLimitingAttribute), true).Cast<EnableRateLimitingAttribute>().Single();
         var size = type.GetCustomAttributes(typeof(RequestSizeLimitAttribute), true).Cast<RequestSizeLimitAttribute>().Single();
+        var sizeMetadata = (IRequestSizeLimitMetadata)size;
 
         Assert.Equal("ClaimsEvidencePublic", rate.PolicyName);
-        Assert.Equal(1_048_576, size.Bytes);
+        Assert.Equal(1_048_576, sizeMetadata.MaxRequestBodySize);
     }
 
     private ClaimsEvidenceController CreateController()
