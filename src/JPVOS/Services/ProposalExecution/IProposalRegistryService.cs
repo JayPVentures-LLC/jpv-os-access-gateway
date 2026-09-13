@@ -18,3 +18,5 @@ public interface IProposalRegistryService
 
 public sealed class ProposalValidationException(string message) : Exception(message);
 public sealed class ProposalPersistenceException(string message, Exception? inner = null) : Exception(message, inner);
+public sealed class ProposalConcurrencyException(string message) : Exception(message);
+public sealed class ProposalIdempotencyConflictException(string message) : Exception(message);
