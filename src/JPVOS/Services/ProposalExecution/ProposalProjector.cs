@@ -30,6 +30,16 @@ public static class ProposalProjector
                     projection = projection with { Status = payload.Status, EvidenceReferences = evidence, Authorities = authorities, LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
                 }
+                case ProposalEventType.EvidenceLinked when projection is not null:
+                {
+                    var classified = projection.ClassifiedEvidence.ToList();
+                    var evidence = Read<ClassifiedEvidenceReference>(item);
+                    if (!classified.Contains(evidence)) classified.Add(evidence);
+                    var references = projection.EvidenceReferences.ToList();
+                    if (!references.Contains(evidence.Reference)) references.Add(evidence.Reference);
+                    projection = projection with { ClassifiedEvidence = classified, EvidenceReferences = references, LastUpdatedAtUtc = item.OccurredAtUtc };
+                    break;
+                }
                 case ProposalEventType.AuthorityMapped when projection is not null:
                 {
                     var authorities = projection.Authorities.ToList();
@@ -37,6 +47,9 @@ public static class ProposalProjector
                     projection = projection with { Authorities = authorities, LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
                 }
+                case ProposalEventType.AdoptionRouteSet when projection is not null:
+                    projection = projection with { AdoptionRoute = Read<AdoptionRoute>(item), LastUpdatedAtUtc = item.OccurredAtUtc };
+                    break;
                 case ProposalEventType.ObligationAdded when projection is not null:
                 {
                     var obligations = projection.Obligations.ToList();
@@ -44,6 +57,16 @@ public static class ProposalProjector
                     projection = projection with { Obligations = obligations, LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
                 }
+                case ProposalEventType.VerificationRequirementAdded when projection is not null:
+                {
+                    var requirements = projection.VerificationRequirements.ToList();
+                    requirements.Add(Read<VerificationRequirement>(item));
+                    projection = projection with { VerificationRequirements = requirements, LastUpdatedAtUtc = item.OccurredAtUtc };
+                    break;
+                }
+                case ProposalEventType.ReviewRequirementSet when projection is not null:
+                    projection = projection with { ReviewRequirement = Read<ReviewRequirement>(item), LastUpdatedAtUtc = item.OccurredAtUtc };
+                    break;
                 case ProposalEventType.OutcomeRecorded when projection is not null:
                     projection = projection with { LatestOutcome = Read<OutcomeMeasurement>(item), LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
