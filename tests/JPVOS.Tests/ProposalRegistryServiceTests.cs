@@ -4,7 +4,7 @@ namespace JPVOS.Tests;
 
 public sealed class ProposalRegistryServiceTests : IDisposable
 {
-    private readonly string _path = Path.Combine(Path.GetTempPath(), $"jpv-registry-{Guid.NewGuid():N}.db");
+    private readonly string _path = Path.Join(Path.GetTempPath(), $"jpv-registry-{Guid.NewGuid():N}.db");
 
     [Fact]
     public async Task Registry_rejects_status_without_required_record()
@@ -23,6 +23,61 @@ public sealed class ProposalRegistryServiceTests : IDisposable
         var projection = await service.GetAsync("JPV-REG-2", default);
         Assert.Equal(ProposalStatus.Submitted, projection!.Status);
         Assert.Contains("record-2", projection.EvidenceReferences);
+    }
+
+    [Fact]
+    public async Task Retry_is_idempotent_after_lifecycle_has_advanced()
+    {
+        var service = CreateService();
+        await service.RegisterAsync("JPV-REG-RETRY", "Retry", ProposalClass.GrantProposal, ProposalLane.Enterprise, "r-retry", default);
+        await service.RecordStatusAsync("JPV-REG-RETRY", ProposalStatus.Submitted, "submission-1", null, "submit-key", default);
+        await service.RecordStatusAsync("JPV-REG-RETRY", ProposalStatus.Acknowledged, "ack-1", null, "ack-key", default);
+        await service.RecordStatusAsync("JPV-REG-RETRY", ProposalStatus.UnderReview, null, null, "review-key", default);
+
+        var replay = await service.RecordStatusAsync("JPV-REG-RETRY", ProposalStatus.Submitted, "submission-1", null, "submit-key", default);
+
+        Assert.Equal(ProposalStatus.UnderReview, replay.Status);
+    }
+
+    [Fact]
+    public async Task Registry_rejects_completed_obligation_without_completion_evidence()
+    {
+        var service = CreateService();
+        await service.RegisterAsync("JPV-REG-OBL", "Obligation", ProposalClass.OperationalStandard, ProposalLane.Enterprise, "r-obl", default);
+        await Assert.ThrowsAsync<ProposalValidationException>(() => service.AddObligationAsync(
+            "JPV-REG-OBL",
+            new ImplementationObligation("obl-1", "operator", "Execute", "receipt", true, null),
+            "obl-key", default));
+    }
+
+    [Fact]
+    public async Task Registry_requires_measurement_evidence_for_measured_outcomes()
+    {
+        var service = CreateService();
+        await service.RegisterAsync("JPV-REG-OUT", "Outcome", ProposalClass.PublicInterestFramework, ProposalLane.Labs, "r-out", default);
+        await Assert.ThrowsAsync<ProposalValidationException>(() => service.RecordOutcomeAsync(
+            "JPV-REG-OUT", new OutcomeMeasurement("adoption", "met", null), "out-1", default));
+
+        var recorded = await service.RecordOutcomeAsync(
+            "JPV-REG-OUT",
+            new OutcomeMeasurement("adoption", "met", "measurement-1", Method: "ledger", DataSource: "proposal-ledger", ObservationWindow: "90 days", ReviewOwner: "reviewer"),
+            "out-2", default);
+        Assert.Equal("met", recorded.LatestOutcome!.Disposition);
+    }
+
+    [Fact]
+    public async Task Registry_blocks_release_until_required_independent_review_is_complete()
+    {
+        var service = CreateService();
+        await service.RegisterAsync("JPV-REG-REL", "Release", ProposalClass.PublicPolicy, ProposalLane.Enterprise, "r-rel", default);
+        await service.MapAuthorityAsync("JPV-REG-REL", new AuthorityAssignment("proposal-owner", "owner-1", null), "owner-map", default);
+        await service.SetReviewRequirementAsync("JPV-REG-REL", new ReviewRequirement("before-publication", true, "independent review"), "review-required", default);
+
+        await Assert.ThrowsAsync<ProposalValidationException>(() => service.RecordReleaseAsync("JPV-REG-REL", true, "Public", "release-blocked", default));
+
+        await service.SetReviewRequirementAsync("JPV-REG-REL", new ReviewRequirement("before-publication", true, "independent review", "reviewer-1", true, "review-evidence-1"), "review-complete", default);
+        var released = await service.RecordReleaseAsync("JPV-REG-REL", true, "Public", "release-ok", default);
+        Assert.True(released.PublicReleaseApproved);
     }
 
     [Fact]
