@@ -8,35 +8,56 @@ public static class ProposalProjector
     {
         ProposalProjection? projection = null;
 
-        foreach (var @event in events.OrderBy(x => x.Sequence))
+        foreach (var item in events.OrderBy(x => x.Sequence))
         {
-            switch (@event.Type)
+            switch (item.Type)
             {
                 case ProposalEventType.Registered:
                 {
-                    var payload = JsonSerializer.Deserialize<ProposalLifecycleEvent.RegistrationPayload>(@event.PayloadJson)
-                                  ?? throw new ProposalValidationException("Invalid registration payload.");
-                    projection = ProposalProjection.New(@event.ProposalId, payload.Title, payload.Class, payload.Lane)
-                        with { LastUpdatedAtUtc = @event.OccurredAtUtc };
+                    var payload = Read<ProposalLifecycleEvent.RegistrationPayload>(item);
+                    projection = ProposalProjection.New(item.ProposalId, payload.Title, payload.Class, payload.Lane)
+                        with { LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
                 }
                 case ProposalEventType.StatusChanged when projection is not null:
                 {
-                    var payload = JsonSerializer.Deserialize<ProposalLifecycleEvent.StatusPayload>(@event.PayloadJson)
-                                  ?? throw new ProposalValidationException("Invalid status payload.");
+                    var payload = Read<ProposalLifecycleEvent.StatusPayload>(item);
                     var evidence = projection.EvidenceReferences.ToList();
                     if (!string.IsNullOrWhiteSpace(payload.EvidenceReference) && !evidence.Contains(payload.EvidenceReference)) evidence.Add(payload.EvidenceReference);
                     var authorities = projection.Authorities.ToList();
                     if (!string.IsNullOrWhiteSpace(payload.AuthorityReference) && !authorities.Any(x => x.AuthorityReference == payload.AuthorityReference))
                         authorities.Add(new AuthorityAssignment("decision-authority", payload.AuthorityReference, payload.EvidenceReference));
-                    projection = projection with { Status = payload.Status, EvidenceReferences = evidence, Authorities = authorities, LastUpdatedAtUtc = @event.OccurredAtUtc };
+                    projection = projection with { Status = payload.Status, EvidenceReferences = evidence, Authorities = authorities, LastUpdatedAtUtc = item.OccurredAtUtc };
+                    break;
+                }
+                case ProposalEventType.AuthorityMapped when projection is not null:
+                {
+                    var authorities = projection.Authorities.ToList();
+                    authorities.Add(Read<AuthorityAssignment>(item));
+                    projection = projection with { Authorities = authorities, LastUpdatedAtUtc = item.OccurredAtUtc };
+                    break;
+                }
+                case ProposalEventType.ObligationAdded when projection is not null:
+                {
+                    var obligations = projection.Obligations.ToList();
+                    obligations.Add(Read<ImplementationObligation>(item));
+                    projection = projection with { Obligations = obligations, LastUpdatedAtUtc = item.OccurredAtUtc };
+                    break;
+                }
+                case ProposalEventType.OutcomeRecorded when projection is not null:
+                    projection = projection with { LatestOutcome = Read<OutcomeMeasurement>(item), LastUpdatedAtUtc = item.OccurredAtUtc };
+                    break;
+                case ProposalEventType.LineageAdded when projection is not null:
+                {
+                    var lineage = projection.Lineage.ToList();
+                    lineage.Add(Read<ProposalLineage>(item));
+                    projection = projection with { Lineage = lineage, LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
                 }
                 case ProposalEventType.PublicationReviewed when projection is not null:
                 {
-                    var payload = JsonSerializer.Deserialize<ProposalLifecycleEvent.PublicationPayload>(@event.PayloadJson)
-                                  ?? throw new ProposalValidationException("Invalid publication payload.");
-                    projection = projection with { PublicReleaseApproved = payload.Approved, PublicSummary = payload.Summary, LastUpdatedAtUtc = @event.OccurredAtUtc };
+                    var payload = Read<ProposalLifecycleEvent.PublicationPayload>(item);
+                    projection = projection with { PublicReleaseApproved = payload.Approved, PublicSummary = payload.Summary, LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
                 }
             }
@@ -44,4 +65,7 @@ public static class ProposalProjector
 
         return projection ?? throw new ProposalValidationException("Proposal stream has no registration event.");
     }
+
+    private static T Read<T>(ProposalLifecycleEvent item) =>
+        JsonSerializer.Deserialize<T>(item.PayloadJson) ?? throw new ProposalValidationException($"Invalid {item.Type} payload.");
 }
