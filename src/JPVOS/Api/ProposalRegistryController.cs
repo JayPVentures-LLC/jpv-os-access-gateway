@@ -15,7 +15,7 @@ public sealed class ProposalRegistryController(IProposalRegistryService registry
         return Ok(new PublicProposalStatus(
             proposal.ProposalId,
             proposal.Title,
-            proposal.Status.ToString(),
+            ProposalWireValues.Status(proposal.Status),
             proposal.PublicSummary,
             proposal.LastUpdatedAtUtc));
     }
