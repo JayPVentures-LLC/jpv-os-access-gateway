@@ -11,10 +11,25 @@ public sealed class ProposalLifecycleValidator
             return ProposalValidationResult.Invalid("submission evidence is required");
         if (next == ProposalStatus.Acknowledged && string.IsNullOrWhiteSpace(evidenceReference))
             return ProposalValidationResult.Invalid("acknowledgment evidence is required");
-        if (next == ProposalStatus.Adopted && (string.IsNullOrWhiteSpace(evidenceReference) || string.IsNullOrWhiteSpace(authorityReference)))
-            return ProposalValidationResult.Invalid("adoption requires authority and evidence");
-        if (next == ProposalStatus.Verification && string.IsNullOrWhiteSpace(evidenceReference))
-            return ProposalValidationResult.Invalid("verification requires implementation evidence");
+
+        if (next == ProposalStatus.Adopted)
+        {
+            if (string.IsNullOrWhiteSpace(evidenceReference) || string.IsNullOrWhiteSpace(authorityReference))
+                return ProposalValidationResult.Invalid("adoption requires authority and evidence");
+            if (!current.Authorities.Any(x => string.Equals(x.Role, "decision-authority", StringComparison.OrdinalIgnoreCase) && x.AuthorityReference == authorityReference))
+                return ProposalValidationResult.Invalid("adoption authority must already be mapped as decision-authority");
+            if (!current.ClassifiedEvidence.Any(x => x.Reference == evidenceReference && x.Classification == ProposalEvidenceClass.CompetentAuthorityDetermination))
+                return ProposalValidationResult.Invalid("adoption evidence must be a recorded competent-authority determination");
+        }
+
+        if (next == ProposalStatus.Verification)
+        {
+            if (string.IsNullOrWhiteSpace(evidenceReference))
+                return ProposalValidationResult.Invalid("verification requires implementation evidence");
+            if (current.Obligations.Any(x => !x.Completed || string.IsNullOrWhiteSpace(x.CompletionEvidenceReference)))
+                return ProposalValidationResult.Invalid("all implementation obligations must be completed with evidence before verification");
+        }
+
         if (next == ProposalStatus.Verified && string.IsNullOrWhiteSpace(evidenceReference))
             return ProposalValidationResult.Invalid("verification evidence is required");
 
