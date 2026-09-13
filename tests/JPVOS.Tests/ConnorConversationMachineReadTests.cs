@@ -13,11 +13,11 @@ public sealed class ConnorConversationMachineReadTests
         const string token = "unit-test-connor-read-secret";
         var digest = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
 
-        Assert.True(MachineReadTokenAuthenticator.IsAuthorized($"Bearer {token}", digest));
+        Assert.True(MachineReadTokenAuthenticator.IsAuthorized($"Bearer ${token}", digest));
         Assert.False(MachineReadTokenAuthenticator.IsAuthorized("Bearer wrong", digest));
         Assert.False(MachineReadTokenAuthenticator.IsAuthorized(token, digest));
-        Assert.False(MachineReadTokenAuthenticator.IsAuthorized($"Bearer {token}", null));
-        Assert.False(MachineReadTokenAuthenticator.IsAuthorized($"Bearer {token}", "not-hex"));
+        Assert.False(MachineReadTokenAuthenticator.IsAuthorized($"Bearer ${token}", null));
+        Assert.False(MachineReadTokenAuthenticator.IsAuthorized($"Bearer ${token}", "not-hex"));
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public sealed class ConnorConversationMachineReadTests
         var result = await new ConnorConversationProjectionService(store).ReadAsync(CancellationToken.None);
 
         Assert.Equal("jpv.connor-direct-conversation-read.v1", result.SchemaVersion);
-        Assert.Equal(PrincipalSmsBindingResolver.ConnorPrincipalId, result.SubjectId);
+        Assert.Equal("connor-kruer", result.SubjectId);
         Assert.Equal(DirectConversationService.ConnorConversationId, result.ConversationId);
         Assert.True(result.ReadOnly);
         Assert.Collection(result.Messages,
