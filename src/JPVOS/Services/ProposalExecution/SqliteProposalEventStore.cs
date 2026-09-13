@@ -43,7 +43,7 @@ public sealed class SqliteProposalEventStore : IProposalEventStore
     {
         await using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
-        await using var transaction = connection.BeginTransaction(SqliteTransactionMode.Immediate);
+        await using var transaction = connection.BeginTransaction(deferred: false);
 
         try
         {
