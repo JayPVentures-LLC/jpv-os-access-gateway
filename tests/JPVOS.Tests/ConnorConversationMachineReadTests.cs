@@ -13,11 +13,11 @@ public sealed class ConnorConversationMachineReadTests
         const string token = "unit-test-connor-read-secret";
         var digest = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
 
-        Assert.True(MachineReadTokenAuthenticator.IsAuthorized($"Bearer ${token}", digest));
+        Assert.True(MachineReadTokenAuthenticator.IsAuthorized($"Bearer {token}", digest));
         Assert.False(MachineReadTokenAuthenticator.IsAuthorized("Bearer wrong", digest));
         Assert.False(MachineReadTokenAuthenticator.IsAuthorized(token, digest));
-        Assert.False(MachineReadTokenAuthenticator.IsAuthorized($"Bearer ${token}", null));
-        Assert.False(MachineReadTokenAuthenticator.IsAuthorized($"Bearer ${token}", "not-hex"));
+        Assert.False(MachineReadTokenAuthenticator.IsAuthorized($"Bearer {token}", null));
+        Assert.False(MachineReadTokenAuthenticator.IsAuthorized($"Bearer {token}", "not-hex"));
     }
 
     [Fact]
