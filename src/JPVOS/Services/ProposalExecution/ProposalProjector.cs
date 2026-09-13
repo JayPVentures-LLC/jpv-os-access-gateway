@@ -24,10 +24,7 @@ public static class ProposalProjector
                     var payload = Read<ProposalLifecycleEvent.StatusPayload>(item);
                     var evidence = projection.EvidenceReferences.ToList();
                     if (!string.IsNullOrWhiteSpace(payload.EvidenceReference) && !evidence.Contains(payload.EvidenceReference)) evidence.Add(payload.EvidenceReference);
-                    var authorities = projection.Authorities.ToList();
-                    if (!string.IsNullOrWhiteSpace(payload.AuthorityReference) && !authorities.Any(x => x.AuthorityReference == payload.AuthorityReference))
-                        authorities.Add(new AuthorityAssignment("decision-authority", payload.AuthorityReference, payload.EvidenceReference));
-                    projection = projection with { Status = payload.Status, EvidenceReferences = evidence, Authorities = authorities, LastUpdatedAtUtc = item.OccurredAtUtc };
+                    projection = projection with { Status = payload.Status, EvidenceReferences = evidence, LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
                 }
                 case ProposalEventType.EvidenceLinked when projection is not null:
@@ -42,8 +39,9 @@ public static class ProposalProjector
                 }
                 case ProposalEventType.AuthorityMapped when projection is not null:
                 {
-                    var authorities = projection.Authorities.ToList();
-                    authorities.Add(Read<AuthorityAssignment>(item));
+                    var authority = Read<AuthorityAssignment>(item);
+                    var authorities = projection.Authorities.Where(x => !(x.Role == authority.Role && x.AuthorityReference == authority.AuthorityReference)).ToList();
+                    authorities.Add(authority);
                     projection = projection with { Authorities = authorities, LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
                 }
@@ -52,15 +50,17 @@ public static class ProposalProjector
                     break;
                 case ProposalEventType.ObligationAdded when projection is not null:
                 {
-                    var obligations = projection.Obligations.ToList();
-                    obligations.Add(Read<ImplementationObligation>(item));
+                    var obligation = Read<ImplementationObligation>(item);
+                    var obligations = projection.Obligations.Where(x => x.ObligationId != obligation.ObligationId).ToList();
+                    obligations.Add(obligation);
                     projection = projection with { Obligations = obligations, LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
                 }
                 case ProposalEventType.VerificationRequirementAdded when projection is not null:
                 {
-                    var requirements = projection.VerificationRequirements.ToList();
-                    requirements.Add(Read<VerificationRequirement>(item));
+                    var requirement = Read<VerificationRequirement>(item);
+                    var requirements = projection.VerificationRequirements.Where(x => x.RequirementId != requirement.RequirementId).ToList();
+                    requirements.Add(requirement);
                     projection = projection with { VerificationRequirements = requirements, LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
                 }
@@ -68,8 +68,13 @@ public static class ProposalProjector
                     projection = projection with { ReviewRequirement = Read<ReviewRequirement>(item), LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
                 case ProposalEventType.OutcomeRecorded when projection is not null:
-                    projection = projection with { LatestOutcome = Read<OutcomeMeasurement>(item), LastUpdatedAtUtc = item.OccurredAtUtc };
+                {
+                    var outcome = Read<OutcomeMeasurement>(item);
+                    var outcomes = projection.Outcomes.Where(x => !string.Equals(x.Metric, outcome.Metric, StringComparison.OrdinalIgnoreCase)).ToList();
+                    outcomes.Add(outcome);
+                    projection = projection with { LatestOutcome = outcome, Outcomes = outcomes, LastUpdatedAtUtc = item.OccurredAtUtc };
                     break;
+                }
                 case ProposalEventType.LineageAdded when projection is not null:
                 {
                     var lineage = projection.Lineage.ToList();
