@@ -39,7 +39,13 @@ public sealed class SqliteProposalEventStore : IProposalEventStore
         command.ExecuteNonQuery();
     }
 
-    public async Task AppendAsync(ProposalLifecycleEvent item, CancellationToken cancellationToken)
+    public Task AppendAsync(ProposalLifecycleEvent item, CancellationToken cancellationToken) =>
+        AppendCoreAsync(item, null, cancellationToken);
+
+    public Task AppendAsync(ProposalLifecycleEvent item, long expectedVersion, CancellationToken cancellationToken) =>
+        AppendCoreAsync(item, expectedVersion, cancellationToken);
+
+    private async Task AppendCoreAsync(ProposalLifecycleEvent item, long? expectedVersion, CancellationToken cancellationToken)
     {
         await using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
@@ -49,30 +55,31 @@ public sealed class SqliteProposalEventStore : IProposalEventStore
         {
             if (!string.IsNullOrWhiteSpace(item.IdempotencyKey))
             {
-                await using var existing = connection.CreateCommand();
-                existing.Transaction = transaction;
-                existing.CommandText = "SELECT 1 FROM proposal_events WHERE proposal_id=$proposal AND idempotency_key=$key LIMIT 1";
-                existing.Parameters.AddWithValue("$proposal", item.ProposalId);
-                existing.Parameters.AddWithValue("$key", item.IdempotencyKey);
-                if (await existing.ExecuteScalarAsync(cancellationToken) is not null)
+                var existing = await FindByIdempotencyKeyAsync(connection, transaction, item.ProposalId, item.IdempotencyKey, cancellationToken);
+                if (existing is not null)
                 {
+                    if (existing.Type != item.Type || !string.Equals(existing.PayloadJson, item.PayloadJson, StringComparison.Ordinal))
+                        throw new ProposalIdempotencyConflictException("Idempotency key was already used with different proposal event content.");
                     transaction.Commit();
                     return;
                 }
             }
 
-            await using var sequenceCommand = connection.CreateCommand();
-            sequenceCommand.Transaction = transaction;
-            sequenceCommand.CommandText = "SELECT COALESCE(MAX(sequence),0)+1 FROM proposal_events WHERE proposal_id=$proposal";
-            sequenceCommand.Parameters.AddWithValue("$proposal", item.ProposalId);
-            var sequence = Convert.ToInt64(await sequenceCommand.ExecuteScalarAsync(cancellationToken));
+            await using var versionCommand = connection.CreateCommand();
+            versionCommand.Transaction = transaction;
+            versionCommand.CommandText = "SELECT COALESCE(MAX(sequence),0) FROM proposal_events WHERE proposal_id=$proposal";
+            versionCommand.Parameters.AddWithValue("$proposal", item.ProposalId);
+            var currentVersion = Convert.ToInt64(await versionCommand.ExecuteScalarAsync(cancellationToken));
+
+            if (expectedVersion.HasValue && currentVersion != expectedVersion.Value)
+                throw new ProposalConcurrencyException($"Proposal stream version changed from expected {expectedVersion.Value} to {currentVersion}.");
 
             await using var insert = connection.CreateCommand();
             insert.Transaction = transaction;
             insert.CommandText = "INSERT INTO proposal_events(event_id,proposal_id,sequence,occurred_at_utc,event_type,idempotency_key,payload_json) VALUES($id,$proposal,$sequence,$occurred,$type,$key,$payload)";
             insert.Parameters.AddWithValue("$id", item.EventId);
             insert.Parameters.AddWithValue("$proposal", item.ProposalId);
-            insert.Parameters.AddWithValue("$sequence", sequence);
+            insert.Parameters.AddWithValue("$sequence", currentVersion + 1);
             insert.Parameters.AddWithValue("$occurred", item.OccurredAtUtc.ToUniversalTime().ToString("O"));
             insert.Parameters.AddWithValue("$type", item.Type.ToString());
             insert.Parameters.AddWithValue("$key", (object?)item.IdempotencyKey ?? DBNull.Value);
@@ -80,16 +87,33 @@ public sealed class SqliteProposalEventStore : IProposalEventStore
             await insert.ExecuteNonQueryAsync(cancellationToken);
             transaction.Commit();
         }
-        catch (OperationCanceledException)
-        {
-            transaction.Rollback();
-            throw;
-        }
+        catch (ProposalConcurrencyException) { transaction.Rollback(); throw; }
+        catch (ProposalIdempotencyConflictException) { transaction.Rollback(); throw; }
+        catch (OperationCanceledException) { transaction.Rollback(); throw; }
         catch (SqliteException ex)
         {
             transaction.Rollback();
             throw new ProposalPersistenceException("Failed to append proposal lifecycle event.", ex);
         }
+    }
+
+    public async Task<ProposalLifecycleEvent?> FindByIdempotencyKeyAsync(string proposalId, string idempotencyKey, CancellationToken cancellationToken)
+    {
+        await using var connection = new SqliteConnection(_connectionString);
+        await connection.OpenAsync(cancellationToken);
+        return await FindByIdempotencyKeyAsync(connection, null, proposalId, idempotencyKey, cancellationToken);
+    }
+
+    private static async Task<ProposalLifecycleEvent?> FindByIdempotencyKeyAsync(SqliteConnection connection, SqliteTransaction? transaction, string proposalId, string idempotencyKey, CancellationToken cancellationToken)
+    {
+        await using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = "SELECT event_id,proposal_id,sequence,occurred_at_utc,event_type,idempotency_key,payload_json FROM proposal_events WHERE proposal_id=$proposal AND idempotency_key=$key LIMIT 1";
+        command.Parameters.AddWithValue("$proposal", proposalId);
+        command.Parameters.AddWithValue("$key", idempotencyKey);
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        if (!await reader.ReadAsync(cancellationToken)) return null;
+        return ReadEvent(reader);
     }
 
     public async Task<IReadOnlyList<ProposalLifecycleEvent>> ReadStreamAsync(string proposalId, CancellationToken cancellationToken)
@@ -101,17 +125,16 @@ public sealed class SqliteProposalEventStore : IProposalEventStore
         command.CommandText = "SELECT event_id,proposal_id,sequence,occurred_at_utc,event_type,idempotency_key,payload_json FROM proposal_events WHERE proposal_id=$proposal ORDER BY sequence";
         command.Parameters.AddWithValue("$proposal", proposalId);
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-        while (await reader.ReadAsync(cancellationToken))
-        {
-            events.Add(new ProposalLifecycleEvent(
-                reader.GetString(0),
-                reader.GetString(1),
-                reader.GetInt64(2),
-                DateTime.Parse(reader.GetString(3), null, System.Globalization.DateTimeStyles.RoundtripKind),
-                Enum.Parse<ProposalEventType>(reader.GetString(4), true),
-                reader.IsDBNull(5) ? null : reader.GetString(5),
-                reader.GetString(6)));
-        }
+        while (await reader.ReadAsync(cancellationToken)) events.Add(ReadEvent(reader));
         return events;
     }
+
+    private static ProposalLifecycleEvent ReadEvent(SqliteDataReader reader) => new(
+        reader.GetString(0),
+        reader.GetString(1),
+        reader.GetInt64(2),
+        DateTime.Parse(reader.GetString(3), null, System.Globalization.DateTimeStyles.RoundtripKind),
+        Enum.Parse<ProposalEventType>(reader.GetString(4), true),
+        reader.IsDBNull(5) ? null : reader.GetString(5),
+        reader.GetString(6));
 }
