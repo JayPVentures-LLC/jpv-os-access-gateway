@@ -26,7 +26,11 @@ public sealed class ProposalExecutionSchemaCoverageTests
         var projection = ProposalProjector.Project(events);
 
         Assert.Contains(evidence, projection.ClassifiedEvidence);
-        Assert.Equal(route, projection.AdoptionRoute);
+        var replayedRoute = Assert.IsType<AdoptionRoute>(projection.AdoptionRoute);
+        Assert.Equal(route.TargetAuthority, replayedRoute.TargetAuthority);
+        Assert.Equal(route.SubmissionMechanism, replayedRoute.SubmissionMechanism);
+        Assert.Equal(route.RequiredArtifacts, replayedRoute.RequiredArtifacts);
+        Assert.Equal(route.RequiredEvidence, replayedRoute.RequiredEvidence);
         Assert.Contains(verification, projection.VerificationRequirements);
         Assert.Equal(review, projection.ReviewRequirement);
     }
