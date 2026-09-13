@@ -10,10 +10,8 @@ using JPVOS.Services.Reciprocity;
 using JPVOS.Services.PrivilegedActions;
 using JPVOS.Services.GitHubOrgMutation;
 using JPVOS.Services.Attention;
-using JPVOS.Services.Outbound;
 using JPVOS.Services.ClaimsEvidence;
 using JPVOS.Infrastructure.Stripe;
-using JPVOS.Infrastructure.Twilio;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,7 +54,7 @@ if (string.IsNullOrWhiteSpace(reciprocityDataDir))
 if (string.IsNullOrWhiteSpace(reciprocityDataDir))
 {
     if (!builder.Environment.IsDevelopment())
-        throw new InvalidOperationException("JPV_RECIPROCITY_DATA_DIR or JPV_OUTBOUND_DATA_DIR must point to writable persistent storage in production.");
+        throw new InvalidOperationException("JPV_RECIPROCITY_DATA_DIR must point to writable persistent storage in production.");
     reciprocityDataDir = Path.Combine(Path.GetTempPath(), "jpv-os-reciprocity");
 }
 Directory.CreateDirectory(reciprocityDataDir);
