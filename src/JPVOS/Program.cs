@@ -11,6 +11,7 @@ using JPVOS.Services.PrivilegedActions;
 using JPVOS.Services.GitHubOrgMutation;
 using JPVOS.Services.Attention;
 using JPVOS.Services.ClaimsEvidence;
+using JPVOS.Services.ProposalExecution;
 using JPVOS.Infrastructure.Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,14 @@ if (string.IsNullOrWhiteSpace(claimsDataDir))
 Directory.CreateDirectory(claimsDataDir);
 var claimsDataProtectionDir = Path.Combine(claimsDataDir, "data-protection-keys");
 Directory.CreateDirectory(claimsDataProtectionDir);
+
+var proposalDataDir = builder.Configuration["JPV_PROPOSAL_DATA_DIR"];
+if (string.IsNullOrWhiteSpace(proposalDataDir))
+{
+    if (!builder.Environment.IsDevelopment()) throw new InvalidOperationException("JPV_PROPOSAL_DATA_DIR is required outside Development and must point to writable persistent storage.");
+    proposalDataDir = Path.Combine(Path.GetTempPath(), "jpv-os-proposals");
+}
+Directory.CreateDirectory(proposalDataDir);
 
 var reciprocityDataDir = builder.Configuration["JPV_RECIPROCITY_DATA_DIR"];
 if (string.IsNullOrWhiteSpace(reciprocityDataDir))
@@ -108,6 +117,11 @@ builder.Services.AddSingleton<IClaimsEvidenceEventStore>(sp => new SqliteClaimsE
     Path.Combine(claimsDataDir, "claims-evidence.db"),
     sp.GetRequiredService<IDataProtectionProvider>()));
 builder.Services.AddSingleton<IClaimsEvidenceService, ClaimsEvidenceService>();
+
+builder.Services.AddSingleton<ProposalLifecycleValidator>();
+builder.Services.AddSingleton<IProposalEventStore>(_ => new SqliteProposalEventStore(Path.Combine(proposalDataDir, "proposal-execution.db")));
+builder.Services.AddSingleton<IProposalRegistryService, ProposalRegistryService>();
+
 builder.Services.AddJpvReciprocityGate(reciprocityLedgerPath, reciprocityAuditPath);
 
 builder.Services.AddSingleton(systemicAccessPolicy);
@@ -157,6 +171,7 @@ app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemi
         founderWorkspace = "/workspace"
     },
     claimsEvidence = new { registered = true, persistentStorageRequired = !app.Environment.IsDevelopment(), binaryEvidenceEnabled = false },
+    proposalExecution = new { registered = true, persistentStorageRequired = !app.Environment.IsDevelopment(), publicReadRequiresReleaseReview = true },
     privilegedActions = new
     {
         policyLoaded = true,
