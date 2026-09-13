@@ -21,7 +21,7 @@ public sealed class ProposalRegistryControllerTests : IDisposable
         var ok = Assert.IsType<OkObjectResult>(await controller.GetStatus("JPV-API-1", default));
         var body = Assert.IsType<ProposalRegistryController.PublicProposalStatus>(ok.Value);
         Assert.Equal("Public summary", body.Summary);
-        Assert.DoesNotContain("Evidence", string.Join(',', body.GetType().GetProperties().Select(x => x.Name)), StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Evidence", string.Join(",", body.GetType().GetProperties().Select(x => x.Name)), StringComparison.OrdinalIgnoreCase);
     }
 
     public void Dispose()
