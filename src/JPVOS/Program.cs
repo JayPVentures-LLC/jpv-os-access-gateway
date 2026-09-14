@@ -37,13 +37,16 @@ Directory.CreateDirectory(claimsDataDir);
 var claimsDataProtectionDir = Path.Combine(claimsDataDir, "data-protection-keys");
 Directory.CreateDirectory(claimsDataProtectionDir);
 
-var proposalDataDir = builder.Configuration["JPV_PROPOSAL_DATA_DIR"];
-if (string.IsNullOrWhiteSpace(proposalDataDir))
-{
-    if (!builder.Environment.IsDevelopment()) throw new InvalidOperationException("JPV_PROPOSAL_DATA_DIR is required outside Development and must point to writable persistent storage.");
-    proposalDataDir = Path.Combine(Path.GetTempPath(), "jpv-os-proposals");
-}
+var proposalDataDir = ProposalStoragePathResolver.Resolve(
+    builder.Configuration["JPV_PROPOSAL_DATA_DIR"],
+    builder.Configuration["JPV_OUTBOUND_DATA_DIR"],
+    builder.Environment.IsDevelopment());
 Directory.CreateDirectory(proposalDataDir);
+var proposalBootstrapManifestPath = Path.Combine(
+    builder.Environment.ContentRootPath,
+    "governance",
+    "proposals",
+    "JPV-PROPOSAL-REGISTRY.bootstrap.json");
 
 var reciprocityDataDir = builder.Configuration["JPV_RECIPROCITY_DATA_DIR"];
 if (string.IsNullOrWhiteSpace(reciprocityDataDir))
@@ -121,6 +124,7 @@ builder.Services.AddSingleton<IClaimsEvidenceService, ClaimsEvidenceService>();
 builder.Services.AddSingleton<ProposalLifecycleValidator>();
 builder.Services.AddSingleton<IProposalEventStore>(_ => new SqliteProposalEventStore(Path.Combine(proposalDataDir, "proposal-execution.db")));
 builder.Services.AddSingleton<IProposalRegistryService, ProposalRegistryService>();
+builder.Services.AddSingleton<ProposalBootstrapImporter>();
 
 builder.Services.AddJpvReciprocityGate(reciprocityLedgerPath, reciprocityAuditPath);
 
@@ -149,13 +153,13 @@ builder.Services.AddSingleton<GitHubOrganizationReconciler>();
 builder.Services.AddSingleton<GitHubOrgMutationRuntimeState>();
 builder.Services.AddHostedService<GitHubOrgMutationHostedService>();
 
-builder.Services.AddSingleton(systemicAccessPolicy); builder.Services.AddSingleton<SystemicAccessClassifier>(); builder.Services.AddSingleton<SystemicAccessRuntimeState>();
-builder.Services.AddSingleton(sp => new SystemicAccessAuditStore(Path.Combine(AppContext.BaseDirectory, "audit", "systemic-access-receipts.jsonl"))); builder.Services.AddSingleton<SystemicAccessReconciler>(); builder.Services.AddHostedService<SystemicAccessReconciliationService>();
+var app = builder.Build();
+PeopleProtectionStartupGuard.Verify(app);
+app.Services.GetRequiredService<SystemicAccessRuntimeState>().MarkPolicyLoaded();
+_ = app.Services.GetRequiredService<ProductionAttentionAdmissionService>();
+_ = app.Services.GetRequiredService<ReciprocityLedgerStore>();
+await app.Services.GetRequiredService<ProposalBootstrapImporter>().ImportAsync(proposalBootstrapManifestPath, CancellationToken.None);
 
-builder.Services.AddSingleton(githubAppOptions); builder.Services.AddHttpClient<IGitHubAppTokenProvider, GitHubAppTokenProvider>(); builder.Services.AddHttpClient<IGitHubOrganizationClient, GitHubOrganizationClient>(); builder.Services.AddHttpClient<IGitHubCanonicalTopologySource, GitHubCanonicalTopologyLoader>();
-builder.Services.AddSingleton(sp => new GitHubOrgMutationReceiptStore(Path.Combine(AppContext.BaseDirectory, "audit", "github-org-mutation-receipts.jsonl"))); builder.Services.AddSingleton<GitHubOrganizationReconciler>(); builder.Services.AddSingleton<GitHubOrgMutationRuntimeState>(); builder.Services.AddHostedService<GitHubOrgMutationHostedService>();
-
-var app = builder.Build(); PeopleProtectionStartupGuard.Verify(app); app.Services.GetRequiredService<SystemicAccessRuntimeState>().MarkPolicyLoaded(); _ = app.Services.GetRequiredService<ProductionAttentionAdmissionService>(); _ = app.Services.GetRequiredService<ReciprocityLedgerStore>();
 if (!app.Environment.IsDevelopment()) { app.UseExceptionHandler("/Error", createScopeForErrors: true); app.UseHsts(); app.UseHttpsRedirection(); }
 app.UseStaticFiles(); app.UseRateLimiter(); app.UseAuthentication(); app.UseAuthorization(); app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(); app.MapControllers();
