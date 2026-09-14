@@ -68,8 +68,11 @@ public sealed class ProposalRegistryService(IProposalEventStore store, ProposalL
 
     public async Task<ProposalProjection> AddObligationAsync(string proposalId, ImplementationObligation obligation, string? idempotencyKey, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(obligation.ObligationId) || string.IsNullOrWhiteSpace(obligation.CompletionEvidenceRequirement))
-            throw new ProposalValidationException("Obligation ID and completion evidence requirement are required.");
+        if (string.IsNullOrWhiteSpace(obligation.ObligationId) ||
+            string.IsNullOrWhiteSpace(obligation.ResponsibleAuthority) ||
+            string.IsNullOrWhiteSpace(obligation.ActionRequired) ||
+            string.IsNullOrWhiteSpace(obligation.CompletionEvidenceRequirement))
+            throw new ProposalValidationException("Obligation ID, responsible authority, action, and completion evidence requirement are required.");
         if (obligation.Completed && string.IsNullOrWhiteSpace(obligation.CompletionEvidenceReference))
             throw new ProposalValidationException("Completed obligations require completion evidence.");
         return await AppendGovernedAsync(ProposalLifecycleEvent.ObligationAdded(proposalId, obligation, idempotencyKey), cancellationToken);
@@ -89,11 +92,15 @@ public sealed class ProposalRegistryService(IProposalEventStore store, ProposalL
         if (requirement.Completed && (string.IsNullOrWhiteSpace(requirement.ReviewerReference) || string.IsNullOrWhiteSpace(requirement.ReviewEvidenceReference)))
             throw new ProposalValidationException("Completed review requires reviewer and review evidence.");
 
-        var (current, _) = await GetSnapshotAsync(proposalId, cancellationToken);
+        var item = ProposalLifecycleEvent.ReviewRequirementSet(proposalId, requirement, idempotencyKey);
+        var replay = await TryReplayAsync(item, cancellationToken);
+        if (replay is not null) return replay;
+
+        var (current, version) = await GetSnapshotAsync(proposalId, cancellationToken);
         if (requirement.Completed && requirement.IndependentReviewRequired && IsConflictedReviewer(current, requirement.ReviewerReference!))
             throw new ProposalValidationException("Independent reviewer conflicts with proposal ownership or implementation authority.");
 
-        return await AppendGovernedAsync(ProposalLifecycleEvent.ReviewRequirementSet(proposalId, requirement, idempotencyKey), cancellationToken);
+        return await AppendAndReadAsync(item, version, cancellationToken);
     }
 
     public async Task<ProposalProjection> RecordOutcomeAsync(string proposalId, OutcomeMeasurement outcome, string? idempotencyKey, CancellationToken cancellationToken)
@@ -101,12 +108,14 @@ public sealed class ProposalRegistryService(IProposalEventStore store, ProposalL
         if (string.IsNullOrWhiteSpace(outcome.Metric) || !OutcomeDispositions.Contains(outcome.Disposition))
             throw new ProposalValidationException("Outcome requires a metric and canonical disposition.");
 
-        var measured = outcome.Disposition is "mixed" or "met" or "not-met" or "adverse-effect-detected";
+        var normalizedDisposition = outcome.Disposition.ToLowerInvariant();
+        var measured = normalizedDisposition is "mixed" or "met" or "not-met" or "adverse-effect-detected";
         if (measured && (string.IsNullOrWhiteSpace(outcome.EvidenceReference) || string.IsNullOrWhiteSpace(outcome.Method) ||
                          string.IsNullOrWhiteSpace(outcome.DataSource) || string.IsNullOrWhiteSpace(outcome.ObservationWindow) || string.IsNullOrWhiteSpace(outcome.ReviewOwner)))
             throw new ProposalValidationException("Measured outcomes require evidence, method, data source, observation window, and review owner.");
 
-        return await AppendGovernedAsync(ProposalLifecycleEvent.OutcomeRecorded(proposalId, outcome, idempotencyKey), cancellationToken);
+        var canonicalOutcome = outcome with { Disposition = normalizedDisposition };
+        return await AppendGovernedAsync(ProposalLifecycleEvent.OutcomeRecorded(proposalId, canonicalOutcome, idempotencyKey), cancellationToken);
     }
 
     public async Task<ProposalProjection> AddLineageAsync(string proposalId, ProposalLineage lineage, string? idempotencyKey, CancellationToken cancellationToken)
@@ -124,6 +133,8 @@ public sealed class ProposalRegistryService(IProposalEventStore store, ProposalL
 
         var (current, version) = await GetSnapshotAsync(proposalId, cancellationToken);
         if (approved && string.IsNullOrWhiteSpace(summary)) throw new ProposalValidationException("An approved release requires a public summary.");
+        if (approved && current.Class == ProposalClass.PublicPolicy && current.ReviewRequirement is not { Stage: "before-publication" })
+            throw new ProposalValidationException("Public-policy release requires a before-publication review requirement.");
         if (approved && current.ReviewRequirement is { Stage: "before-publication", IndependentReviewRequired: true } review)
         {
             if (!review.Completed || string.IsNullOrWhiteSpace(review.ReviewerReference) || string.IsNullOrWhiteSpace(review.ReviewEvidenceReference))
