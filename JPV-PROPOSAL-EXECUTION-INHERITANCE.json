@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0.0",
+  "authority": "JPV-OS",
+  "consumer": "jpv-os-access-gateway",
+  "standard": "Proposal Execution Standard",
+  "spec_path": "docs/superpowers/specs/2026-09-13-jpv-proposal-reform-execution-standard-design.md",
+  "state_model": "append-only",
+  "release_mode": "explicit-review"
+}

@@ -10,6 +10,7 @@ RUN dotnet restore src/JPVOS/JPVOS.csproj
 COPY src/JPVOS/ src/JPVOS/
 COPY .jpv/governance/systemic-access-hygiene.json .jpv/governance/systemic-access-hygiene.json
 COPY .jpv/governance/privileged-action-governance.json .jpv/governance/privileged-action-governance.json
+COPY governance/proposals/JPV-PROPOSAL-REGISTRY.bootstrap.json governance/proposals/JPV-PROPOSAL-REGISTRY.bootstrap.json
 
 # Build and publish (--no-restore since restore already ran).
 RUN dotnet publish src/JPVOS/JPVOS.csproj -c Release -o /app/publish --no-restore

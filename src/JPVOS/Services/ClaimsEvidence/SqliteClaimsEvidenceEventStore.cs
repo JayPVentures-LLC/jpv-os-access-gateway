@@ -62,7 +62,7 @@ public sealed class SqliteClaimsEvidenceEventStore : IClaimsEvidenceEventStore
         if (events.Count == 0) throw new ArgumentException("At least one event is required.", nameof(events));
         await using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
-        await using var transaction = connection.BeginTransaction(SqliteTransactionMode.Immediate);
+        await using var transaction = connection.BeginTransaction(deferred: false);
         try
         {
             var replay = await TryGetIdempotentResultAsync(connection, transaction, operationScope, idempotencyKey, requestHash, cancellationToken);
@@ -100,7 +100,7 @@ public sealed class SqliteClaimsEvidenceEventStore : IClaimsEvidenceEventStore
     {
         await using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
-        await using var transaction = connection.BeginTransaction(SqliteTransactionMode.Immediate);
+        await using var transaction = connection.BeginTransaction(deferred: false);
         try
         {
             var replay = await TryGetIdempotentResultAsync(connection, transaction, operationScope, idempotencyKey, requestHash, cancellationToken);

@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "authority": "JPV-OS",
+  "records": [
+    {
+      "proposal_id": "JPV-PROP-PURDUE-FOOD-RESILIENCE",
+      "title": "JPV-OS Food Resilience Initiative - Purdue Exploratory Collaboration",
+      "class": "ResearchCollaboration",
+      "lane": "Labs",
+      "status": "Draft",
+      "truth_note": "Exploratory proposal artifacts exist; no partnership or adoption is asserted."
+    },
+    {
+      "proposal_id": "JPV-PROP-GOVERNANCE-GRANTS",
+      "title": "JPV-OS Governance Grants - Industrial Policy Proposal",
+      "class": "GrantProposal",
+      "lane": "Enterprise",
+      "status": "Draft",
+      "truth_note": "Proposal package exists; funding, submission, acknowledgment, and award are not asserted by this registry bootstrap."
+    },
+    {
+      "proposal_id": "JPV-PROP-INSTITUTIONAL-ACCOUNTABILITY",
+      "title": "Institutional Accountability Review Packet",
+      "class": "InstitutionalReview",
+      "lane": "Enterprise",
+      "status": "Draft",
+      "truth_note": "Review and correspondence artifacts exist; no external disposition is asserted without receipt evidence."
+    },
+    {
+      "proposal_id": "JPV-PROP-EXECUTIVE-OVERSIGHT",
+      "title": "Executive Accountability Oversight Referral",
+      "class": "InstitutionalReview",
+      "lane": "Enterprise",
+      "status": "Validated",
+      "truth_note": "Evidence-oriented referral artifact exists; external adoption or finding is not asserted."
+    },
+    {
+      "proposal_id": "JPV-PROP-PUBLIC-RECOVERY",
+      "title": "Public Recovery and Reinvestment Reform Concept",
+      "class": "PublicInterestFramework",
+      "lane": "Labs",
+      "status": "Researching",
+      "truth_note": "Concept remains research-stage pending legal and authority analysis."
+    }
+  ]
+}

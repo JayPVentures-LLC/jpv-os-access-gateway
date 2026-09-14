@@ -4,7 +4,7 @@ services:
     name: jpv-os
     runtime: docker
     dockerfilePath: ./src/JPVOS/Dockerfile
-    dockerContext: ./src/JPVOS
+    dockerContext: .
     region: oregon
     plan: starter
     numInstances: 1
