@@ -19,6 +19,7 @@ public sealed class ProposalRegistryServiceTests : IDisposable
     {
         var service = CreateService();
         await service.RegisterAsync("JPV-REG-2", "Registry", ProposalClass.ResearchCollaboration, ProposalLane.Labs, "r2", default);
+        await service.LinkEvidenceAsync("JPV-REG-2", new ClassifiedEvidenceReference("record-2", ProposalEvidenceClass.SourceRecord), "e2", default);
         await service.RecordStatusAsync("JPV-REG-2", ProposalStatus.Submitted, "record-2", null, "s2", default);
         var projection = await service.GetAsync("JPV-REG-2", default);
         Assert.Equal(ProposalStatus.Submitted, projection!.Status);
@@ -30,6 +31,8 @@ public sealed class ProposalRegistryServiceTests : IDisposable
     {
         var service = CreateService();
         await service.RegisterAsync("JPV-REG-RETRY", "Retry", ProposalClass.GrantProposal, ProposalLane.Enterprise, "r-retry", default);
+        await service.LinkEvidenceAsync("JPV-REG-RETRY", new ClassifiedEvidenceReference("submission-1", ProposalEvidenceClass.SourceRecord), "submission-evidence", default);
+        await service.LinkEvidenceAsync("JPV-REG-RETRY", new ClassifiedEvidenceReference("ack-1", ProposalEvidenceClass.LaterDisposition), "ack-evidence", default);
         await service.RecordStatusAsync("JPV-REG-RETRY", ProposalStatus.Submitted, "submission-1", null, "submit-key", default);
         await service.RecordStatusAsync("JPV-REG-RETRY", ProposalStatus.Acknowledged, "ack-1", null, "ack-key", default);
         await service.RecordStatusAsync("JPV-REG-RETRY", ProposalStatus.UnderReview, null, null, "review-key", default);
@@ -57,10 +60,12 @@ public sealed class ProposalRegistryServiceTests : IDisposable
         await service.RegisterAsync("JPV-REG-OUT", "Outcome", ProposalClass.PublicInterestFramework, ProposalLane.Labs, "r-out", default);
         await Assert.ThrowsAsync<ProposalValidationException>(() => service.RecordOutcomeAsync(
             "JPV-REG-OUT", new OutcomeMeasurement("adoption", "met", null), "out-1", default));
+        await Assert.ThrowsAsync<ProposalValidationException>(() => service.RecordOutcomeAsync(
+            "JPV-REG-OUT", new OutcomeMeasurement("adoption", "MET", null), "out-uppercase", default));
 
         var recorded = await service.RecordOutcomeAsync(
             "JPV-REG-OUT",
-            new OutcomeMeasurement("adoption", "met", "measurement-1", Method: "ledger", DataSource: "proposal-ledger", ObservationWindow: "90 days", ReviewOwner: "reviewer"),
+            new OutcomeMeasurement("adoption", "MET", "measurement-1", Method: "ledger", DataSource: "proposal-ledger", ObservationWindow: "90 days", ReviewOwner: "reviewer"),
             "out-2", default);
         Assert.Equal("met", recorded.LatestOutcome!.Disposition);
     }
@@ -71,13 +76,26 @@ public sealed class ProposalRegistryServiceTests : IDisposable
         var service = CreateService();
         await service.RegisterAsync("JPV-REG-REL", "Release", ProposalClass.PublicPolicy, ProposalLane.Enterprise, "r-rel", default);
         await service.MapAuthorityAsync("JPV-REG-REL", new AuthorityAssignment("proposal-owner", "owner-1", null), "owner-map", default);
-        await service.SetReviewRequirementAsync("JPV-REG-REL", new ReviewRequirement("before-publication", true, "independent review"), "review-required", default);
 
+        await Assert.ThrowsAsync<ProposalValidationException>(() => service.RecordReleaseAsync("JPV-REG-REL", true, "Public", "release-missing-review", default));
+
+        await service.SetReviewRequirementAsync("JPV-REG-REL", new ReviewRequirement("before-publication", true, "independent review"), "review-required", default);
         await Assert.ThrowsAsync<ProposalValidationException>(() => service.RecordReleaseAsync("JPV-REG-REL", true, "Public", "release-blocked", default));
 
         await service.SetReviewRequirementAsync("JPV-REG-REL", new ReviewRequirement("before-publication", true, "independent review", "reviewer-1", true, "review-evidence-1"), "review-complete", default);
         var released = await service.RecordReleaseAsync("JPV-REG-REL", true, "Public", "release-ok", default);
         Assert.True(released.PublicReleaseApproved);
+    }
+
+    [Fact]
+    public async Task Registry_requires_actor_and_action_for_implementation_obligations()
+    {
+        var service = CreateService();
+        await service.RegisterAsync("JPV-REG-OBL-FIELDS", "Obligation fields", ProposalClass.OperationalStandard, ProposalLane.Enterprise, "r", default);
+        await Assert.ThrowsAsync<ProposalValidationException>(() => service.AddObligationAsync(
+            "JPV-REG-OBL-FIELDS",
+            new ImplementationObligation("obl-1", "", "", "receipt", false, null),
+            "o", default));
     }
 
     [Fact]
