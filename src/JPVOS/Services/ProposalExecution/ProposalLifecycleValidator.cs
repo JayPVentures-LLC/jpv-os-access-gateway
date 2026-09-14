@@ -7,10 +7,15 @@ public sealed class ProposalLifecycleValidator
         if (!IsAllowed(current.Status, next))
             return ProposalValidationResult.Invalid($"Unsupported lifecycle transition: {current.Status} -> {next}.");
 
-        if (next == ProposalStatus.Submitted && string.IsNullOrWhiteSpace(evidenceReference))
-            return ProposalValidationResult.Invalid("submission evidence is required");
-        if (next == ProposalStatus.Acknowledged && string.IsNullOrWhiteSpace(evidenceReference))
-            return ProposalValidationResult.Invalid("acknowledgment evidence is required");
+        if (next is ProposalStatus.Submitted or ProposalStatus.Acknowledged)
+        {
+            if (string.IsNullOrWhiteSpace(evidenceReference))
+                return ProposalValidationResult.Invalid(next == ProposalStatus.Submitted ? "submission evidence is required" : "acknowledgment evidence is required");
+            if (!HasRecordedExternalEvidence(current, evidenceReference))
+                return ProposalValidationResult.Invalid(next == ProposalStatus.Submitted
+                    ? "submission evidence must already be recorded as external evidence"
+                    : "acknowledgment evidence must already be recorded as external evidence");
+        }
 
         if (next == ProposalStatus.Adopted)
         {
@@ -22,6 +27,14 @@ public sealed class ProposalLifecycleValidator
                 return ProposalValidationResult.Invalid("adoption evidence must be a recorded competent-authority determination");
         }
 
+        if (next == ProposalStatus.Implementation)
+        {
+            if (string.IsNullOrWhiteSpace(evidenceReference) || !HasRecordedExternalEvidence(current, evidenceReference))
+                return ProposalValidationResult.Invalid("implementation requires recorded authorization evidence");
+            if (current.Obligations.Count == 0)
+                return ProposalValidationResult.Invalid("implementation requires at least one explicit implementation obligation");
+        }
+
         if (next == ProposalStatus.Verification)
         {
             if (string.IsNullOrWhiteSpace(evidenceReference))
@@ -30,11 +43,27 @@ public sealed class ProposalLifecycleValidator
                 return ProposalValidationResult.Invalid("all implementation obligations must be completed with evidence before verification");
         }
 
-        if (next == ProposalStatus.Verified && string.IsNullOrWhiteSpace(evidenceReference))
-            return ProposalValidationResult.Invalid("verification evidence is required");
+        if (next == ProposalStatus.Verified)
+        {
+            if (string.IsNullOrWhiteSpace(evidenceReference))
+                return ProposalValidationResult.Invalid("verification evidence is required");
+            foreach (var requirement in current.VerificationRequirements)
+            {
+                if (!string.IsNullOrWhiteSpace(requirement.ExpectedRepositoryHead) &&
+                    !string.Equals(evidenceReference, requirement.ExpectedRepositoryHead, StringComparison.Ordinal))
+                    return ProposalValidationResult.Invalid($"verification evidence does not satisfy requirement {requirement.RequirementId}");
+            }
+        }
 
         return ProposalValidationResult.Valid();
     }
+
+    private static bool HasRecordedExternalEvidence(ProposalProjection current, string reference) =>
+        current.ClassifiedEvidence.Any(x => x.Reference == reference && x.Classification is
+            ProposalEvidenceClass.SourceRecord or
+            ProposalEvidenceClass.VerifiedFact or
+            ProposalEvidenceClass.CompetentAuthorityDetermination or
+            ProposalEvidenceClass.LaterDisposition);
 
     private static bool IsAllowed(ProposalStatus current, ProposalStatus next)
     {
