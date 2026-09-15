@@ -1,12 +1,12 @@
 {
-  "policy_id":"JPV-GOV-AI-AGENCY-SAFETY-001",
+  "policyId":"JPV-GOV-AI-AGENCY-SAFETY-001",
   "mode":"fail-closed",
-  "deny_wins":true,
-  "allow_wildcard_scope":false,
-  "allow_authority_inheritance":false,
-  "allow_self_certification":false,
-  "allow_shutdown_bypass":false,
-  "persistence_provenance_required":true,
-  "consequential_independent_verification_required":true,
-  "authority_levels":["OBSERVE","ANALYZE","RECOMMEND","PREPARE_REVERSIBLE","EXECUTE_BOUNDED","EXECUTE_CONSEQUENTIAL","EXECUTE_IRREVERSIBLE_HIGH_IMPACT"]
+  "denyWins":true,
+  "allowWildcardScope":false,
+  "allowAuthorityInheritance":false,
+  "allowSelfCertification":false,
+  "allowShutdownBypass":false,
+  "persistenceProvenanceRequired":true,
+  "consequentialIndependentVerificationRequired":true,
+  "authorityLevels":["OBSERVE","ANALYZE","RECOMMEND","PREPARE_REVERSIBLE","EXECUTE_BOUNDED","EXECUTE_CONSEQUENTIAL","EXECUTE_IRREVERSIBLE_HIGH_IMPACT"]
 }
