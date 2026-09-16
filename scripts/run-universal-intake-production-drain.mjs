@@ -26,10 +26,6 @@ export async function executeProductionDrainCommand({queue,manifest,sourceRecord
   const recoveredIds=new Set(sourceRecords.records.map(x=>x.source_id));
   const seedItems=queue.items.map(item=>({source_id:item.source_id}));
   const manifestById=new Map(manifest.items.map(x=>[x.source_id,x]));
-
-  // A recovered-source manifest is authoritative for whether recovery was attempted.
-  // Missing canonical sources intentionally have no sourceRecords entry and are allowed
-  // to flow into runProductionDrain() as precise fail-closed states.
   for(const seed of seedItems){
     const recovery=manifestById.get(seed.source_id);
     if(!recovery) errors.push(`recovery result missing for ${seed.source_id}`);
@@ -43,14 +39,23 @@ export async function executeProductionDrainCommand({queue,manifest,sourceRecord
 
 async function loadJson(path){ return JSON.parse(await readFile(path,'utf8')); }
 
-export async function main({deps={}}={}){
+function defaultRuntimeDeps(root){
+  return {
+    runtimeAuthority:{platform:'JPV_NATIVE'},
+    loadPortalProfile: async id => loadJson(resolve(root,`governance/portal-profiles/${id}.json`)),
+    portalWorker: async () => { throw new Error('JPV_NATIVE_RUNTIME_CAPACITY_UNAVAILABLE: no admitted JPV native runtime binding is present in this process'); }
+  };
+}
+
+export async function main({deps}={}){
   const root=resolve(fileURLToPath(new URL('..',import.meta.url)));
   const queue=await loadJson(resolve(root,'governance/backlog/2026-09-16-manual-queue.json'));
   const manifest=await loadJson(resolve(root,'governance/backlog/2026-09-16-recovered-source-manifest.json'));
   const sourceRecords=await loadJson(resolve(root,'governance/backlog/2026-09-16-production-source-records.json'));
   const registry=await loadJson(resolve(root,'governance/universal-intake-authorities.json'));
   const receipts=[];
-  const result=await executeProductionDrainCommand({queue,manifest,sourceRecords,registry,receipts,deps});
+  const runtimeDeps=deps ?? defaultRuntimeDeps(root);
+  const result=await executeProductionDrainCommand({queue,manifest,sourceRecords,registry,receipts,deps:runtimeDeps});
   process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
   return result.exit_code;
 }
