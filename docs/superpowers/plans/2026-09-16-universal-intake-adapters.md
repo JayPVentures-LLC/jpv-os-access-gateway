@@ -56,7 +56,7 @@
 - Modify: `governance/universal-intake-authorities.json`
 - Test: `tests/universal-intake-authorities.test.mjs`
 
-**Coverage:** NIST FOIA, FTC FOIA, UK DSIT FOI as executable email routes; DOJ FOIA, California CDT PRA, and European Commission access-to-documents as non-executable portal routes until an authenticated browser/API adapter is available.
+**Coverage:** NIST FOIA, FTC FOIA, UK DSIT FOI, and DOJ's Mail Referral Unit as executable email routes; California CDT PRA and European Commission access-to-documents remain non-executable portal routes until an authenticated browser/API adapter is available. The DOJ referral route is used only when the correct DOJ component is uncertain; component-specific routes supersede it when known.
 
 - [ ] Write tests asserting exact route classifications and endpoint metadata.
 - [ ] Confirm RED.
