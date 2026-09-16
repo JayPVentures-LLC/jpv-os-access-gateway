@@ -24,8 +24,21 @@ function preparedFromPackage(pkg){
 function classifyActionRequired(item){
   const reason=String(item?.handoff?.reason ?? 'ACTION_REQUIRED');
   if(reason.includes('JPV_NATIVE_RUNTIME_CAPACITY_UNAVAILABLE')) return 'ACTION_REQUIRED:JPV_NATIVE_RUNTIME_CAPACITY_UNAVAILABLE';
-  if(['MFA','CAPTCHA','IDENTITY_CONFIRMATION','TERMS_ACCEPTANCE','ACCOUNT_PROFILE_COMPLETION'].some(x=>reason.includes(x))) return 'ACTION_REQUIRED:HUMAN_GATE';
+  if(reason.includes('authority not registered')) return 'ACTION_REQUIRED:UNREGISTERED_AUTHORITY';
+  if(['MFA','CAPTCHA','IDENTITY_CONFIRMATION','TERMS_ACCEPTANCE','ACCOUNT_PROFILE_COMPLETION','HUMAN_GATE_REQUIRED'].some(x=>reason.includes(x))) return 'ACTION_REQUIRED:HUMAN_GATE';
   return 'ACTION_REQUIRED';
+}
+
+function executablePackages(pkg){
+  if(Array.isArray(pkg.components)&&pkg.components.length){
+    return pkg.components.flatMap((component,index)=>expandRecipients({
+      source_id:`${pkg.source_id}:${component.component_id ?? index+1}`,
+      request:component.request,
+      attachments:component.attachments ?? pkg.attachments ?? [],
+      recipients:component.recipients ?? []
+    }));
+  }
+  return expandRecipients(pkg);
 }
 
 export async function runProductionDrain({seedItems=[],sourceRecords=[],receipts=[],registry,deps={}}={}){
@@ -37,8 +50,18 @@ export async function runProductionDrain({seedItems=[],sourceRecords=[],receipts
       results.push({source_id:recoveredItem.source_id,status:`ACTION_REQUIRED:${recoveredItem.blocker.code}`,blocker:recoveredItem.blocker});
       continue;
     }
-    const expanded=expandRecipients(recoveredItem.package);
-    for(const pkg of expanded){
+    const recoveredPackage=recoveredItem.package;
+    if(recoveredPackage.preflight_blocker){
+      const blocker=recoveredPackage.preflight_blocker;
+      const suffix=blocker.code==='HUMAN_GATE_REQUIRED'?'HUMAN_GATE':blocker.code;
+      results.push({source_id:recoveredItem.source_id,status:`ACTION_REQUIRED:${suffix}`,blocker});
+      continue;
+    }
+    for(const pkg of executablePackages(recoveredPackage)){
+      if(!pkg.request){
+        results.push({source_id:pkg.source_id,status:'ACTION_REQUIRED:MISSING_CANONICAL_SOURCE',blocker:{code:'MISSING_CANONICAL_SOURCE',source_id:pkg.source_id}});
+        continue;
+      }
       const drained=await drainBacklog([preparedFromPackage(pkg)],receipts,registry,deps);
       const item=drained.items[0];
       if(item.status==='SUBMITTED' && item.receipt){
