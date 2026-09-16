@@ -1,0 +1,11 @@
+{
+  "branch":"feat/end-to-end-backlog-drain-20260916",
+  "design_spec_committed":true,
+  "implementation_plan_committed":true,
+  "source_recovery_attempted_for_all_seed_items":true,
+  "tests_authored":true,
+  "local_shell_verification_available":false,
+  "production_jpv_native_primary_available":false,
+  "external_submissions_claimed":false,
+  "ready_for_repository_ci_and_independent_review":true
+}
