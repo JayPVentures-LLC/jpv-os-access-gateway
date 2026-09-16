@@ -1,0 +1,6 @@
+{
+  "completion_claim":"NOT_AUTHORIZED",
+  "reason":"Repository CI, JPV-native primary enrollment, production transport execution, and external receipts remain outstanding.",
+  "external_submissions":0,
+  "provider_substitution_used":false
+}
