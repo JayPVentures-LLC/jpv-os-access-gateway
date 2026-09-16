@@ -1,0 +1,1 @@
+Pre-PR state frozen: source recovery reconciled; runtime remains fail-closed; no external submission is claimed.
