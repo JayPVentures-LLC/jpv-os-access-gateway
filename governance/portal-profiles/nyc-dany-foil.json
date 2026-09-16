@@ -1,0 +1,11 @@
+{
+  "id":"nyc-dany-foil",
+  "authority_id":"NYC_DANY_FOIL",
+  "profile_version":"1.0.0",
+  "semantic_fields":{"requester_name":"requester.name","requester_email":"requester.email","agency":"recipient.authority_name","title":"subject","request_description":"summary","canonical_request_id":"request_id"},
+  "fixed_values":{"agency_selection":"Manhattan District Attorney's Office"},
+  "attachments_field":"attachments",
+  "human_gates":["CAPTCHA","MFA","IDENTITY_CONFIRMATION","TERMS_ACCEPTANCE","ACCOUNT_PROFILE_COMPLETION"],
+  "receipt_requirements":["tracking_id","received_at","confirmation_url_or_screenshot_hash"],
+  "selectors_in_core":false
+}
