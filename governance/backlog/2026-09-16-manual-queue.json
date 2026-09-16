@@ -1,0 +1,16 @@
+{
+  "version":"1.0.0",
+  "captured_at":"2026-09-16",
+  "note":"Seed manifest for migration. Items without complete canonical package data remain ACTION_REQUIRED until their prepared package is attached; no submission status is inferred.",
+  "items":[
+    {"source_id":"frontier-doj-foia","authority_id":"DOJ_FOIA","authority_name":"DOJ","request_type":"PUBLIC_RECORDS","subject":"Frontier AI coordination and standards records","status_hint":"PREPARED_PACKAGE_REQUIRED"},
+    {"source_id":"frontier-ca-cdt-pra","authority_id":"CA_CDT_PRA","authority_name":"California Department of Technology","request_type":"PUBLIC_RECORDS","subject":"Frontier AI definitions, standards provenance, and industry inputs","status_hint":"PREPARED_PACKAGE_REQUIRED"},
+    {"source_id":"frontier-eu-1049","authority_id":"EU_COMMISSION_1049","authority_name":"European Commission","request_type":"ACCESS_TO_DOCUMENTS","subject":"Frontier AI governance, standards, and industry participation records","status_hint":"PREPARED_PACKAGE_REQUIRED"},
+    {"source_id":"manhattan-da-domain-records","authority_id":"UNREGISTERED_NYC_RECORDS","authority_name":"New York records authority","request_type":"PUBLIC_RECORDS","subject":"Seized-domain identifiers, warrants, returns, inventories, and related records","status_hint":"AUTHORITY_PROFILE_REQUIRED"},
+    {"source_id":"ftc-antitrust-complaint","authority_id":"UNREGISTERED_FTC_COMPLAINT","authority_name":"Federal Trade Commission","request_type":"COMPLAINT","subject":"Antitrust complaint package","status_hint":"AUTHORITY_PROFILE_REQUIRED"},
+    {"source_id":"stars-stripes-accountability","authority_id":"UNREGISTERED_MULTI_AUTHORITY","authority_name":"Multiple federal and congressional recipients","request_type":"OVERSIGHT_REFERRAL","subject":"Stars and Stripes accountability package and associated records requests","status_hint":"SPLIT_RECIPIENTS_REQUIRED"},
+    {"source_id":"clarity-2-congressional","authority_id":"UNREGISTERED_CONGRESSIONAL","authority_name":"Congressional recipients","request_type":"OVERSIGHT_REFERRAL","subject":"CLARITY 2.0 congressional package","status_hint":"RECIPIENT_PROFILE_REQUIRED"},
+    {"source_id":"ib-iba-kremlev-trumpjr-oversight","authority_id":"UNREGISTERED_CONGRESSIONAL","authority_name":"Congressional recipients","request_type":"OVERSIGHT_REFERRAL","subject":"IB Challenger / IBA / Umar Kremlev / Donald Trump Jr. oversight package","status_hint":"RECIPIENT_PROFILE_REQUIRED"},
+    {"source_id":"four-foia-bipartisan-oversight-recipient-copies","authority_id":"UNREGISTERED_MULTI_AUTHORITY","authority_name":"Multiple recipients","request_type":"OVERSIGHT_REFERRAL","subject":"Remaining recipient copies from four-FOIA and bipartisan oversight package","status_hint":"RECIPIENT_RECONCILIATION_REQUIRED"}
+  ]
+}
