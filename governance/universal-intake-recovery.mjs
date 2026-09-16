@@ -15,10 +15,12 @@ export function recoverBacklogPackages(seedItems, sourceRecords = []) {
       status: 'RECOVERED',
       package: {
         source_id: sourceId,
-        request: structuredClone(record.request),
+        request: structuredClone(record.request ?? null),
         attachments: structuredClone(record.attachments ?? []),
         recipients: structuredClone(record.recipients ?? []),
+        components: structuredClone(record.components ?? []),
         receipts: structuredClone(record.receipts ?? []),
+        preflight_blocker: structuredClone(record.preflight_blocker ?? null),
         source_ref: structuredClone(record.source_ref ?? null)
       }
     };
