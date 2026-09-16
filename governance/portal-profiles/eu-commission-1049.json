@@ -1,0 +1,17 @@
+{
+  "id": "eu-commission-1049",
+  "authority_id": "EU_COMMISSION_1049",
+  "profile_version": "1.0.0",
+  "semantic_fields": {
+    "applicant_name": "requester.name",
+    "applicant_email": "requester.email",
+    "institution": "recipient.authority_name",
+    "subject": "subject",
+    "document_description": "summary",
+    "requested_action": "requested_action",
+    "canonical_request_id": "request_id"
+  },
+  "human_gates": ["CAPTCHA", "MFA", "IDENTITY_CONFIRMATION", "TERMS_ACCEPTANCE"],
+  "receipt_requirements": ["tracking_id", "received_at", "confirmation_url_or_screenshot_hash"],
+  "selectors_in_core": false
+}
