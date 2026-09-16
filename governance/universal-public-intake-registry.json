@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "principle": "submit-once-route-correctly",
+  "profiles": {
+    "US-FOIA": {"request_type":"PUBLIC_RECORDS","legal_family":"5-USC-552"},
+    "US-STATE-PRA": {"request_type":"PUBLIC_RECORDS","legal_family":"STATE_PUBLIC_RECORDS"},
+    "UK-FOIA": {"request_type":"PUBLIC_RECORDS","legal_family":"UK_FOIA_2000"},
+    "EU-1049-2001": {"request_type":"ACCESS_TO_DOCUMENTS","legal_family":"REGULATION_1049_2001"},
+    "OVERSIGHT": {"request_type":"OVERSIGHT_REFERRAL","legal_family":"LEGISLATIVE_OVERSIGHT"},
+    "REGULATORY-COMPLAINT": {"request_type":"COMPLAINT","legal_family":"REGULATORY_INTAKE"}
+  },
+  "lifecycle": ["NEW","TRIAGED","ROUTED","SUBMITTED","WAITING","ACTION_REQUIRED","RESOLVED","CLOSED"],
+  "transport_priority": ["API","EMAIL","FORM","PORTAL"],
+  "requirements": {
+    "submitted_requires_receipt": true,
+    "manual_handoff_only_when_no_executable_transport": true,
+    "preserve_canonical_request_id": true,
+    "preserve_provenance": true,
+    "lossy_transformations_must_be_disclosed": true
+  }
+}
