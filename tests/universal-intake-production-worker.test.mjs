@@ -1,0 +1,61 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { acquirePortalSession, stripSessionSecrets } from '../governance/universal-intake-session.mjs';
+import { createBrowserPortalWorker } from '../governance/universal-intake-browser-worker.mjs';
+
+const request = {
+  request_id:'UPIS-2026-PROD-1', request_type:'PUBLIC_RECORDS', requester:{name:'Jay Price',email:'jay@example.test'},
+  recipient:{authority_id:'CA_CDT_PRA',authority_name:'California Department of Technology'}, subject:'Records', summary:'Produce records',
+  requested_action:'Produce electronically', provenance:{package_hash:'sha256:req'}, attachments:[{name:'evidence.pdf',sha256:'abc'}]
+};
+
+
+test('session boundary returns only scoped ephemeral handle metadata', async () => {
+  const session = await acquirePortalSession({ authority_id:'CA_CDT_PRA', request_id:request.request_id }, {
+    sessionProvider: async () => ({ handle:'session-1', expires_at:'2026-09-16T11:00:00Z', scope:['CA_CDT_PRA'], cookies:['secret'], token:'secret' }),
+    now: () => new Date('2026-09-16T10:00:00Z')
+  });
+  assert.equal(session.handle,'session-1');
+  assert.deepEqual(session.scope,['CA_CDT_PRA']);
+  assert.equal('cookies' in session,false);
+  assert.equal('token' in session,false);
+});
+
+test('session boundary rejects wrong scope and expired sessions', async () => {
+  await assert.rejects(() => acquirePortalSession({authority_id:'CA_CDT_PRA',request_id:'x'}, {sessionProvider:async()=>({handle:'x',expires_at:'2026-09-16T09:00:00Z',scope:['CA_CDT_PRA']}),now:()=>new Date('2026-09-16T10:00:00Z')}), /expired/i);
+  await assert.rejects(() => acquirePortalSession({authority_id:'CA_CDT_PRA',request_id:'x'}, {sessionProvider:async()=>({handle:'x',expires_at:'2026-09-16T11:00:00Z',scope:['OTHER']}),now:()=>new Date('2026-09-16T10:00:00Z')}), /scope/i);
+});
+
+test('secret stripping recursively removes sensitive session material', () => {
+  assert.deepEqual(stripSessionSecrets({handle:'h',token:'x',cookies:[1],nested:{password:'p',ok:true}}), {handle:'h',nested:{ok:true}});
+});
+
+test('browser worker maps semantic fields, uploads attachments and returns evidence', async () => {
+  const calls=[];
+  const worker=createBrowserPortalWorker({
+    sessionProvider: async()=>({handle:'sess',expires_at:'2026-09-16T11:00:00Z',scope:['CA_CDT_PRA']}),
+    now:()=>new Date('2026-09-16T10:00:00Z'),
+    driverFactory: async()=>({
+      open:async x=>calls.push(['open',x]), fill:async(a,b)=>calls.push(['fill',a,b]), upload:async(a,b)=>calls.push(['upload',a,b]),
+      detectHumanGate:async()=>null, validate:async()=>({ok:true,lossy_transformations:[]}), submit:async()=>({tracking_id:'CDT-9',received_at:'2026-09-16T10:02:00Z',confirmation_url:'https://example.test/r/9',screenshot_hash:'sha256:shot'})
+    })
+  });
+  const result=await worker({request,authority:{id:'CA_CDT_PRA'},transport:{endpoint:'https://example.test'},profile:{semantic_fields:{requester_name:'requester.name',subject:'subject'},attachments_field:'attachments'},fingerprint:'sha256:fp'});
+  assert.equal(result.state,'SUBMITTED');
+  assert.equal(result.tracking_id,'CDT-9');
+  assert.equal(result.fingerprint,'sha256:fp');
+  assert.ok(calls.some(c=>c[0]==='upload'));
+});
+
+test('browser worker stops on human gate without submitting', async () => {
+  let submitted=false;
+  const worker=createBrowserPortalWorker({sessionProvider:async()=>({handle:'s',expires_at:'2026-09-16T11:00:00Z',scope:['EU_COMMISSION_1049']}),now:()=>new Date('2026-09-16T10:00:00Z'),driverFactory:async()=>({open:async()=>{},fill:async()=>{},upload:async()=>{},detectHumanGate:async()=>({reason:'MFA',resume_token:'r1'}),validate:async()=>({ok:true,lossy_transformations:[]}),submit:async()=>{submitted=true;}})});
+  const result=await worker({request:{...request,recipient:{authority_id:'EU_COMMISSION_1049'}},authority:{id:'EU_COMMISSION_1049'},transport:{endpoint:'https://example.test'},profile:{semantic_fields:{}},fingerprint:'fp'});
+  assert.equal(result.state,'HUMAN_REQUIRED'); assert.equal(result.reason,'MFA'); assert.equal(submitted,false);
+});
+
+test('browser worker rejects lossy transformation before submission', async () => {
+  const worker=createBrowserPortalWorker({sessionProvider:async()=>({handle:'s',expires_at:'2026-09-16T11:00:00Z',scope:['CA_CDT_PRA']}),now:()=>new Date('2026-09-16T10:00:00Z'),driverFactory:async()=>({open:async()=>{},fill:async()=>{},upload:async()=>{},detectHumanGate:async()=>null,validate:async()=>({ok:false,lossy_transformations:['summary truncated']}),submit:async()=>({})})});
+  const result=await worker({request,authority:{id:'CA_CDT_PRA'},transport:{endpoint:'https://example.test'},profile:{semantic_fields:{}},fingerprint:'fp'});
+  assert.equal(result.state,'HUMAN_REQUIRED'); assert.equal(result.reason,'LOSSY_TRANSFORMATION');
+});
