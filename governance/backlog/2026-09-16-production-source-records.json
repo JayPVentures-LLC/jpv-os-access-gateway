@@ -1,0 +1,41 @@
+{
+  "version":"1.0.0",
+  "generated_at":"2026-09-16",
+  "records":[
+    {
+      "source_id":"manhattan-da-domain-records",
+      "source_ref":{"surface":"library","file_id":"file_000000007ad881f59ebc71ed217ddf95","name":"JPV_NCII_Records_Acquisition_and_Enforcement_Routing_Packet_v1.0.md"},
+      "request":{
+        "request_id":"UPIS-NYC-DANY-20260916-01",
+        "request_type":"PUBLIC_RECORDS",
+        "requester":{"name":"Jay Price","organization":"JPV"},
+        "recipient":{"authority_id":"NYC_DANY_FOIL","authority_name":"Manhattan District Attorney's Office"},
+        "subject":"September 2026 seizure of twelve AI-generated deepfake website domains",
+        "summary":"Pursuant to the New York Freedom of Information Law, I request records sufficient to identify the twelve domain names that the New York County District Attorney's Office announced it seized on September 14, 2026 in connection with websites allegedly disseminating, publishing, or selling AI-generated nonconsensual intimate imagery. I also request, to the extent publicly releasable: (1) the seizure-warrant number or numbers associated with those twelve domains; (2) the warrant return or returns, inventories, schedules, attachments, or other records identifying the seized domains; (3) any public-facing seizure orders or records sufficient to identify the exact domains seized; (4) records sufficient to identify the registries and registrars directed to implement the seizures, excluding confidential investigative details where applicable; and (5) the date on which each seizure order or warrant was executed. I am expressly not requesting victim names, victim images or videos, sexually explicit material, confidential witness information, grand-jury material, sealed affidavits, personal identifying information of victims, or material whose release would expose victims to further harm. If any responsive record contains exempt material, please provide all reasonably segregable non-exempt portions. If the Office determines that the full warrant, return, attachment, or inventory cannot be released, please provide records sufficient to identify the domain names and warrant/docket identifiers to the extent disclosure is lawful. Electronic production is preferred.",
+        "requested_action":"Produce responsive records electronically, including segregable non-exempt portions.",
+        "provenance":{"package_hash":"sha256:fae904c72217ca00b2f6d51e7c4366dea2066422796c28b502cb3bb67744569e","source_system":"JPV_LIBRARY"}
+      },
+      "attachments":[]
+    },
+    {
+      "source_id":"stars-stripes-accountability",
+      "source_ref":{"surface":"library","file_id":"file_0000000092dc820ab9533ffa3432bf0e","name":"Master_Stars_and_Stripes_Accountability_Packet.docx"},
+      "request":{"request_id":"UPIS-STARS-STRIPES-20260916","request_type":"PUBLIC_RECORDS","requester":{"name":"Jay Price","organization":"JPV"},"recipient":{"authority_id":"OSD_JS_FOIA","authority_name":"OSD/JS FOIA"},"subject":"Stars and Stripes Ombudsman accountability package","summary":"Recovered canonical package contains four separately scoped FOIA requests and a bipartisan congressional referral.","requested_action":"Route each recovered component through its independently auditable destination.","provenance":{"package_hash":"sha256:9ff3217e86b6e5b8b1c35b8c18305285553d6746da5ca26c4e2b346277507227","source_system":"JPV_LIBRARY"}},
+      "preflight_blocker":{"code":"HUMAN_GATE_REQUIRED","reason":"Requester contact placeholders in the exact recovered component documents require authorized identity/contact resolution before transmission."}
+    },
+    {
+      "source_id":"clarity-2-congressional",
+      "source_ref":{"surface":"library","file_id":"file_0000000089d881fdaffdd5b20515f82f","name":"JPV_CLARITY_2_0_Congressional_Package_COMPLETE.pdf"},
+      "request":{"request_id":"UPIS-CLARITY2-20260916","request_type":"OVERSIGHT_REFERRAL","requester":{"name":"Jay Price","organization":"JPV"},"recipient":{"authority_id":"UNREGISTERED_CONGRESSIONAL","authority_name":"Congressional recipients"},"subject":"CLARITY 2.0 congressional package","summary":"Recovered legislative package and routing record.","requested_action":"Human principal decides whether and where to transmit the legislative proposal; autonomous political advocacy is not executed.","provenance":{"package_hash":"sha256:dfc6f663f90392ce80aca1a0c3922049f92c53bf3161e722ff8e3271ecf5614f","source_system":"JPV_LIBRARY"}},
+      "recipients":[{"authority_id":"SENATE_BANKING","authority_name":"Senate Committee on Banking, Housing, and Urban Affairs"},{"authority_id":"SENATE_AGRICULTURE","authority_name":"Senate Committee on Agriculture, Nutrition, and Forestry"},{"authority_id":"HOUSE_FINANCIAL_SERVICES","authority_name":"House Committee on Financial Services"},{"authority_id":"HOUSE_AGRICULTURE","authority_name":"House Committee on Agriculture"}],
+      "preflight_blocker":{"code":"HUMAN_POLITICAL_DECISION_REQUIRED","reason":"Legislative advocacy transmission remains a human political decision; package recovery and routing metadata are complete."}
+    },
+    {
+      "source_id":"ib-iba-kremlev-trumpjr-oversight",
+      "source_ref":{"surface":"library","file_id":"file_000000006af881f59e7c92cb12306b43","name":"JPV_Oversight_Subpoena_Package_IB_Challenger_Kremlev_2026-09-15.pdf"},
+      "request":{"request_id":"UPIS-IB-IBA-20260916","request_type":"OVERSIGHT_REFERRAL","requester":{"name":"Jay Price","organization":"JPV"},"recipient":{"authority_id":"UNREGISTERED_CONGRESSIONAL","authority_name":"Congressional recipients"},"subject":"IB Challenger / IBA / Umar Kremlev / Donald Trump Jr. oversight package","summary":"Recovered supplemental oversight and compulsory-process package.","requested_action":"Human principal decides whether and where to transmit the congressional oversight request; autonomous political advocacy is not executed.","provenance":{"package_hash":"sha256:a73f4916360c28df79d528b3a61a2a108671b7d942d3b97180d67bc15c1e4e83","source_system":"JPV_LIBRARY"}},
+      "recipients":[{"authority_id":"HOUSE_OVERSIGHT_MAJORITY","authority_name":"House Committee on Oversight and Government Reform - Majority investigative staff"},{"authority_id":"HOUSE_OVERSIGHT_MINORITY","authority_name":"House Committee on Oversight and Government Reform - Minority investigative staff"}],
+      "preflight_blocker":{"code":"HUMAN_POLITICAL_DECISION_REQUIRED","reason":"Request for congressional compulsory process remains a human political decision; package recovery and routing metadata are complete."}
+    }
+  ]
+}

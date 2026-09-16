@@ -1,0 +1,16 @@
+{
+  "date":"2026-09-16",
+  "seeded_source_items":9,
+  "recovered_source_items":4,
+  "missing_canonical_source_items":5,
+  "source_level_states":{
+    "ACTION_REQUIRED:MISSING_CANONICAL_SOURCE":5,
+    "ACTION_REQUIRED:JPV_NATIVE_RUNTIME_CAPACITY_UNAVAILABLE":1,
+    "ACTION_REQUIRED:HUMAN_GATE":1,
+    "ACTION_REQUIRED:HUMAN_POLITICAL_DECISION_REQUIRED":2
+  },
+  "external_submissions":0,
+  "new_tracking_ids":0,
+  "new_submission_evidence_records":0,
+  "completion_claim_authorized":false
+}
