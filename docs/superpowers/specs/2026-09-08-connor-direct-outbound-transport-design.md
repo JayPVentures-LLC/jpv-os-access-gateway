@@ -15,7 +15,7 @@ The repository's provider-neutral deployment boundary remains authoritative. Twi
 
 ## Governing Constraints
 
-1. The bound principal is `github:jaypventuresllc-admin`; callers cannot supply an arbitrary destination phone number.
+1. No GitHub administrative alias establishes Connor's identity. Callers cannot supply an arbitrary destination; direct communication requires a separately verified bound endpoint and does not establish reviewer consent or authority.
 2. Connor's phone number, provider credentials, webhook secrets, and equivalent sensitive values remain runtime secrets and are never committed.
 3. Sending and inbound attribution fail closed when the principal binding is absent, malformed, unverified, expired, revoked, or mismatched.
 4. Founder-originated sends require authorized founder context.
@@ -28,7 +28,7 @@ The repository's provider-neutral deployment boundary remains authoritative. Twi
 
 ## Communication Model
 
-JPV maintains one canonical direct conversation with Connor: `direct:github:jaypventuresllc-admin`.
+JPV may maintain a direct conversation with Connor only through a separately verified endpoint binding. `direct:github:jaypventuresllc-admin` is a historical administrative alias and MUST NOT be used as evidence that the human participant is Connor.
 
 Each conversation message records:
 
