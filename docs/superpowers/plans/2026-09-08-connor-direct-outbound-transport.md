@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Canonical target principal: `github:jaypventuresllc-admin`.
+- Historical administrative principal `github:jaypventuresllc-admin` MUST NOT be treated as Connor's canonical identity or independent reviewer principal. Any direct communication target requires separately verified endpoint authority; any reviewer action additionally requires affirmative accepted reviewer scope.
 - No raw destination phone number in any founder send surface.
 - Phone number and provider credentials are runtime secrets only.
 - Fail closed on missing/unverified/revoked/expired/mismatched binding or authority.
@@ -48,7 +48,7 @@
 - [ ] Stripe/Azure validation PASS on the final exact head.
 - [ ] Container Build PASS on the final exact head.
 - [ ] Fresh automated review on the final exact head has no unresolved substantive defects.
-- [ ] `jaypventuresllc-admin` submits an independent `APPROVED` review on the final exact head.
+- [ ] An ACTIVE, affirmatively consented, identity-verified distinct-human reviewer submits any independently required `APPROVED` review; otherwise state is `REVIEWER_NOT_ENROLLED`.
 - [ ] Repository signing requirements are satisfied from an execution environment capable of signed commits.
 
 ### Production activation and live end-to-end proof
