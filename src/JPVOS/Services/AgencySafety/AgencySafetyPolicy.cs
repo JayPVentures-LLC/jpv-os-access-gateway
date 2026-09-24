@@ -12,6 +12,10 @@ public sealed record AgencySafetyPolicy(
     bool AllowShutdownBypass,
     bool PersistenceProvenanceRequired,
     bool ConsequentialIndependentVerificationRequired,
+    bool ThirdPartyAuthorizationDenialSticky,
+    bool AlternateRouteDoesNotCreateAuthority,
+    bool SecurityTestingRequiresScopedAttributableAuthorization,
+    bool AuthoritativeDenialStateRequired,
     string[] AuthorityLevels);
 
 public static class AgencySafetyPolicyLoader
@@ -21,29 +25,191 @@ public static class AgencySafetyPolicyLoader
         if (!File.Exists(path)) throw new InvalidOperationException("AI agency safety policy is required; startup fails closed.");
         var p = JsonSerializer.Deserialize<AgencySafetyPolicy>(File.ReadAllText(path), new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
             ?? throw new InvalidOperationException("AI agency safety policy is malformed.");
-        if (p.PolicyId != "JPV-GOV-AI-AGENCY-SAFETY-001" || p.Mode != "fail-closed" || !p.DenyWins || p.AllowWildcardScope || p.AllowAuthorityInheritance || p.AllowSelfCertification || p.AllowShutdownBypass || !p.PersistenceProvenanceRequired || !p.ConsequentialIndependentVerificationRequired || p.AuthorityLevels is null || p.AuthorityLevels.Length != 7)
+        if (p.PolicyId != "JPV-GOV-AI-AGENCY-SAFETY-001" || p.Mode != "fail-closed" || !p.DenyWins ||
+            p.AllowWildcardScope || p.AllowAuthorityInheritance || p.AllowSelfCertification || p.AllowShutdownBypass ||
+            !p.PersistenceProvenanceRequired || !p.ConsequentialIndependentVerificationRequired ||
+            !p.ThirdPartyAuthorizationDenialSticky || !p.AlternateRouteDoesNotCreateAuthority ||
+            !p.SecurityTestingRequiresScopedAttributableAuthorization || !p.AuthoritativeDenialStateRequired ||
+            p.AuthorityLevels is null || p.AuthorityLevels.Length != 7)
             throw new InvalidOperationException("AI agency safety policy weakens canonical invariants.");
         return p;
     }
 }
 
-public sealed record AgencyActionRequest(string PrincipalId,string AuthorizationId,string AuthorityLevel,string Scope,string[] Capabilities,int CredentialTtlSeconds,string NetworkScope,string PersistenceScope,string? PersistenceProvenance,string AgentCommunicationScope,bool Revoked,bool ShutdownRequested,string? IndependentVerifier,bool TamperEvidentReceipt);
-public sealed record AgencySafetyDecision(bool Allowed,string Reason);
+public sealed record AgencyTargetDenial(string TargetResourceId, string EvidenceId, DateTimeOffset DeniedAtUtc);
 
-public sealed class AgencySafetyAuthorizer(AgencySafetyPolicy policy)
+public interface IAgencyDenialStateStore
 {
+    AgencyTargetDenial? Get(string targetResourceId);
+    void Record(string targetResourceId, string evidenceId);
+}
+
+public sealed class FileAgencyDenialStateStore : IAgencyDenialStateStore
+{
+    private readonly string _path;
+    private readonly object _gate = new();
+
+    public FileAgencyDenialStateStore(string path)
+    {
+        _path = path;
+        Directory.CreateDirectory(Path.GetDirectoryName(path) ?? ".");
+    }
+
+    public AgencyTargetDenial? Get(string targetResourceId)
+    {
+        lock (_gate)
+        {
+            return Load().FirstOrDefault(x => string.Equals(x.TargetResourceId, targetResourceId, StringComparison.Ordinal));
+        }
+    }
+
+    public void Record(string targetResourceId, string evidenceId)
+    {
+        if (string.IsNullOrWhiteSpace(targetResourceId) || string.IsNullOrWhiteSpace(evidenceId))
+            throw new ArgumentException("Target resource and evidence id are required.");
+        lock (_gate)
+        {
+            var items = Load();
+            if (items.All(x => !string.Equals(x.TargetResourceId, targetResourceId, StringComparison.Ordinal)))
+                items.Add(new(targetResourceId, evidenceId, DateTimeOffset.UtcNow));
+            var tmp = _path + ".tmp";
+            File.WriteAllText(tmp, JsonSerializer.Serialize(items));
+            File.Move(tmp, _path, true);
+        }
+    }
+
+    private List<AgencyTargetDenial> Load()
+    {
+        if (!File.Exists(_path)) return [];
+        try
+        {
+            return JsonSerializer.Deserialize<List<AgencyTargetDenial>>(File.ReadAllText(_path)) ?? [];
+        }
+        catch (JsonException ex)
+        {
+            throw new InvalidOperationException("Agency denial state is malformed; fail closed.", ex);
+        }
+    }
+}
+
+public sealed record AgencySecurityTestingGrant(
+    string AuthorizationId,
+    string TargetResourceId,
+    string Method,
+    DateTimeOffset ValidUntil,
+    string IssuerPrincipalId);
+
+public interface IAgencySecurityTestingGrantStore
+{
+    AgencySecurityTestingGrant? Get(string authorizationId);
+    void Record(AgencySecurityTestingGrant grant);
+}
+
+public sealed class FileAgencySecurityTestingGrantStore : IAgencySecurityTestingGrantStore
+{
+    private readonly string _path;
+    private readonly object _gate = new();
+
+    public FileAgencySecurityTestingGrantStore(string path)
+    {
+        _path = path;
+        Directory.CreateDirectory(Path.GetDirectoryName(path) ?? ".");
+    }
+
+    public AgencySecurityTestingGrant? Get(string authorizationId)
+    {
+        lock (_gate) return Load().FirstOrDefault(x => string.Equals(x.AuthorizationId, authorizationId, StringComparison.Ordinal));
+    }
+
+    public void Record(AgencySecurityTestingGrant grant)
+    {
+        if (string.IsNullOrWhiteSpace(grant.AuthorizationId) || string.IsNullOrWhiteSpace(grant.TargetResourceId) ||
+            string.IsNullOrWhiteSpace(grant.Method) || string.IsNullOrWhiteSpace(grant.IssuerPrincipalId))
+            throw new ArgumentException("Security testing grant is incomplete.");
+        lock (_gate)
+        {
+            var items = Load();
+            items.RemoveAll(x => string.Equals(x.AuthorizationId, grant.AuthorizationId, StringComparison.Ordinal));
+            items.Add(grant);
+            var tmp = _path + ".tmp";
+            File.WriteAllText(tmp, JsonSerializer.Serialize(items));
+            File.Move(tmp, _path, true);
+        }
+    }
+
+    private List<AgencySecurityTestingGrant> Load()
+    {
+        if (!File.Exists(_path)) return [];
+        try { return JsonSerializer.Deserialize<List<AgencySecurityTestingGrant>>(File.ReadAllText(_path)) ?? []; }
+        catch (JsonException ex) { throw new InvalidOperationException("Agency security testing grants are malformed; fail closed.", ex); }
+    }
+}
+
+public sealed record AgencyActionRequest(
+    string PrincipalId,
+    string AuthorizationId,
+    string AuthorityLevel,
+    string Scope,
+    string[] Capabilities,
+    int CredentialTtlSeconds,
+    string NetworkScope,
+    string PersistenceScope,
+    string? PersistenceProvenance,
+    string AgentCommunicationScope,
+    bool Revoked,
+    bool ShutdownRequested,
+    string? IndependentVerifier,
+    bool TamperEvidentReceipt,
+    string TargetResourceId,
+    string RequestedMethod,
+    string? SecurityTestingAuthorizationId);
+
+public sealed record AgencySafetyDecision(bool Allowed, string Reason);
+
+public sealed class AgencySafetyAuthorizer(AgencySafetyPolicy policy, FileAgencyDenialStateStore denialState, FileAgencySecurityTestingGrantStore securityTestingGrants)
+{
+    public void RecordAuthoritativeTargetDenial(string targetResourceId, string evidenceId) =>
+        denialState.Record(targetResourceId, evidenceId);
+
+    public void RecordSecurityTestingGrant(AgencySecurityTestingGrant grant) =>
+        securityTestingGrants.Record(grant);
+
     public AgencySafetyDecision Authorize(AgencyActionRequest r)
     {
         if (string.IsNullOrWhiteSpace(r.PrincipalId) || string.IsNullOrWhiteSpace(r.AuthorizationId)) return Deny("missing_authority");
+        if (string.IsNullOrWhiteSpace(r.TargetResourceId)) return Deny("missing_target_resource");
         var level = Array.IndexOf(policy.AuthorityLevels, r.AuthorityLevel); if (level < 0) return Deny("authority_level_exceeded");
         if (r.Scope == "*" || r.NetworkScope == "*" || r.PersistenceScope == "*") return Deny("unbounded_scope");
         if (r.Capabilities is null || r.Capabilities.Length == 0 || r.CredentialTtlSeconds <= 0) return Deny("capability_or_credential_invalid");
         if (r.AgentCommunicationScope == "inherit-authority") return Deny("implicit_agent_authority");
         if (r.PersistenceScope != "none" && string.IsNullOrWhiteSpace(r.PersistenceProvenance)) return Deny("missing_persistence_provenance");
         if (r.Revoked || r.ShutdownRequested) return Deny("shutdown_or_revocation_bypass");
+
+        AgencyTargetDenial? priorDenial;
+        try { priorDenial = denialState.Get(r.TargetResourceId); }
+        catch (InvalidOperationException) { return Deny("authoritative_denial_state_unavailable"); }
+
+        if (priorDenial is not null)
+        {
+            if (string.IsNullOrWhiteSpace(r.SecurityTestingAuthorizationId) || r.SecurityTestingAuthorizationId == r.AuthorizationId)
+                return Deny("third_party_authorization_denial_circumvention");
+
+            AgencySecurityTestingGrant? grant;
+            try { grant = securityTestingGrants.Get(r.SecurityTestingAuthorizationId); }
+            catch (InvalidOperationException) { return Deny("security_testing_authorization_unavailable"); }
+
+            if (grant is null ||
+                !string.Equals(grant.TargetResourceId, r.TargetResourceId, StringComparison.Ordinal) ||
+                !string.Equals(grant.Method, r.RequestedMethod, StringComparison.OrdinalIgnoreCase) ||
+                grant.ValidUntil <= DateTimeOffset.UtcNow)
+                return Deny("third_party_authorization_denial_circumvention");
+        }
+
         var consequential = Array.IndexOf(policy.AuthorityLevels, "EXECUTE_CONSEQUENTIAL");
-        if (level >= consequential && (string.IsNullOrWhiteSpace(r.IndependentVerifier) || r.IndependentVerifier == r.PrincipalId || !r.TamperEvidentReceipt)) return Deny("verification_unavailable");
-        return new(true,"allow");
+        if (level >= consequential && (string.IsNullOrWhiteSpace(r.IndependentVerifier) || r.IndependentVerifier == r.PrincipalId || !r.TamperEvidentReceipt))
+            return Deny("verification_unavailable");
+        return new(true, "allow");
     }
+
     private static AgencySafetyDecision Deny(string reason) => new(false, reason);
 }
