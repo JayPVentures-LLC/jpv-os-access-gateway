@@ -11,13 +11,10 @@ public sealed class AgencySafetyPolicyTests
 
     private static AgencyActionRequest Request(
         string target="target:example",
-        bool securityTest=false,
-        string? securityAuthId=null,
-        string? securityTarget=null,
-        string? method=null,
-        DateTimeOffset? validUntil=null) =>
+        string method="GET",
+        string? securityAuthId=null) =>
         new("human:founder","auth-1","EXECUTE_BOUNDED","repo:bounded",["read"],300,"example.com","none",null,"none",false,false,null,false,
-            target,securityTest,securityAuthId,securityTarget,method,validUntil);
+            target,method,securityAuthId);
 
     [Fact]
     public void Prior_denial_is_sticky_across_new_authorizer_instances()
@@ -27,10 +24,11 @@ public sealed class AgencySafetyPolicyTests
         try
         {
             var path = Path.Combine(dir, "denials.json");
-            var first = new AgencySafetyAuthorizer(Policy(), new FileAgencyDenialStateStore(path));
+            var grants = Path.Combine(dir, "grants.json");
+            var first = new AgencySafetyAuthorizer(Policy(), new FileAgencyDenialStateStore(path), new FileAgencySecurityTestingGrantStore(grants));
             first.RecordAuthoritativeTargetDenial("target:example", "deny-1");
 
-            var retry = new AgencySafetyAuthorizer(Policy(), new FileAgencyDenialStateStore(path));
+            var retry = new AgencySafetyAuthorizer(Policy(), new FileAgencyDenialStateStore(path), new FileAgencySecurityTestingGrantStore(grants));
             var result = retry.Authorize(Request());
 
             Assert.False(result.Allowed);
@@ -47,13 +45,17 @@ public sealed class AgencySafetyPolicyTests
         try
         {
             var path = Path.Combine(dir, "denials.json");
-            var authorizer = new AgencySafetyAuthorizer(Policy(), new FileAgencyDenialStateStore(path));
+            var grants = Path.Combine(dir, "grants.json");
+            var authorizer = new AgencySafetyAuthorizer(Policy(), new FileAgencyDenialStateStore(path), new FileAgencySecurityTestingGrantStore(grants));
             authorizer.RecordAuthoritativeTargetDenial("target:example", "deny-1");
 
-            Assert.False(authorizer.Authorize(Request(securityTest:true,securityAuthId:"auth-1",securityTarget:"target:example",method:"GET",validUntil:DateTimeOffset.UtcNow.AddHours(1))).Allowed);
-            Assert.False(authorizer.Authorize(Request(securityTest:true,securityAuthId:"sec-2",securityTarget:"other",method:"GET",validUntil:DateTimeOffset.UtcNow.AddHours(1))).Allowed);
-            Assert.False(authorizer.Authorize(Request(securityTest:true,securityAuthId:"sec-2",securityTarget:"target:example",method:"GET",validUntil:DateTimeOffset.UtcNow.AddMinutes(-1))).Allowed);
-            Assert.True(authorizer.Authorize(Request(securityTest:true,securityAuthId:"sec-2",securityTarget:"target:example",method:"GET",validUntil:DateTimeOffset.UtcNow.AddHours(1))).Allowed);
+            Assert.False(authorizer.Authorize(Request(securityAuthId:"sec-2")).Allowed);
+            authorizer.RecordSecurityTestingGrant(new("sec-2","other","GET",DateTimeOffset.UtcNow.AddHours(1),"human:founder"));
+            Assert.False(authorizer.Authorize(Request(securityAuthId:"sec-2")).Allowed);
+            authorizer.RecordSecurityTestingGrant(new("sec-2","target:example","GET",DateTimeOffset.UtcNow.AddMinutes(-1),"human:founder"));
+            Assert.False(authorizer.Authorize(Request(securityAuthId:"sec-2")).Allowed);
+            authorizer.RecordSecurityTestingGrant(new("sec-2","target:example","GET",DateTimeOffset.UtcNow.AddHours(1),"human:founder"));
+            Assert.True(authorizer.Authorize(Request(securityAuthId:"sec-2")).Allowed);
         }
         finally { Directory.Delete(dir, true); }
     }
@@ -66,7 +68,7 @@ public sealed class AgencySafetyPolicyTests
         try
         {
             var path = Path.Combine(dir, "denials.json");
-            var authorizer = new AgencySafetyAuthorizer(Policy(), new FileAgencyDenialStateStore(path));
+            var authorizer = new AgencySafetyAuthorizer(Policy(), new FileAgencyDenialStateStore(path), new FileAgencySecurityTestingGrantStore(Path.Combine(dir, "grants.json")));
             authorizer.RecordAuthoritativeTargetDenial("target:blocked", "deny-1");
 
             var result = authorizer.Authorize(Request(target:"target:public"));
