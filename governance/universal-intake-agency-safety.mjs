@@ -1,5 +1,5 @@
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 
 function dataRoot() {
   if (process.env.JPV_AGENCY_SAFETY_DATA_DIR) return process.env.JPV_AGENCY_SAFETY_DATA_DIR;
@@ -17,6 +17,13 @@ async function readJsonArray(path, unavailableReason) {
     error.code = unavailableReason;
     throw error;
   }
+}
+
+async function atomicWriteJson(path, value) {
+  await mkdir(dirname(path), { recursive:true });
+  const tmp=`${path}.${process.pid}.tmp`;
+  await writeFile(tmp, JSON.stringify(value, null, 2) + '\n', { encoding:'utf8', flag:'wx' });
+  await rename(tmp, path);
 }
 
 export function portalTargetResourceId(input) {
@@ -45,4 +52,23 @@ export async function authorizePortalTarget(input, options = {}) {
     return { allowed:false, reason:'third_party_authorization_denial_circumvention' };
   }
   return { allowed:true, reason:'authorized_security_testing_exception' };
+}
+
+export async function recordPortalTargetDenial(input, denial, options = {}) {
+  const targetResourceId = portalTargetResourceId(input);
+  if (!targetResourceId) throw Object.assign(new Error('missing_target_resource'), { code:'missing_target_resource' });
+  if (!denial?.evidence_id) throw Object.assign(new Error('authorization_denial_evidence_required'), { code:'authorization_denial_evidence_required' });
+  const root = options.dataDir ?? dataRoot();
+  const path = join(root, 'target-denials.json');
+  const denials = await readJsonArray(path, 'authoritative_denial_state_unavailable');
+  const existing = denials.find(x => (x?.target_resource_id ?? x?.TargetResourceId) === targetResourceId);
+  if (existing) return { recorded:false, denial:existing };
+  const record = {
+    target_resource_id:targetResourceId,
+    evidence_id:String(denial.evidence_id),
+    denied_at_utc:denial.denied_at_utc ?? new Date().toISOString(),
+    source:denial.source ?? 'runtime_authorization_boundary'
+  };
+  await atomicWriteJson(path, [...denials, record]);
+  return { recorded:true, denial:record };
 }
