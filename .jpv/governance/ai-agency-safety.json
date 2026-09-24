@@ -1,12 +1,24 @@
 {
-  "policyId":"JPV-GOV-AI-AGENCY-SAFETY-001",
-  "mode":"fail-closed",
-  "denyWins":true,
-  "allowWildcardScope":false,
-  "allowAuthorityInheritance":false,
-  "allowSelfCertification":false,
-  "allowShutdownBypass":false,
-  "persistenceProvenanceRequired":true,
-  "consequentialIndependentVerificationRequired":true,
-  "authorityLevels":["OBSERVE","ANALYZE","RECOMMEND","PREPARE_REVERSIBLE","EXECUTE_BOUNDED","EXECUTE_CONSEQUENTIAL","EXECUTE_IRREVERSIBLE_HIGH_IMPACT"]
+  "policyId": "JPV-GOV-AI-AGENCY-SAFETY-001",
+  "mode": "fail-closed",
+  "denyWins": true,
+  "allowWildcardScope": false,
+  "allowAuthorityInheritance": false,
+  "allowSelfCertification": false,
+  "allowShutdownBypass": false,
+  "persistenceProvenanceRequired": true,
+  "consequentialIndependentVerificationRequired": true,
+  "authorityLevels": [
+    "OBSERVE",
+    "ANALYZE",
+    "RECOMMEND",
+    "PREPARE_REVERSIBLE",
+    "EXECUTE_BOUNDED",
+    "EXECUTE_CONSEQUENTIAL",
+    "EXECUTE_IRREVERSIBLE_HIGH_IMPACT"
+  ],
+  "thirdPartyAuthorizationDenialSticky": true,
+  "alternateRouteDoesNotCreateAuthority": true,
+  "securityTestingRequiresScopedAttributableAuthorization": true,
+  "authoritativeDenialStateRequired": true
 }
