@@ -28,6 +28,7 @@ export function createJpvNativeDriverFactory(deps={}){
       open:url=>invoke('OPEN',{url}),
       fill:(field,value)=>invoke('FILL',{field,value}),
       upload:(field,attachment)=>invoke('UPLOAD',{field,attachment}),
+      detectAuthorizationDenial:async()=>{const out=await invoke('DETECT_AUTHORIZATION_DENIAL');return out.denial??null;},
       detectHumanGate:async()=>{const out=await invoke('DETECT_HUMAN_GATE');return out.gate??null;},
       validate:ctx=>invoke('VALIDATE',{request_id:ctx.request?.request_id,profile_id:ctx.profile?.id}),
       submit:ctx=>invoke('SUBMIT',{request_id:ctx.request_id,fingerprint:ctx.fingerprint})

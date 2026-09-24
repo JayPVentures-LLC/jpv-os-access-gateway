@@ -1,5 +1,5 @@
 import { acquirePortalSession } from './universal-intake-session.mjs';
-import { authorizePortalTarget } from './universal-intake-agency-safety.mjs';
+import { authorizePortalTarget, recordPortalTargetDenial } from './universal-intake-agency-safety.mjs';
 
 function getPath(obj, path) {
   return String(path).split('.').reduce((cur,key)=>cur?.[key], obj);
@@ -8,6 +8,7 @@ function getPath(obj, path) {
 export function createBrowserPortalWorker(deps = {}) {
   if (typeof deps.driverFactory !== 'function') throw new Error('driverFactory is required');
   const agencySafetyGate = deps.agencySafetyGate ?? authorizePortalTarget;
+  const agencyDenialRecorder = deps.agencyDenialRecorder ?? recordPortalTargetDenial;
   return async function browserPortalWorker(input) {
     const agencyDecision = await agencySafetyGate(input);
     if (!agencyDecision?.allowed) return { state:'ACTION_REQUIRED', reason:agencyDecision?.reason ?? 'AGENCY_SAFETY_DENY' };
@@ -17,6 +18,15 @@ export function createBrowserPortalWorker(deps = {}) {
     if (!driver) throw new Error('browser driver unavailable');
 
     await driver.open(input.transport.endpoint);
+    if (typeof driver.detectAuthorizationDenial !== 'function') {
+      return { state:'ACTION_REQUIRED', reason:'AUTHORIZATION_BOUNDARY_DETECTION_UNAVAILABLE' };
+    }
+    const authorizationDenial = await driver.detectAuthorizationDenial();
+    if (authorizationDenial?.denied) {
+      if (!authorizationDenial.evidence_id) return { state:'ACTION_REQUIRED', reason:'AUTHORIZATION_DENIAL_EVIDENCE_REQUIRED' };
+      await agencyDenialRecorder(input, authorizationDenial);
+      return { state:'ACTION_REQUIRED', reason:'THIRD_PARTY_AUTHORIZATION_DENIED', evidence_id:authorizationDenial.evidence_id };
+    }
     for (const [semantic, sourcePath] of Object.entries(input.profile?.semantic_fields ?? {})) {
       const value = getPath(input.request, sourcePath);
       if (value !== undefined && value !== null && typeof driver.fill === 'function') await driver.fill(semantic, String(value));

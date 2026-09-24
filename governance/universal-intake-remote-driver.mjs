@@ -15,6 +15,7 @@ export function createRemoteDriverFactory(config={}) {
       open:url=>operation('OPEN',{url}),
       fill:(field,value)=>operation('FILL',{field,value}),
       upload:(field,attachment)=>operation('UPLOAD',{field,attachment}),
+      detectAuthorizationDenial:async()=>{const out=await operation('DETECT_AUTHORIZATION_DENIAL');return out.denial??null;},
       detectHumanGate:async()=>{const out=await operation('DETECT_HUMAN_GATE');return out.gate??null;},
       validate:async context=>operation('VALIDATE',{request_id:context.request?.request_id,profile_id:context.profile?.id}),
       submit:context=>operation('SUBMIT',{request_id:context.request_id,fingerprint:context.fingerprint})
