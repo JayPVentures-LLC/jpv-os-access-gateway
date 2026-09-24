@@ -1,4 +1,5 @@
 import { acquirePortalSession } from './universal-intake-session.mjs';
+import { authorizePortalTarget } from './universal-intake-agency-safety.mjs';
 
 function getPath(obj, path) {
   return String(path).split('.').reduce((cur,key)=>cur?.[key], obj);
@@ -6,7 +7,10 @@ function getPath(obj, path) {
 
 export function createBrowserPortalWorker(deps = {}) {
   if (typeof deps.driverFactory !== 'function') throw new Error('driverFactory is required');
+  const agencySafetyGate = deps.agencySafetyGate ?? authorizePortalTarget;
   return async function browserPortalWorker(input) {
+    const agencyDecision = await agencySafetyGate(input);
+    if (!agencyDecision?.allowed) return { state:'ACTION_REQUIRED', reason:agencyDecision?.reason ?? 'AGENCY_SAFETY_DENY' };
     const authorityId = input.authority?.id ?? input.request?.recipient?.authority_id;
     const session = await acquirePortalSession({ authority_id: authorityId, request_id: input.request.request_id }, deps);
     const driver = await deps.driverFactory({ authority_id: authorityId, session_handle: session.handle, fingerprint: input.fingerprint });
