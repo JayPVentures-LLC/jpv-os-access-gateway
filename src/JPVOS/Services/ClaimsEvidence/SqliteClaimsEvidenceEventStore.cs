@@ -15,7 +15,7 @@ public sealed class SqliteClaimsEvidenceEventStore : IClaimsEvidenceEventStore
         ArgumentNullException.ThrowIfNull(dataProtectionProvider);
         var directory = Path.GetDirectoryName(databasePath);
         if (!string.IsNullOrWhiteSpace(directory)) Directory.CreateDirectory(directory);
-        _connectionString = new SqliteConnectionStringBuilder { DataSource = databasePath, Mode = SqliteOpenMode.ReadWriteCreate }.ToString();
+        _connectionString = new SqliteConnectionStringBuilder { DataSource = databasePath, Mode = SqliteOpenMode.ReadWriteCreate, Pooling = false }.ToString();
         _protector = dataProtectionProvider.CreateProtector("JPVOS.ClaimsEvidence.Idempotency.v1");
         Initialize();
     }
