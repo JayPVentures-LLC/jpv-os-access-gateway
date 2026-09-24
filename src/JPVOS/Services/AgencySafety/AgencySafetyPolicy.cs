@@ -44,7 +44,7 @@ public interface IAgencyDenialStateStore
     void Record(string targetResourceId, string evidenceId);
 }
 
-public sealed class FileAgencyDenialStateStore
+public sealed class FileAgencyDenialStateStore : IAgencyDenialStateStore
 {
     private readonly string _path;
     private readonly object _gate = new();
