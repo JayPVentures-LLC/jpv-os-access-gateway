@@ -187,7 +187,7 @@ public sealed class AgencySafetyAuthorizer(AgencySafetyPolicy policy, FileAgency
 
         AgencyTargetDenial? priorDenial;
         try { priorDenial = denialState.Get(r.TargetResourceId); }
-        catch { return Deny("authoritative_denial_state_unavailable"); }
+        catch (InvalidOperationException) { return Deny("authoritative_denial_state_unavailable"); }
 
         if (priorDenial is not null)
         {
@@ -196,7 +196,7 @@ public sealed class AgencySafetyAuthorizer(AgencySafetyPolicy policy, FileAgency
 
             AgencySecurityTestingGrant? grant;
             try { grant = securityTestingGrants.Get(r.SecurityTestingAuthorizationId); }
-            catch { return Deny("security_testing_authorization_unavailable"); }
+            catch (InvalidOperationException) { return Deny("security_testing_authorization_unavailable"); }
 
             if (grant is null ||
                 !string.Equals(grant.TargetResourceId, r.TargetResourceId, StringComparison.Ordinal) ||
