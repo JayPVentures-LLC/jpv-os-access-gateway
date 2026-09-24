@@ -19,12 +19,12 @@ public sealed class AgencySafetyPolicyTests
     [Fact]
     public void Prior_denial_is_sticky_across_new_authorizer_instances()
     {
-        var dir = Path.Combine(Path.GetTempPath(), "jpv-agency-" + Guid.NewGuid());
+        var dir = Path.Join(Path.GetTempPath(), "jpv-agency-" + Guid.NewGuid());
         Directory.CreateDirectory(dir);
         try
         {
-            var path = Path.Combine(dir, "denials.json");
-            var grants = Path.Combine(dir, "grants.json");
+            var path = Path.Join(dir, "denials.json");
+            var grants = Path.Join(dir, "grants.json");
             var first = new AgencySafetyAuthorizer(Policy(), new FileAgencyDenialStateStore(path), new FileAgencySecurityTestingGrantStore(grants));
             first.RecordAuthoritativeTargetDenial("target:example", "deny-1");
 
@@ -40,12 +40,12 @@ public sealed class AgencySafetyPolicyTests
     [Fact]
     public void Security_test_exception_requires_distinct_scoped_unexpired_authorization()
     {
-        var dir = Path.Combine(Path.GetTempPath(), "jpv-agency-" + Guid.NewGuid());
+        var dir = Path.Join(Path.GetTempPath(), "jpv-agency-" + Guid.NewGuid());
         Directory.CreateDirectory(dir);
         try
         {
-            var path = Path.Combine(dir, "denials.json");
-            var grants = Path.Combine(dir, "grants.json");
+            var path = Path.Join(dir, "denials.json");
+            var grants = Path.Join(dir, "grants.json");
             var authorizer = new AgencySafetyAuthorizer(Policy(), new FileAgencyDenialStateStore(path), new FileAgencySecurityTestingGrantStore(grants));
             authorizer.RecordAuthoritativeTargetDenial("target:example", "deny-1");
 
@@ -63,12 +63,12 @@ public sealed class AgencySafetyPolicyTests
     [Fact]
     public void Denial_on_one_target_does_not_block_unrelated_public_target()
     {
-        var dir = Path.Combine(Path.GetTempPath(), "jpv-agency-" + Guid.NewGuid());
+        var dir = Path.Join(Path.GetTempPath(), "jpv-agency-" + Guid.NewGuid());
         Directory.CreateDirectory(dir);
         try
         {
-            var path = Path.Combine(dir, "denials.json");
-            var authorizer = new AgencySafetyAuthorizer(Policy(), new FileAgencyDenialStateStore(path), new FileAgencySecurityTestingGrantStore(Path.Combine(dir, "grants.json")));
+            var path = Path.Join(dir, "denials.json");
+            var authorizer = new AgencySafetyAuthorizer(Policy(), new FileAgencyDenialStateStore(path), new FileAgencySecurityTestingGrantStore(Path.Join(dir, "grants.json")));
             authorizer.RecordAuthoritativeTargetDenial("target:blocked", "deny-1");
 
             var result = authorizer.Authorize(Request(target:"target:public"));
