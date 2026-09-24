@@ -30,10 +30,6 @@ var privilegedActionPolicy = PrivilegedActionPolicyLoader.LoadAndValidate(privil
 var githubAppOptions = GitHubAppAuthenticationOptions.FromConfiguration(builder.Configuration);
 var agencySafetyPolicyPath = Path.Combine(builder.Environment.ContentRootPath, ".jpv", "governance", "ai-agency-safety.json");
 var agencySafetyPolicy = AgencySafetyPolicyLoader.LoadAndValidate(agencySafetyPolicyPath);
-var agencySafetyDataDir = builder.Configuration["JPV_AGENCY_SAFETY_DATA_DIR"];
-if (string.IsNullOrWhiteSpace(agencySafetyDataDir))
-    agencySafetyDataDir = Path.Combine(claimsDataDir, "agency-safety");
-Directory.CreateDirectory(agencySafetyDataDir);
 var claimsDataDir = builder.Configuration["JPV_CLAIMS_DATA_DIR"];
 if (string.IsNullOrWhiteSpace(claimsDataDir))
 {
@@ -41,6 +37,10 @@ if (string.IsNullOrWhiteSpace(claimsDataDir))
     claimsDataDir = Path.Combine(Path.GetTempPath(), "jpv-os-claims");
 }
 Directory.CreateDirectory(claimsDataDir);
+var agencySafetyDataDir = builder.Configuration["JPV_AGENCY_SAFETY_DATA_DIR"];
+if (string.IsNullOrWhiteSpace(agencySafetyDataDir))
+    agencySafetyDataDir = Path.Combine(claimsDataDir, "agency-safety");
+Directory.CreateDirectory(agencySafetyDataDir);
 var claimsDataProtectionDir = Path.Combine(claimsDataDir, "data-protection-keys");
 Directory.CreateDirectory(claimsDataProtectionDir);
 
