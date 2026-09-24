@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { authorizePortalTarget } from '../governance/universal-intake-agency-safety.mjs';
+import { authorizePortalTarget, recordPortalTargetDenial } from '../governance/universal-intake-agency-safety.mjs';
 
 async function withState(denials, grants, fn) {
   const dir = await mkdtemp(join(tmpdir(), 'jpv-agency-'));
@@ -65,4 +65,22 @@ test('missing or malformed authoritative state fails closed', async () => {
     await writeFile(join(dir,'target-denials.json'),'{bad');
     await assert.rejects(()=>authorizePortalTarget(input(),{dataDir:dir}),/authoritative_denial_state_unavailable/);
   } finally { await rm(dir,{recursive:true,force:true}); }
+});
+
+
+test('records observed target denial durably and makes the next attempt fail sticky', async () => {
+  await withState([],[],async dataDir=>{
+    const observed=input();
+    const write=await recordPortalTargetDenial(observed,{evidence_id:'deny-403',denied_at_utc:'2026-09-24T16:00:00Z'},{dataDir});
+    assert.equal(write.recorded,true);
+    const next=await authorizePortalTarget(observed,{dataDir});
+    assert.equal(next.allowed,false);
+    assert.equal(next.reason,'third_party_authorization_denial_circumvention');
+  });
+});
+
+test('refuses to record a denial without evidence id', async () => {
+  await withState([],[],async dataDir=>{
+    await assert.rejects(()=>recordPortalTargetDenial(input(),{denied:true},{dataDir}),/authorization_denial_evidence_required/);
+  });
 });
