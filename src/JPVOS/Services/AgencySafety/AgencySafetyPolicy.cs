@@ -92,6 +92,59 @@ public sealed class FileAgencyDenialStateStore : IAgencyDenialStateStore
     }
 }
 
+public sealed record AgencySecurityTestingGrant(
+    string AuthorizationId,
+    string TargetResourceId,
+    string Method,
+    DateTimeOffset ValidUntil,
+    string IssuerPrincipalId);
+
+public interface IAgencySecurityTestingGrantStore
+{
+    AgencySecurityTestingGrant? Get(string authorizationId);
+    void Record(AgencySecurityTestingGrant grant);
+}
+
+public sealed class FileAgencySecurityTestingGrantStore : IAgencySecurityTestingGrantStore
+{
+    private readonly string _path;
+    private readonly object _gate = new();
+
+    public FileAgencySecurityTestingGrantStore(string path)
+    {
+        _path = path;
+        Directory.CreateDirectory(Path.GetDirectoryName(path) ?? ".");
+    }
+
+    public AgencySecurityTestingGrant? Get(string authorizationId)
+    {
+        lock (_gate) return Load().FirstOrDefault(x => string.Equals(x.AuthorizationId, authorizationId, StringComparison.Ordinal));
+    }
+
+    public void Record(AgencySecurityTestingGrant grant)
+    {
+        if (string.IsNullOrWhiteSpace(grant.AuthorizationId) || string.IsNullOrWhiteSpace(grant.TargetResourceId) ||
+            string.IsNullOrWhiteSpace(grant.Method) || string.IsNullOrWhiteSpace(grant.IssuerPrincipalId))
+            throw new ArgumentException("Security testing grant is incomplete.");
+        lock (_gate)
+        {
+            var items = Load();
+            items.RemoveAll(x => string.Equals(x.AuthorizationId, grant.AuthorizationId, StringComparison.Ordinal));
+            items.Add(grant);
+            var tmp = _path + ".tmp";
+            File.WriteAllText(tmp, JsonSerializer.Serialize(items));
+            File.Move(tmp, _path, true);
+        }
+    }
+
+    private List<AgencySecurityTestingGrant> Load()
+    {
+        if (!File.Exists(_path)) return [];
+        try { return JsonSerializer.Deserialize<List<AgencySecurityTestingGrant>>(File.ReadAllText(_path)) ?? []; }
+        catch (JsonException ex) { throw new InvalidOperationException("Agency security testing grants are malformed; fail closed.", ex); }
+    }
+}
+
 public sealed record AgencyActionRequest(
     string PrincipalId,
     string AuthorizationId,
@@ -108,18 +161,18 @@ public sealed record AgencyActionRequest(
     string? IndependentVerifier,
     bool TamperEvidentReceipt,
     string TargetResourceId,
-    bool SecurityTestingAuthorization,
-    string? SecurityTestingAuthorizationId,
-    string? SecurityTestingTargetScope,
-    string? SecurityTestingMethodScope,
-    DateTimeOffset? SecurityTestingValidUntil);
+    string RequestedMethod,
+    string? SecurityTestingAuthorizationId);
 
 public sealed record AgencySafetyDecision(bool Allowed, string Reason);
 
-public sealed class AgencySafetyAuthorizer(AgencySafetyPolicy policy, FileAgencyDenialStateStore denialState)
+public sealed class AgencySafetyAuthorizer(AgencySafetyPolicy policy, FileAgencyDenialStateStore denialState, FileAgencySecurityTestingGrantStore securityTestingGrants)
 {
     public void RecordAuthoritativeTargetDenial(string targetResourceId, string evidenceId) =>
         denialState.Record(targetResourceId, evidenceId);
+
+    public void RecordSecurityTestingGrant(AgencySecurityTestingGrant grant) =>
+        securityTestingGrants.Record(grant);
 
     public AgencySafetyDecision Authorize(AgencyActionRequest r)
     {
@@ -138,13 +191,17 @@ public sealed class AgencySafetyAuthorizer(AgencySafetyPolicy policy, FileAgency
 
         if (priorDenial is not null)
         {
-            if (!r.SecurityTestingAuthorization) return Deny("third_party_authorization_denial_circumvention");
             if (string.IsNullOrWhiteSpace(r.SecurityTestingAuthorizationId) || r.SecurityTestingAuthorizationId == r.AuthorizationId)
                 return Deny("third_party_authorization_denial_circumvention");
-            if (!string.Equals(r.SecurityTestingTargetScope, r.TargetResourceId, StringComparison.Ordinal))
-                return Deny("third_party_authorization_denial_circumvention");
-            if (string.IsNullOrWhiteSpace(r.SecurityTestingMethodScope) || r.SecurityTestingValidUntil is null ||
-                r.SecurityTestingValidUntil <= DateTimeOffset.UtcNow)
+
+            AgencySecurityTestingGrant? grant;
+            try { grant = securityTestingGrants.Get(r.SecurityTestingAuthorizationId); }
+            catch { return Deny("security_testing_authorization_unavailable"); }
+
+            if (grant is null ||
+                !string.Equals(grant.TargetResourceId, r.TargetResourceId, StringComparison.Ordinal) ||
+                !string.Equals(grant.Method, r.RequestedMethod, StringComparison.OrdinalIgnoreCase) ||
+                grant.ValidUntil <= DateTimeOffset.UtcNow)
                 return Deny("third_party_authorization_denial_circumvention");
         }
 
