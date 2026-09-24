@@ -32,7 +32,7 @@ test('secret stripping recursively removes sensitive session material', () => {
 
 test('browser worker maps semantic fields, uploads attachments and returns evidence', async () => {
   const calls=[];
-  const worker=createBrowserPortalWorker({
+  const worker=createBrowserPortalWorker({agencySafetyGate:async()=>({allowed:true,reason:'allow'}),
     sessionProvider: async()=>({handle:'sess',expires_at:'2026-09-16T11:00:00Z',scope:['CA_CDT_PRA']}),
     now:()=>new Date('2026-09-16T10:00:00Z'),
     driverFactory: async()=>({
@@ -49,13 +49,28 @@ test('browser worker maps semantic fields, uploads attachments and returns evide
 
 test('browser worker stops on human gate without submitting', async () => {
   let submitted=false;
-  const worker=createBrowserPortalWorker({sessionProvider:async()=>({handle:'s',expires_at:'2026-09-16T11:00:00Z',scope:['EU_COMMISSION_1049']}),now:()=>new Date('2026-09-16T10:00:00Z'),driverFactory:async()=>({open:async()=>{},fill:async()=>{},upload:async()=>{},detectHumanGate:async()=>({reason:'MFA',resume_token:'r1'}),validate:async()=>({ok:true,lossy_transformations:[]}),submit:async()=>{submitted=true;}})});
+  const worker=createBrowserPortalWorker({agencySafetyGate:async()=>({allowed:true,reason:'allow'}),sessionProvider:async()=>({handle:'s',expires_at:'2026-09-16T11:00:00Z',scope:['EU_COMMISSION_1049']}),now:()=>new Date('2026-09-16T10:00:00Z'),driverFactory:async()=>({open:async()=>{},fill:async()=>{},upload:async()=>{},detectHumanGate:async()=>({reason:'MFA',resume_token:'r1'}),validate:async()=>({ok:true,lossy_transformations:[]}),submit:async()=>{submitted=true;}})});
   const result=await worker({request:{...request,recipient:{authority_id:'EU_COMMISSION_1049'}},authority:{id:'EU_COMMISSION_1049'},transport:{endpoint:'https://example.test'},profile:{semantic_fields:{}},fingerprint:'fp'});
   assert.equal(result.state,'HUMAN_REQUIRED'); assert.equal(result.reason,'MFA'); assert.equal(submitted,false);
 });
 
 test('browser worker rejects lossy transformation before submission', async () => {
-  const worker=createBrowserPortalWorker({sessionProvider:async()=>({handle:'s',expires_at:'2026-09-16T11:00:00Z',scope:['CA_CDT_PRA']}),now:()=>new Date('2026-09-16T10:00:00Z'),driverFactory:async()=>({open:async()=>{},fill:async()=>{},upload:async()=>{},detectHumanGate:async()=>null,validate:async()=>({ok:false,lossy_transformations:['summary truncated']}),submit:async()=>({})})});
+  const worker=createBrowserPortalWorker({agencySafetyGate:async()=>({allowed:true,reason:'allow'}),sessionProvider:async()=>({handle:'s',expires_at:'2026-09-16T11:00:00Z',scope:['CA_CDT_PRA']}),now:()=>new Date('2026-09-16T10:00:00Z'),driverFactory:async()=>({open:async()=>{},fill:async()=>{},upload:async()=>{},detectHumanGate:async()=>null,validate:async()=>({ok:false,lossy_transformations:['summary truncated']}),submit:async()=>({})})});
   const result=await worker({request,authority:{id:'CA_CDT_PRA'},transport:{endpoint:'https://example.test'},profile:{semantic_fields:{}},fingerprint:'fp'});
   assert.equal(result.state,'HUMAN_REQUIRED'); assert.equal(result.reason,'LOSSY_TRANSFORMATION');
+});
+
+
+test('browser worker denies before session and navigation when agency safety gate denies', async () => {
+  let opened=false;
+  const worker=createBrowserPortalWorker({
+    agencySafetyGate:async()=>({allowed:false,reason:'third_party_authorization_denial_circumvention'}),
+    sessionProvider:async()=>({handle:'s',expires_at:'2026-09-16T11:00:00Z',scope:['CA_CDT_PRA']}),
+    now:()=>new Date('2026-09-16T10:00:00Z'),
+    driverFactory:async()=>({open:async()=>{opened=true;}})
+  });
+  const result=await worker({request,authority:{id:'CA_CDT_PRA'},transport:{endpoint:'https://example.test'},profile:{semantic_fields:{}},fingerprint:'fp'});
+  assert.equal(result.state,'ACTION_REQUIRED');
+  assert.equal(result.reason,'third_party_authorization_denial_circumvention');
+  assert.equal(opened,false);
 });
