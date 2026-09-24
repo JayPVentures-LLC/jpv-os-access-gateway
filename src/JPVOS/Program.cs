@@ -32,10 +32,7 @@ var agencySafetyPolicyPath = Path.Combine(builder.Environment.ContentRootPath, "
 var agencySafetyPolicy = AgencySafetyPolicyLoader.LoadAndValidate(agencySafetyPolicyPath);
 var agencySafetyDataDir = builder.Configuration["JPV_AGENCY_SAFETY_DATA_DIR"];
 if (string.IsNullOrWhiteSpace(agencySafetyDataDir))
-{
-    if (!builder.Environment.IsDevelopment()) throw new InvalidOperationException("JPV_AGENCY_SAFETY_DATA_DIR is required outside Development and must point to writable persistent storage.");
-    agencySafetyDataDir = Path.Combine(Path.GetTempPath(), "jpv-os-agency-safety");
-}
+    agencySafetyDataDir = Path.Combine(claimsDataDir, "agency-safety");
 Directory.CreateDirectory(agencySafetyDataDir);
 var claimsDataDir = builder.Configuration["JPV_CLAIMS_DATA_DIR"];
 if (string.IsNullOrWhiteSpace(claimsDataDir))
