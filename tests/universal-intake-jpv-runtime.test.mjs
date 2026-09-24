@@ -3,12 +3,12 @@ import assert from 'node:assert/strict';
 import { createJpvNativeDriverFactory } from '../governance/universal-intake-jpv-runtime.mjs';
 
 test('requires a verified JPV_NATIVE deployment target', async()=>{
-  const factory=createJpvNativeDriverFactory({jpvDeploy:async()=>null});
+  const factory=createJpvNativeDriverFactory({jpvDeploy:async()=>null,transport:async()=>({ok:true})});
   await assert.rejects(()=>factory({authority_id:'CA_CDT_PRA',session_handle:'s',fingerprint:'f'}),/JPV_NATIVE_RUNTIME_CAPACITY_UNAVAILABLE/);
 });
 
 test('rejects external provider runtime even when reachable', async()=>{
-  const factory=createJpvNativeDriverFactory({jpvDeploy:async()=>({platform:'VERCEL',verified:true,endpoint:'https://x.example'})});
+  const factory=createJpvNativeDriverFactory({jpvDeploy:async()=>({platform:'VERCEL',verified:true,endpoint:'https://x.example'}),transport:async()=>({ok:true})});
   await assert.rejects(()=>factory({authority_id:'CA_CDT_PRA',session_handle:'s',fingerprint:'f'}),/external provider runtime/i);
 });
 
