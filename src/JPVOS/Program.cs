@@ -121,6 +121,7 @@ builder.Services.AddSingleton<JPVOS.Infrastructure.Discord.DiscordRoleSyncAuditS
 builder.Services.AddSingleton<ProductionAttentionAdmissionService>();
 builder.Services.AddSingleton(agencySafetyPolicy);
 builder.Services.AddSingleton(new FileAgencyDenialStateStore(Path.Combine(agencySafetyDataDir, "target-denials.json")));
+builder.Services.AddSingleton(new FileAgencySecurityTestingGrantStore(Path.Combine(agencySafetyDataDir, "security-testing-grants.json")));
 builder.Services.AddSingleton<AgencySafetyAuthorizer>();
 
 builder.Services.AddDataProtection()
