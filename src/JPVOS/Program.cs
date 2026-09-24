@@ -11,6 +11,7 @@ using JPVOS.Services.PrivilegedActions;
 using JPVOS.Services.GitHubOrgMutation;
 using JPVOS.Services.Attention;
 using JPVOS.Services.ClaimsEvidence;
+using JPVOS.Services.AgencySafety;
 using JPVOS.Services.ProposalExecution;
 using JPVOS.Infrastructure.Stripe;
 
@@ -27,6 +28,15 @@ var privilegedActionPolicyPath = Path.Combine(
 var privilegedActionPolicy = PrivilegedActionPolicyLoader.LoadAndValidate(privilegedActionPolicyPath);
 
 var githubAppOptions = GitHubAppAuthenticationOptions.FromConfiguration(builder.Configuration);
+var agencySafetyPolicyPath = Path.Combine(builder.Environment.ContentRootPath, ".jpv", "governance", "ai-agency-safety.json");
+var agencySafetyPolicy = AgencySafetyPolicyLoader.LoadAndValidate(agencySafetyPolicyPath);
+var agencySafetyDataDir = builder.Configuration["JPV_AGENCY_SAFETY_DATA_DIR"];
+if (string.IsNullOrWhiteSpace(agencySafetyDataDir))
+{
+    if (!builder.Environment.IsDevelopment()) throw new InvalidOperationException("JPV_AGENCY_SAFETY_DATA_DIR is required outside Development and must point to writable persistent storage.");
+    agencySafetyDataDir = Path.Combine(Path.GetTempPath(), "jpv-os-agency-safety");
+}
+Directory.CreateDirectory(agencySafetyDataDir);
 var claimsDataDir = builder.Configuration["JPV_CLAIMS_DATA_DIR"];
 if (string.IsNullOrWhiteSpace(claimsDataDir))
 {
@@ -109,6 +119,9 @@ builder.Services.AddSingleton<StripeWebhookEventStore>();
 builder.Services.AddSingleton<StripeSubscriptionAuditStore>();
 builder.Services.AddSingleton<JPVOS.Infrastructure.Discord.DiscordRoleSyncAuditStore>();
 builder.Services.AddSingleton<ProductionAttentionAdmissionService>();
+builder.Services.AddSingleton(agencySafetyPolicy);
+builder.Services.AddSingleton(new FileAgencyDenialStateStore(Path.Combine(agencySafetyDataDir, "target-denials.json")));
+builder.Services.AddSingleton<AgencySafetyAuthorizer>();
 
 builder.Services.AddDataProtection()
     .SetApplicationName("JPVOS.ClaimsEvidence")
@@ -206,6 +219,7 @@ app.MapGet("/health", (IConfiguration config, SystemicAccessRuntimeState systemi
         registered = attentionGate is not null,
         mode = "fail-closed"
     },
+    agencySafety = new { policyLoaded = true, authoritativeDenialState = true, stickyThirdPartyDenial = agencySafetyPolicy.ThirdPartyAuthorizationDenialSticky },
     reciprocity = new
     {
         registered = true,
