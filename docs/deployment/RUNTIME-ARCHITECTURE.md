@@ -3,31 +3,29 @@
 
 ## Architecture
 
-Cloudflare:
+JPV-OS / JPV-native:
+- application runtime authority
+- Stripe Checkout and webhooks
+- Discord OAuth and role assignment
+- admin and entitlement routing
+- deployment selection and terminal verification
+
+Cloudflare (currently admitted bounded infrastructure):
 - DNS
 - SSL
 - CDN
-- Edge protection
+- edge protection
 
-Azure App Service:
-- Blazor/.NET runtime
-- Stripe Checkout
-- Stripe webhooks
-- Discord OAuth
-- Discord role assignment
-- Admin routes
-- Entitlement routing
+Azure App Service is not an admitted production runtime.
 
 ## Production Secrets
 
 STRIPE_SECRET_KEY
 STRIPE_WEBHOOK_SECRET
-
 DISCORD_CLIENT_ID
 DISCORD_CLIENT_SECRET
 DISCORD_BOT_TOKEN
 DISCORD_GUILD_ID
-
 DISCORD_ROLE_MEMBER
 DISCORD_ROLE_VIP_VENTURE
 
@@ -36,4 +34,5 @@ DISCORD_ROLE_VIP_VENTURE
 - Never expose secrets client-side.
 - Never commit secrets into Git.
 - Stripe + Discord stay server-side only.
-- Cloudflare Pages is not the runtime host.
+- Provider availability never confers runtime or completion authority.
+- JPV-native authoritative readback is required for completion.
