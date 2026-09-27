@@ -2,73 +2,46 @@
 
 JPV Nexus is the application-facing entry layer for the JPV ecosystem.
 
-It provides the structured interface for identity-aware entry, entitlement routing, dashboard access, role-aware experience design, and governed application routing across the JayPVentures LLC infrastructure and creator-facing systems.
+It provides identity-aware entry, entitlement routing, dashboard access, role-aware experience design, and governed application routing across JayPVentures LLC infrastructure.
 
-## Operational Purpose
+## Operational purpose
 
-- Application interface
-- Identity-aware entry
-- Dashboard shell
-- Entitlement routing
-- Role-aware routing
-- Governance-aware app layer
+- application interface
+- identity-aware entry
+- dashboard shell
+- entitlement routing
+- role-aware routing
+- governance-aware application layer
 
-## Governance Alignment
+## Canonical runtime
 
-This repo must preserve:
+JPV Nexus production execution runs on **JPV Compute** under **JPV Deploy** authority.
 
-- security policy enforcement
-- role-based access architecture
-- audit-friendly deployment history
-- human-review protections
-- interoperability freedom
-- vendor-boundary separation
-- JPV-OS people-protection standards
+External compute providers, GitHub Actions, Azure App Service, Render, Railway, Fly.io, DigitalOcean App Platform, Google Cloud Run, AWS App Runner, Vercel, and SentinelX are not canonical production runtime paths.
 
-## Primary Stack
+Cloudflare may be used only where separately admitted for bounded DNS/SSL/CDN/edge publication. Cloudflare never owns Nexus runtime, identity, entitlement state, deployment authority, or completion authority.
 
-- .NET / Blazor
-- GitHub Actions
-- JayPVentures LLC governance standards
-
-## Deployment
-
-### Container Deployment (Current)
-
-The application is containerized and published to GitHub Container Registry when changes to `src/JPVOS/**` are pushed to `main`:
+## Build
 
 ```bash
-# For local testing
-docker pull ghcr.io/jaypventures-llc/jpv-os:latest
-docker run -p 8080:8080 ghcr.io/jaypventures-llc/jpv-os:latest
-
-# For production (use immutable commit SHA tag)
-docker pull ghcr.io/jaypventures-llc/jpv-os:<commit-sha>
-docker run -p 8080:8080 ghcr.io/jaypventures-llc/jpv-os:<commit-sha>
+dotnet build JPVOS.sln -c Release
+dotnet test JPVOS.sln -c Release --no-build
 ```
 
-**Supported Platforms:**
-- Render (render.yaml included)
-- Railway
-- Fly.io (fly.toml included)
-- DigitalOcean App Platform
-- Google Cloud Run
-- AWS App Runner
+## Production contract
 
-See [docs/CONTAINER-DEPLOYMENT.md](docs/CONTAINER-DEPLOYMENT.md) for detailed deployment instructions.
+Production completion requires all of the following:
 
-### Azure App Service
+1. the exact approved source revision is packaged for JPV Compute;
+2. JPV Deploy activates that exact revision on the admitted JPV Compute target;
+3. `GET /health` returns healthy state;
+4. Nexus authentication succeeds;
+5. entitlement and role enforcement succeed;
+6. Stripe payment/claim/entitlement flow succeeds where applicable;
+7. core Nexus actions execute through JPV authority;
+8. authoritative readback proves the exact deployed revision;
+9. restart/recovery returns Nexus to service without workstation or hosted-provider substitution.
 
-Azure App Service deployment is provisioned using automated scripts.
+Repository state, container publication, provider acknowledgement, or source build success alone is not production completion.
 
-**Windows (PowerShell):**
-```powershell
-.\scripts\provision-azure-appservice.ps1 -Path A -SubscriptionId "YOUR-SUBSCRIPTION-ID"
-```
-
-**Linux/macOS (Bash):**
-```bash
-./scripts/provision-azure-appservice.sh -Path A -SubscriptionId "YOUR-SUBSCRIPTION-ID"
-```
-
-See [docs/AZURE-PROVISIONING-GUIDE.md](docs/AZURE-PROVISIONING-GUIDE.md) for deployment details and alternative paths.
+See `docs/DEPLOYMENT.md` for the runtime contract.
