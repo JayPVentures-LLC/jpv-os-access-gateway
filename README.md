@@ -2,73 +2,34 @@
 
 JPV Nexus is the application-facing entry layer for the JPV ecosystem.
 
-It provides the structured interface for identity-aware entry, entitlement routing, dashboard access, role-aware experience design, and governed application routing across the JayPVentures LLC infrastructure and creator-facing systems.
+It provides identity-aware entry, entitlement routing, dashboard access, role-aware experience design, and governed application routing across JayPVentures LLC infrastructure and creator-facing systems.
 
-## Operational Purpose
+## Canonical runtime
 
-- Application interface
-- Identity-aware entry
-- Dashboard shell
-- Entitlement routing
-- Role-aware routing
-- Governance-aware app layer
+Production compute: **JPV Compute**  
+Deployment authority: **JPV_DEPLOY**  
+Canonical execution boundary: **JPV_COMPUTE_FABRIC**
 
-## Governance Alignment
+The application is packaged by `src/JPVOS/Dockerfile` for JPV Compute. Fly.io, Render, Railway, Azure, Vercel, hosted workflow runners, GitHub Actions, and other external compute providers are not production runtime or deployment authority.
 
-This repo must preserve:
+Cloudflare may be used only where separately admitted as bounded DNS/SSL/CDN/edge infrastructure. It does not provide Nexus compute, entitlement authority, canonical state, or completion authority.
 
-- security policy enforcement
-- role-based access architecture
-- audit-friendly deployment history
-- human-review protections
-- interoperability freedom
-- vendor-boundary separation
-- JPV-OS people-protection standards
-
-## Primary Stack
-
-- .NET / Blazor
-- GitHub Actions
-- JayPVentures LLC governance standards
-
-## Deployment
-
-### Container Deployment (Current)
-
-The application is containerized and published to GitHub Container Registry when changes to `src/JPVOS/**` are pushed to `main`:
+## Build
 
 ```bash
-# For local testing
-docker pull ghcr.io/jaypventures-llc/jpv-os:latest
-docker run -p 8080:8080 ghcr.io/jaypventures-llc/jpv-os:latest
-
-# For production (use immutable commit SHA tag)
-docker pull ghcr.io/jaypventures-llc/jpv-os:<commit-sha>
-docker run -p 8080:8080 ghcr.io/jaypventures-llc/jpv-os:<commit-sha>
+dotnet build JPVOS.sln -c Release
+dotnet test JPVOS.sln -c Release --no-build
 ```
 
-**Supported Platforms:**
-- Render (render.yaml included)
-- Railway
-- Fly.io (fly.toml included)
-- DigitalOcean App Platform
-- Google Cloud Run
-- AWS App Runner
+## Production completion
 
-See [docs/CONTAINER-DEPLOYMENT.md](docs/CONTAINER-DEPLOYMENT.md) for detailed deployment instructions.
+Nexus is complete only when JPV Compute runs the exact approved revision and authoritative readback verifies:
 
-### Azure App Service
+- `GET /health` is healthy;
+- identity and authentication work;
+- checkout → Stripe webhook → entitlement → claim → access completes;
+- revocation is enforced;
+- persistent proposal/state storage survives restart;
+- the exact deployed revision/artifact is returned by JPV readback.
 
-Azure App Service deployment is provisioned using automated scripts.
-
-**Windows (PowerShell):**
-```powershell
-.\scripts\provision-azure-appservice.ps1 -Path A -SubscriptionId "YOUR-SUBSCRIPTION-ID"
-```
-
-**Linux/macOS (Bash):**
-```bash
-./scripts/provision-azure-appservice.sh -Path A -SubscriptionId "YOUR-SUBSCRIPTION-ID"
-```
-
-See [docs/AZURE-PROVISIONING-GUIDE.md](docs/AZURE-PROVISIONING-GUIDE.md) for deployment details and alternative paths.
+Repository commits or container creation alone do not establish production completion.

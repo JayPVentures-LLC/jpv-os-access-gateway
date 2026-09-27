@@ -3,15 +3,15 @@ namespace JPVOS.Tests;
 public sealed class ProposalDeploymentConfigurationTests
 {
     [Fact]
-    public void Production_wires_persistent_proposal_storage_and_bootstrap_once()
+    public void Production_wires_persistent_proposal_storage_without_external_provider_config()
     {
         var root = FindRepositoryRoot();
-        var render = File.ReadAllText(Path.Join(root, "render.yaml"));
         var dockerfile = File.ReadAllText(Path.Join(root, "src", "JPVOS", "Dockerfile"));
         var project = File.ReadAllText(Path.Join(root, "src", "JPVOS", "JPVOS.csproj"));
         var program = File.ReadAllText(Path.Join(root, "src", "JPVOS", "Program.cs"));
 
-        Assert.Contains("dockerContext: .", render, StringComparison.Ordinal);
+        Assert.False(File.Exists(Path.Join(root, "render.yaml")));
+        Assert.False(File.Exists(Path.Join(root, "fly.toml")));
         Assert.Contains("COPY governance/proposals/JPV-PROPOSAL-REGISTRY.bootstrap.json governance/proposals/JPV-PROPOSAL-REGISTRY.bootstrap.json", dockerfile, StringComparison.Ordinal);
         Assert.Contains("JPV-PROPOSAL-REGISTRY.bootstrap.json", project, StringComparison.Ordinal);
         Assert.Contains("ProposalStoragePathResolver.Resolve", program, StringComparison.Ordinal);
@@ -29,10 +29,10 @@ public sealed class ProposalDeploymentConfigurationTests
         var current = new DirectoryInfo(AppContext.BaseDirectory);
         while (current is not null)
         {
-            if (File.Exists(Path.Join(current.FullName, "render.yaml"))) return current.FullName;
+            if (File.Exists(Path.Join(current.FullName, "JPVOS.sln"))) return current.FullName;
             current = current.Parent;
         }
 
-        throw new InvalidOperationException("Repository root containing render.yaml was not found.");
+        throw new InvalidOperationException("JPV Nexus repository root was not found.");
     }
 }
