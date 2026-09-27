@@ -3,7 +3,7 @@ namespace JPVOS.Tests;
 public sealed class ProposalDeploymentConfigurationTests
 {
     [Fact]
-    public void Production_wires_persistent_proposal_storage_without_provider_deployment_files()
+    public void Production_wires_persistent_proposal_storage_without_external_provider_config()
     {
         var root = FindRepositoryRoot();
         var dockerfile = File.ReadAllText(Path.Join(root, "src", "JPVOS", "Dockerfile"));
@@ -33,6 +33,6 @@ public sealed class ProposalDeploymentConfigurationTests
             current = current.Parent;
         }
 
-        throw new InvalidOperationException("JPVOS repository root was not found.");
+        throw new InvalidOperationException("JPV Nexus repository root was not found.");
     }
 }
