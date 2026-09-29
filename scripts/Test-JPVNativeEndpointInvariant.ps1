@@ -19,6 +19,8 @@ $installer=Get-Content (Join-Path $RepositoryRoot 'scripts/install-jpv-native-en
 if($program -notmatch 'AddWindowsService'){throw 'Endpoint is not registered as a Windows service.'}
 if($state -notmatch 'CommonApplicationData'){throw 'Endpoint state is not machine-scoped.'}
 if($state -notmatch 'fails closed'){throw 'Endpoint does not fail closed without policy.'}
+if($state -notmatch 'ProtectedData\.Protect' -or $state -notmatch 'DataProtectionScope\.LocalMachine'){throw 'Machine secret is not protected with machine-scoped DPAPI.'}
+if($state -match 'JsonSerializer\.Serialize\(id\)'){throw 'Machine secret must not be serialized into identity metadata.'}
 if($installer -notmatch "start= auto"){throw 'Endpoint service is not automatic.'}
 if($installer -notmatch "failure.*restart"){throw 'Endpoint has no crash recovery.'}
 [ordered]@{status='PASS';service='JPV.NativeEndpoint';machineScoped=$true;sessionIndependent=$true;adapterIndependent=$true;failClosed=$true;automaticRecovery=$true}|ConvertTo-Json
