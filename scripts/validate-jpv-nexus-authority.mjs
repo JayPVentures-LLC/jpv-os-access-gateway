@@ -64,9 +64,16 @@ function main() {
 
   if (!Array.isArray(contract.mustNotOwn)) {
     fail("mustNotOwn must be an array.");
-  } else if (!contract.mustNotOwn.includes("pricing authority")) {
-    fail("mustNotOwn must include pricing authority.");
+  } else {
+    for (const boundary of ["pricing authority", "runtime execution authority", "completion authority", "route authority", "provider authority"]) {
+      if (!contract.mustNotOwn.includes(boundary)) fail(`mustNotOwn must include ${boundary}.`);
+    }
   }
+
+  if (contract.runtimeHandoff?.authority !== "JPV Runtime") fail("runtimeHandoff.authority must be JPV Runtime.");
+  if (!String(contract.runtimeHandoff?.requirement || "").includes("subordinate actuators")) fail("runtimeHandoff must keep routes/providers/adapters subordinate.");
+  if (contract.runtimeHandoff?.terminalProof !== "JPV-authoritative readback") fail("terminalProof must require JPV-authoritative readback.");
+  if (contract.runtimeHandoff?.missingReadbackState !== "UNVERIFIED") fail("missing readback state must be UNVERIFIED.");
 
   if (!String(contract.pricingAuthority || "").includes("must not define final prices")) fail("pricingAuthority must state JPV Nexus must not define final prices.");
 
