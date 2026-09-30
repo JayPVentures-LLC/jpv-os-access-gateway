@@ -2,7 +2,7 @@
 
 **Purpose**: Use this checklist after the final curation PR lands, before public launch.
 
-This document provides a structured visual review process to ensure the JPV-OS Access Gateway meets premium quality standards and brand alignment across all pages and components.
+This document provides a structured visual review process to ensure the JPV Nexus meets premium quality standards and brand alignment across all pages and components.
 
 ---
 

@@ -1,6 +1,6 @@
 # Release Readiness Validation
 
-Validates JPV-OS Access Gateway before deployment.
+Validates JPV Nexus before deployment.
 
 ## Required checks
 
