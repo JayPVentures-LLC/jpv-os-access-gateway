@@ -13,17 +13,18 @@ function manualHandoff(request, authority, transport, extra = {}) {
 }
 
 async function executeEmail(request, authority, transport, deps) {
-  if (typeof deps.sendEmail !== 'function') throw new Error('EMAIL transport requires sendEmail dependency');
-  const external = await deps.sendEmail({ to: transport.endpoint, subject: request.subject, body: renderEmailBody(request), request_id: request.request_id, authority_id: authority.id });
+  if (typeof deps.runtimeActuate !== 'function') throw new Error('EMAIL transport requires JPV Runtime actuation');
+  const actuation = await deps.runtimeActuate({ operation: 'EMAIL_SEND', request_id: request.request_id, authority_id: authority.id, transport: structuredClone(transport), payload: { to: transport.endpoint, subject: request.subject, body: renderEmailBody(request) } });
+  if (actuation?.readback_verified !== true) throw new Error('JPV authoritative readback missing: EMAIL_SEND');
+  const external = actuation.result;
   return normalizeReceipt(request.request_id, external, authority.authority_name);
 }
 
 async function executeApi(request, authority, transport, deps) {
-  const fetchImpl = deps.fetch ?? globalThis.fetch;
-  if (typeof fetchImpl !== 'function') throw new Error('API transport requires fetch dependency');
-  const response = await fetchImpl(transport.endpoint, { method: transport.method ?? 'POST', headers: { 'content-type': 'application/json', 'x-upis-request-id': request.request_id, ...(transport.headers ?? {}) }, body: JSON.stringify(request) });
-  if (!response?.ok) throw new Error(`API transport failed${response?.status ? `: ${response.status}` : ''}`);
-  return normalizeReceipt(request.request_id, await response.json(), authority.authority_name);
+  if (typeof deps.runtimeActuate !== 'function') throw new Error('API transport requires JPV Runtime actuation');
+  const actuation = await deps.runtimeActuate({ operation: 'API_REQUEST', request_id: request.request_id, authority_id: authority.id, transport: structuredClone(transport), payload: { endpoint: transport.endpoint, method: transport.method ?? 'POST', headers: { 'content-type': 'application/json', 'x-upis-request-id': request.request_id, ...(transport.headers ?? {}) }, body: structuredClone(request) } });
+  if (actuation?.readback_verified !== true) throw new Error('JPV authoritative readback missing: API_REQUEST');
+  return normalizeReceipt(request.request_id, actuation.result, authority.authority_name);
 }
 
 export async function executeIntake(request, authority, deps = {}) {
@@ -34,7 +35,8 @@ export async function executeIntake(request, authority, deps = {}) {
   if (transport.kind === 'MANUAL_REQUIRED') return { request: transitionSubmission(routed, 'ACTION_REQUIRED'), transport, handoff: manualHandoff(request, authority, transport) };
 
   if (transport.kind === 'PORTAL') {
-    const portal = await executePortal(request, authority, transport, deps);
+    if (typeof deps.runtimePortalWorker !== 'function') throw new Error('PORTAL transport requires JPV Runtime portal worker');
+    const portal = await executePortal(request, authority, transport, { ...deps, portalWorker: deps.runtimePortalWorker });
     if (portal.state === 'HUMAN_REQUIRED') return { request: transitionSubmission(routed, 'ACTION_REQUIRED'), transport, handoff: manualHandoff(request, authority, transport, { reason: portal.reason, ...(portal.resume_token ? { resume_token: portal.resume_token } : {}) }) };
     const receipt = { request_id: request.request_id, external_tracking_id: portal.tracking_id, received_at: portal.received_at, receiving_authority: authority.authority_name, status: 'SUBMITTED', evidence: portal.evidence, fingerprint: portal.fingerprint };
     return { request: transitionSubmission(routed, 'SUBMITTED', { external_tracking_id: receipt.external_tracking_id, received_at: receipt.received_at }), transport, receipt };
