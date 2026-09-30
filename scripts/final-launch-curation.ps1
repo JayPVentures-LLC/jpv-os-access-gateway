@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
 
-# JPV-OS Access Gateway - Final Launch Curation Script
+# JPV Nexus - Final Launch Curation Script
 # Validates that all launch requirements are met before deployment
 
 Write-Host "[final-launch-curation] Running final launch checks..." -ForegroundColor Cyan
