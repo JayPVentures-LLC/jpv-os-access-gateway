@@ -1,5 +1,5 @@
 # automate-dev-setup.ps1
-# Automates Docker installation (if missing), server startup, and homepage build/test for JPV-OS Access Gateway
+# Automates Docker installation (if missing), server startup, and homepage build/test for JPV Nexus
 
 function Install-DockerIfMissing {
   Write-Host "Checking for Docker..."
