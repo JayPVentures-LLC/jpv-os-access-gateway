@@ -1,6 +1,6 @@
 # Partner Asset Register
 
-This document tracks all partner logo assets used in the JPV-OS Access Gateway. Each asset is categorized by its approval status and documented with trademark/brand guideline notes.
+This document tracks all partner logo assets used in the JPV Nexus. Each asset is categorized by its approval status and documented with trademark/brand guideline notes.
 
 ## Asset Types
 
