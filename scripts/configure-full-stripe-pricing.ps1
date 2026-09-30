@@ -12,7 +12,7 @@ $RepoRoot = (Resolve-Path ".").Path
 $GeneratedDir = Join-Path $RepoRoot "infrastructure\stripe\generated"
 New-Item -ItemType Directory -Force -Path $GeneratedDir | Out-Null
 
-$PricingAuthority = "JPV-OS-v2.1.0"
+$PricingAuthority = "JPV-NEXUS-v2.1.0"
 $Stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $JsonPath = Join-Path $GeneratedDir "stripe-pricing.$Mode.json"
 $ReportPath = Join-Path $GeneratedDir "stripe-pricing.$Mode.$Stamp.md"
@@ -117,7 +117,7 @@ foreach ($tier in $Tiers) {
                 "-d",
                 "tax_behavior=exclusive",
                 "-d",
-                "metadata[ecosystem]=JPV-OS",
+                "metadata[ecosystem]=JPV",
                 "-d",
                 "metadata[legal_entity]=JayPVentures LLC",
                 "-d",
@@ -142,9 +142,9 @@ foreach ($tier in $Tiers) {
             "-d",
             "name=$($tier.name)",
             "-d",
-            "description=JPV-OS Access Gateway tier: $($tier.name)",
+            "description=JPV Nexus tier: $($tier.name)",
             "-d",
-            "metadata[ecosystem]=JPV-OS",
+            "metadata[ecosystem]=JPV",
             "-d",
             "metadata[legal_entity]=JayPVentures LLC",
             "-d",
@@ -169,7 +169,7 @@ foreach ($tier in $Tiers) {
             "-d",
             "tax_behavior=exclusive",
             "-d",
-            "metadata[ecosystem]=JPV-OS",
+            "metadata[ecosystem]=JPV",
             "-d",
             "metadata[legal_entity]=JayPVentures LLC",
             "-d",
