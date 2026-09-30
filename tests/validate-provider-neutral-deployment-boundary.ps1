@@ -40,7 +40,7 @@ if (-not (Test-Path $boundaryDoc)) {
 }
 
 $boundary = Get-Content $boundaryDoc -Raw
-foreach ($required in @('PROVIDER_NEUTRAL', 'JPV_OS', 'NO_ADMITTED_EXECUTION_CAPACITY', 'fail closed')) {
+foreach ($required in @('PROVIDER_NEUTRAL', 'JPV Runtime', 'bounded delivery infrastructure', 'fail closed', 'JPV-authoritative deployed revision readback', 'UNVERIFIED')) {
     if ($boundary -notmatch [regex]::Escape($required)) {
         throw "Provider-neutral boundary is missing required marker: $required"
     }
